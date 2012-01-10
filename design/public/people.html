@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Tombstone</title>
+  <link rel="stylesheet" href="reset.css" />
+  <link rel="stylesheet" href="style.css" />
+  <script type="text/javascript" src="scripts/jquery-1.7.1.min.js"></script>
+  <script type="text/javascript" src="scripts/underscore.js"></script>
+  <script type="text/javascript" src="scripts/backbone.js"></script>
+  <script type="text/javascript" src="src/helpers.js"></script>
+  <script type="text/javascript" src="src/models.js"></script>
+  <script type="text/javascript" src="src/collections.js"></script>
+  <script type="text/javascript" src="src/views.js"></script>
+  <script type="text/javascript">
+    $( function () {
+      var biggle = 'Turkey'
+			
+			window.wizard = new Ts.Wizard({title: 'Test'})
+			window.wizardView = new Ts.WizardView({model: wizard})
+			window.newPerson = new Ts.Person({})
+			window.personForm = new Ts.PersonForm({model: newPerson, overlay: wizard})
+			window.wizard.set({body: personForm.render().el})
+      
+      // newPerson.set({id: 12})
+      // newPerson.fetch()
+			$('body').append(wizardView.render().el)
+		})
+  </script>
+  <script type="text/template" id="wizard_template">
+		<div class="overlay_container" id="add_reservee">
+			<div class="heading">
+				<h2 class="underline"><%= data.title %></h2>
+				<a class="close" href="javascript:void(0)" title="Close"></a>
+			</div>
+  		<div class="body">
+			</div>
+      <div class="loading">
+			</div>
+		</div>
+	</script>
+  <script type="text/template" id="person_form_template">
+		<div class="section padded">
+			<label>
+				<span>First Name</span>
+				<input type="text" name="first_name" style="width: 60%;" />
+			</label>
+			<label>
+				<span>Last Name</span>
+				<input type="text" name="last_name" style="width: 60%;" />
+			</label>
+			<div class="row">
+				<span>Gender</span>
+				<label><input type="radio" name="gender" value="male" />Male</label>
+				&nbsp;
+				<label><input type="radio" name="gender" value="female" />Female</label>
+			</div>
+			<label>
+				<span>Date of Birth</span>
+				<input type="text" name="DOB" />
+			</label>
+			<div class="row">
+				<input type="button" value="Next" action="find" />
+			</div>
+		</div>
+	</script>
+  <script type="text/template" id="person_results_template">
+    <h3 class="underline">Matches Found</h3>
+		<% _.each(collection, function (person) { %>
+      <div class="row_block clickable" title="Click to view">
+        <span><strong><%= person.given_name %> <%= person.surname %></strong></span>
+        Todo: Bring back collection of roles instead of people.
+      </div>
+    <% }, this) %>
+    <div style="text-align: right;"><input type="button" value="Create New Person" action="create_new_person" /></div>
+	</script>
+  <style>
+    select {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+junky stuff
+</body>
+</html>

@@ -1,2 +1,2 @@
 require './app.rb'
-run Tomestone::Main
+run Tombstone::Main

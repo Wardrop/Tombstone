@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tombstone</title>
+  <link rel="stylesheet" href="reset.css" />
+  <link rel="stylesheet" href="style.css" />
+  <script type="text/javascript" src="/scripts/jquery-1.6.2.min.js"></script>
+</head>
+<body>
+  <div id="container">  
+    <h1>Tombstone</h1>  
+    <form id="fuel_form" action="/" method="post" class="vertical">
+      <div class="vertical_form">
+        <div id="key_fields" class="inline_layout">
+          <label style="width: 44%;">
+            <span class="field">Asset Number</span>
+            <input type="text" name="asset_number" maxlength="8" autofocus="enabled" class="with_icon" />          
+          </label>
+          <div class="separator" style="width: 12%;">
+            <span>OR</span>
+            <div></div>
+          </div>
+          <label style="width: 44%;">
+            <span class="field">Job Number</span>
+            <input type="text" name="job_number" maxlength="18" class="with_icon"/>          
+          </label>
+        </div>
+        <div id="key_field_error" style="display: none;"></div>
+        <ul id="validation_errors" style="display: none;"><li>No validation errors ecountered.</li></ul> 
+        <label>
+          <span class="field">Operator Name</span>
+          <input type="text" name="operator" style="width: 260px;" />
+        </label>      
+        <div class="inline_layout">
+          <label>
+            <span class="field">Odometer</span>
+            <input type="text" name="odometer" maxlength="7" style="width: 120px" />
+          </label>
+          <label style="margin-left: 20px">
+            <span class="field">Hours Meter</span>
+            <input type="text" name="hours" maxlength="7" style="width: 120px" />
+          </label>
+          <br />
+          <em style="padding: 8px 0 3px; color: #666;">At least one meter reading must be provided.</em>
+        </div>        
+        <div class="inline_layout">
+          <label>
+            <span class="field">Fuel Type</span>
+            <select name="fuel_type" style="width: 120px;">
+              <% settings.config[:fuel_types].each do |name, value| %>
+                <option value="<%= value %>"><%= name %></option>
+              <% end %>
+            </select>
+          </label>
+          <label style="margin-left: 20px;">
+            <span class="field">Fuel Quantity</span>
+            <div style="position: relative; display: inline-block;">
+              <span style="position: absolute; right: 10px; top: 7px; color: gray;">Litres</span>
+              <input type="text" name="fuel_quantity" maxlength="6" style="width: 120px; text-align: right; padding-right: 50px" />
+            </div>
+          </label>
+        </div>
+        <label>
+          <span class="field">Fuel Source</span>
+          <select type="text" name="fuel_source">
+            <% settings.config[:fuel_sources].each do |name, properties| %>
+              <option value="<%= name %>"><%= name %></option>
+            <% end %>
+          </select>
+        </label>        
+        <label>
+          <span class="field">Refuel Date</span>
+          <input type="text" name="date" style="width: 120px;" value="<%= Date.today.strftime('%d/%m/%Y') %>" />          
+        </label>        
+        <label>
+          <span class="field"></span>
+          <div class="vertical_center">
+            <input id="submit_fuel_form" type="submit" value="Submit" />
+          </div>
+        </label>          
+      </div>      
+    </form>
+  </div>
+</body>
+</html>

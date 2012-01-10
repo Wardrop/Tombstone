@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tombstone</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" href="reset.css" />
+  <link rel="stylesheet" href="style.css" />
+  <script type="text/javascript" src="scripts/jquery-1.7.1.min.js"></script>
+  <script type="text/javascript">
+		$( function () {
+				$('.multibutton').each( function () {
+					new TS.widget.multiButton(this)
+				})
+				$('.delete').click( function () {
+					confirmMessage = $(this).attr("confirm")
+					if(confirmMessage) {
+						if(!confirm(confirmMessage)) {
+							return false;
+						}
+					}
+					console.log('POST\'ing request to '+$(this).attr("action")+' with data: '+$(this).attr("data")+'.')
+					return false;
+				})
+				TS.overlay.hide();
+				$('.overlay_background').live('click', function () {
+					TS.overlay.hide();
+				})
+				$('.overlay_container > ul > li input[action=next]').click( function () {
+					overlay = $(this).parents('.overlay_container')
+					TS.overlay.show(overlay, $(this).parents('li').first().next().attr('page'), true);
+				})
+				$('.overlay_container .close').click( function () {
+					TS.overlay.hide()
+				})
+				$('#reservee_section .row_block').click( function () {
+					TS.overlay.show('#add_reservee')
+				})
+				$('#associates_section .row_block').click( function () {
+					TS.overlay.show('#add_associate')
+				})
+				/*
+				$('.row_block.clickable').click( function () {
+					TS.overlay.show();
+				})
+				*/
+		})
+		
+		
+		
+		TS = {
+			widget: {
+				multiButton: function (selector) {
+					var self = this;
+					this.element = $(selector).first();
+					this.dropdownButton = this.element.children('span');
+					this.list = this.element.children('ul');
+					
+					this.toggle = function () {
+						hidden = (this.list.css('display') == 'none');
+						(hidden) ? this.show() : this.hide();
+					}
+					this.show = function () {
+						this.list.css('min-width', this.element.outerWidth());
+						this.list.css('display', '');
+						viewport_bottom = $(window).scrollTop() + $(window).height();
+						list_bottom = $(this.list).offset().top + $(this.list).outerHeight();
+						if((list_bottom + 10) > viewport_bottom) {
+							this.element.addClass('top');
+						} else {
+							this.element.addClass('bottom');
+						}
+						// If we don't wrap this binding in a timeout, it'll fire directly after this event which is not what we want.
+						window.setTimeout(function () { $(document).click(self.blurEvent); }, 1);
+						$(window).blur(this.blurEvent)
+						$(document).keydown(this.keydownEvent)
+					}
+					this.hide = function () {
+						this.list.css('display', 'none');
+						$(document).unbind('click', this.blurEvent);
+						$(window).unbind('blur', this.blurEvent)
+						$(document).unbind('keydown', this.keydownEvent)
+						this.element.removeClass('top bottom');
+					}
+					this.selectButton = function(selected, loading) {
+						this.element.children('input').remove()
+						this.element.prepend($(selected).children('input').clone())
+						this.list.children('li').removeClass('selected')
+						$(selected).addClass('selected')
+						if(loading && !this.element.next().hasClass('loading')) {
+							this.element.after('<div class="loading" style="width: 38px;" />')
+						}
+					}
+					this.keydownEvent = function (e) {
+						switch (e.keyCode) {
+							case 27: // Escape
+								self.hide();
+								break
+						}
+					}
+					this.blurEvent = function () {
+						self.hide();
+					}
+					
+					// Prepare
+					this.list.css('display', 'none')
+					this.dropdownButton.click( function () {
+						self.toggle();
+					})
+					var selected = this.list.children('.selected')
+					if(selected.length < 1) {
+						selected = this.list.children().first()
+					}
+					this.list.children('li').click( function () {
+						self.selectButton(this, true)
+					})
+					this.selectButton(selected)
+				}
+			},
+			overlay: {
+				show: function (overlay, page, animate) {
+					overlay = $(overlay);
+					if(animate == undefined) {
+						animate = true;
+					}
+					
+					var background =  $('.overlay_background');
+					if(page) {
+						var nextPage = overlay.find('ul > li[page="'+page+'"]');
+					} else {
+						var nextPage =  overlay.find('ul > li').first();
+					}
+					
+					(!!animate) ? background.add(overlay).fadeIn(150) : background.add(overlay).css('display', '');
+					overlay.find('ul > li').css('display', 'none');
+					nextPage.css('display', '');
+				},
+				hide: function (animate) {
+					if(animate == undefined) animate = true;
+					var objects = $('.overlay_background, .overlay_container');
+					(!!animate) ? objects.fadeOut(150) : objects.css('display', 'none');
+				}
+			},
+			addAssociate: function () {
+				TS.overlay.show('#add_associate');
+			}
+		}
+	</script>
+</head>
+<body>
+<div class="overlay_background" style="display: none;">
+  <div class="overlay_container" id="add_reservee" style="display: none;">
+  	<div class="heading">
+    	<h2 class="underline">Add Reservee</h2>
+      <a class="close" href="javascript:void(0)" title="Close"></a>
+    </div>
+  	<ul>
+    	<li page="find_person">
+        <form class="rowed">
+          <div class="section padded">
+            <label>
+              <span>First Name</span>
+              <input type="text" name="first_name" style="width: 60%;" />
+            </label>
+            <label>
+              <span>Last Name</span>
+              <input type="text" name="last_name" style="width: 60%;" />
+            </label>
+            <div class="row">
+              <span>Gender</span>
+              <label><input type="radio" name="gender" /> Male</label>
+              &nbsp;
+              <label><input type="radio" name="gender" /> Female</label>
+            </div>
+            <label>
+              <span>Date of Birth</span>
+              <input type="text" name="DOB" />
+            </label>
+            <div class="row">
+              <input type="button" value="Next" action="next" />
+            </div>
+          </div>
+        </form>
+      </li>
+      <li page="matches">
+      	<h3 class="underline">Matches Found</h3>
+        <div class="row_block clickable" title="Click to view">
+          <span><strong>Roger Gordonson</strong></span>
+          14 Fabian Drive, Mareeba, Queensland 4880
+        </div>
+        <div class="row_block clickable" title="Click to view">
+          <span><strong>Rodney Gordonson</strong></span>
+          3 Shamabana Road, Atherton, Queensland 4883
+        </div>
+        <div style="text-align: right;"><input type="button" value="Create New Person" action="next" /></div>
+      </li>
+      <li page="create_new_person">
+        <h3 class="underline">Create New Person</h3>
+        <form class="rowed">
+          <div class="section padded">
+            <label>
+              <span>First Name</span>
+              <input type="text" name="first_name" style="width: 60%;" />
+            </label>
+            <label>
+              <span>Last Name</span>
+              <input type="text" name="last_name" style="width: 60%;" />
+            </label>
+            <div class="row">
+              <span>Gender</span>
+              <label><input type="radio" name="gender" /> Male</label>
+              &nbsp;
+              <label><input type="radio" name="gender" /> Female</label>
+            </div>
+            <label>
+              <span>Date of Birth</span>
+              <input type="text" name="DOB" />
+            </label>
+            <div class="row">
+              <input type="button" value="Create" action="next" />
+            </div>
+          </div>
+        </form>
+      </li>
+      <li page="loading">
+      	<div class="loading"></div>
+      </li>
+    </ul>
+  </div>
+  <div class="overlay_container" id="add_associate" style="display: none;">
+  	<div class="heading">
+    	<h2 class="underline">Add Associate</h2>
+      <a class="close" href="javascript:void(0)" title="Close"></a>
+    </div>
+  	<ul>
+    	<li page="find_person">
+        <form class="rowed">
+          <div class="section padded">
+            <label>
+              <span>First Name</span>
+              <input type="text" name="first_name" style="width: 60%;" />
+            </label>
+            <label>
+              <span>Last Name</span>
+              <input type="text" name="last_name" style="width: 60%;" />
+            </label>
+            <div class="row">
+              <span>Gender</span>
+              <label><input type="radio" name="gender" /> Male</label>
+              &nbsp;
+              <label><input type="radio" name="gender" /> Female</label>
+            </div>
+            <label>
+              <span>Date of Birth</span>
+              <input type="text" name="DOB" />
+            </label>
+            <div class="row">
+              <input type="button" value="Next" action="next" />
+            </div>
+          </div>
+        </form>
+      </li>
+      <li page="nothing">
+      	This is just a dummy page.
+      </li>
+    </ul>
+  </div>
+</div>
+  
+  <div id="container">  
+  	<div class="info">Hello, <a href="#">Tom Wardrop</a></div>
+    <div id="banner">Tombstone</div>  
+    <div id="navigation_bar">
+    	<a href="index.html" class="breadcrumb home"></a>
+      <span class="breadcrumb div">/</span>
+    	<a href="reservation.html" class="breadcrumb">New Reservation</a>
+    </div>
+    <h2 class="underline">Reserved For</h2>
+    <div id="reservee_section" class="section padded">
+      <!--<a href="#" class="row_button">Click to add&hellip;</a>-->
+      <div class="row_block clickable" title="Click to change">
+      	<span><strong>Roger Gordonson</strong></span>
+        14 Fabian Drive, Mareeba, Queensland 4880
+        <div class="actions">
+          <a href="javascript:void(0);" class="delete" confirm="Are you sure you want to delete this object?" action="/delete/stuff" data="id=56&delete=now" title="Delete"></a>
+        </div>
+      </div>
+    </div>
+    <h2 class="underline">Applicant</h2>
+    <div id="associates_section" class="section padded">
+    	<div class="row_block clickable" title="Click to change">
+        <span>Helen Lauable</span>
+        22 Rockley Road, Atherton, Queensland 4880
+        <div class="actions">
+          <a href="javascript:void(0);" class="delete" confirm="Are you sure you want to delete this object?" action="/delete/stuff" data="id=56&delete=now" title="Delete"></a>
+        </div>
+      </div>
+      <a href="javascript:TS.addAssociate();">Click to add&hellip;</a>
+    </div>
+    <h2 class="underline">Next of Kin</h2>
+    <div id="associates_section" class="section padded">
+      <a href="javascript:TS.addAssociate();">Click to add&hellip;</a>
+    </div>
+    <h2 class="underline">Location</h2>
+    <form class="rowed">
+      <div class="section padded">
+        <label>
+          <span>Cemetery</span>
+          <select type="text" name="cemetery">
+          	<option>Select Cemetery...</option>
+            <option value="Mareeba New">Mareeba New</option>
+            <option value="Mareeba Old">Mareeba Old</option>
+            <option value="Atherton New">Atherton New</option>
+          </select>
+         </label>
+        <label>
+          <span>Section</span>
+          <select type="text" name="section">
+            <option value="Full Slab Grave">Full Slab Grave</option>
+            <option value="Plaque on Beam">Plaque on Beam</option>
+          </select>
+        </label>
+        <label>
+          <span>Row</span>
+          <select type="text" name="row">
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+          </select>
+        </label>
+        <label>
+          <span>Plot</span>
+          <select type="text" name="plot">
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>3A</option>
+            <option>101</option>
+            <option>102</option>
+          </select>
+        </label>
+        <label>
+          <span>Interment</span>
+          <select type="text" name="plot">
+            <option>A</option>
+            <option>B</option>
+          </select>
+        </label>
+      </div>
+      <h2 class="underline">Other Details</h2>
+      <div class="section padded">
+      	<label>
+          <span class="align_top">Location Description</span>
+          <textarea style="width: 100%; height: 56px;"></textarea>
+        </label>
+        <label>
+          <span class="align_top">Comments</span>
+          <textarea style="width: 100%; height: 82px;"></textarea>
+        </label>
+      </div>
+      <h2 class="underline">Actions</h2>
+      <div class="section padded">
+        <div class="inline_layout">
+        	<!--
+        	<input type="submit" value="Save" />
+          <span style="width: 1%;"></span>
+        	<input type="submit" value="Submit" />
+          -->
+          <span class="multibutton">
+            <span></span>
+            <ul>
+            	<li><input type="button" value="Save" /></li>
+            	<li class="selected"><input type="button" value="Submit" /></li>
+              <li><input type="button" value="Approve" /></li>
+              <li><input type="button" value="Inter" /></li>
+            </ul>
+          </span>
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

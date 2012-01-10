@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Tombstone</title>
+  <link rel="stylesheet" href="reset.css" />
+  <link rel="stylesheet" href="style.css" />
+  <script type="text/javascript" src="scripts/jquery-1.7.1.min.js"></script>
+  <script type="text/javascript" src="scripts/underscore.js"></script>
+  <script type="text/javascript" src="scripts/backbone.js"></script>
+  <script type="text/javascript">
+    var Ts = {}
+
+    $( function () {
+      Ts.Place = Backbone.Model.extend({
+        defaults: {
+          type: null,
+          name: null,
+          status: null,
+          selected: false
+        }
+      })
+      
+      Ts.Places = Backbone.Collection.extend({
+        model: Ts.Place,
+        setSelected: function (index) {
+					var current = this.getSelected()
+					if(current) {
+						current.set({selected: false})
+					}
+					var place = this.at(index)
+					place.set({selected: true})
+					this.trigger('setSelected', place, index)
+					
+					return index
+        },
+				getSelected: function () {
+					return this.find(function (v) {
+            return v.get("selected") == true
+          })
+				}
+      })
+      
+      Ts.PlaceList = Backbone.Model.extend({
+        defaults: {
+          parent: null,
+          places: null
+        }
+      })
+      
+      Ts.PlaceLists = Backbone.Collection.extend({
+        model: Ts.PlaceList
+      })
+      
+      Ts.PlaceView = Backbone.View.extend({
+        tagName: 'option',
+        initialize: function () {
+          _.bindAll(this, 'render')
+          this.model.bind('change:selected', function (v) {
+            $(this.el).attr('selected', v.get("selected"))
+            this.render()
+          }, this)
+        },
+        render: function () {
+          $(this.el).html(this.model.get("name"));
+          return this
+        }
+      })
+      
+      Ts.PlaceListView = Backbone.View.extend({
+        tagName: 'select',
+				events: {
+					'.click option': 'render'
+				},
+        initialize: function () {
+          _.bindAll(this, 'render')
+        },
+        render: function () {
+          this.model.get("places").each( function (place) {
+            $(this.el).append( (new Ts.PlaceView({model: place})).render().el );
+          }, this)
+          
+          return this
+        }
+      })
+      
+      Ts.PlaceListsView = Backbone.View.extend({
+        tagName: 'div',
+        initialize: function () {
+          _.bindAll(this, 'render')
+        },
+        render: function () {
+          this.collection.each( function (placeList) {
+            var view = new Ts.PlaceListView({model: placeList})
+            $(this.el).append(view.render().el)
+          }, this)
+          return this
+        }
+      })
+      
+      window.cemeteries = new Ts.PlaceList({
+        places: new Ts.Places([
+          {type: 'Cemetery', name: 'Atherton'},
+          {type: 'Cemetery', name: 'Mareeba'}
+        ])
+      })
+      
+      window.mareebaSections = new Ts.PlaceList({
+        parent: cemeteries.get('places').at(1),
+        places: new Ts.Places([
+          {type: 'Section', name: 'Beamstone'},
+          {type: 'Section', name: 'Plaque'}
+        ])
+      })
+      
+      window.placeLists = new Ts.PlaceLists()
+      placeLists.add(cemeteries)
+      placeLists.add(mareebaSections)
+      
+      placeListsView = new Ts.PlaceListsView({collection: placeLists})
+      $('body').append(placeListsView.render().el)
+    })
+  </script>
+  <style>
+    select {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+</body>
+</html>

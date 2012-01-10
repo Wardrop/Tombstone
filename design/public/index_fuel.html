@@ -1,0 +1,335 @@
+<script type="text/javascript">
+  // Inserts a loading indicator directly after each element in the given jQuery object.    
+  jQuery.fn.showLoadingIndicator = function () {
+    if (this.next('img')[0]) {
+      this.next().attr('src', '/images/loader-24.gif')
+    } else {
+      this.after(' <img src="/images/loader-24.gif" style="display: none;" />').next().fadeIn(500)
+    }
+  }
+  jQuery.fn.hideLoadingIndicator = function () {
+    this.next().remove()
+  }
+  
+  $(function () {    
+    $('input[name=asset_number], input[name=job_number]').change( function () {
+      Guava.loadKeyField($(this).attr('name'))
+    }).keypress( function (e) {
+      if (e.keyCode == 13) {
+        $(this).change()
+        return false
+      }
+    })
+    $('input:not(input[name=asset_number]):not(input[name=job_number])').keypress( function (e) {
+      if (e.keyCode == 13) {
+        Guava.form.submit()
+        return false
+      }
+    })
+    $('#fuel_form').submit( function () {
+      Guava.form.submit()
+      return false
+    })
+    $('input[name=date]').datepicker();
+  })
+
+  Guava = {
+    stdFxDuration: 400,
+    loading: null,
+    response: null,
+    init: function () {
+      this.infoFlyout.hide(false)
+      $('#validation_errors').hide()
+    },
+    loadKeyField: function (key_field_name) {
+      comp_string = key_field_name + '|' + $('input[name='+key_field_name+']').val()
+      if(this.loading == comp_string && this.response.readyState != 4) {
+        return false;
+      }
+      
+      if(key_field_name == undefined) {
+        key_field_name = 'asset_number'
+      }
+      Guava.infoFlyout.hide()
+      $('#key_field_error').slideUp(Guava.stdFxDuration)
+      Guava.form.clearPlaceHolders()
+      Guava.form.setFieldStatus(key_field_name, null)
+
+      if($('input[name='+key_field_name+']').val() == '') {
+        return false;
+      }
+      
+      try {
+        this.response.abort()
+      } catch(e) { }
+      
+      this.loading = key_field_name + '|' + $('input[name='+key_field_name+']').val()
+      this.form.setFieldStatus(key_field_name, 'loading')
+      if(key_field_name == 'job_number') {
+        Guava.form.setFieldStatus('asset_number', null)
+        $('input[name=asset_number]').val('')
+        this.response = this.loadJobNumber(key_field_name)
+      } else {
+        Guava.form.setFieldStatus('job_number', null)
+        $('input[name=job_number]').val('')
+        this.response = this.loadAssetNumber(key_field_name)
+      }
+      return false
+    },
+    loadAssetNumber: function (key_field_name) {
+      console.log('starting')
+      requestData = {asset_number: $('input[name='+key_field_name+']').val()}      
+      return $.ajax({
+        url: '/soap_request/w1_asset_do_read_v2',
+        data: requestData,
+        error: function (request, status) {
+          if (status != 'abort') {
+            alert('Could not contact the server. Verify network connectivity, and try refreshing this web page.')
+          }
+        },
+        success: function (data) {
+          console.log(data)
+          if(data.request_error) {
+            alert('An error occured while requesting data from the server. This is most likely to be a program bug. Please notify the IT department.')
+          } else if (data.soap_error) {
+            $('#key_field_error').text(data.soap_error_message).slideDown(Guava.stdFxDuration)
+            Guava.form.setFieldStatus(key_field_name, 'crossed')
+          } else {
+            attr_index = 0
+            while(data.soap_response.asset_attributes.asset_attribute[attr_index]['@attr_code'] != 'FUEL') {
+              attr_index++
+            }
+            details = {
+              make: data.soap_response.asset['@make'],
+              model: data.soap_response.asset['@model_nbr'],
+              odometer: data.soap_response.asset['@meter1_read_units'],
+              hours: data.soap_response.asset['@meter2_read_units'],
+              fuel_type: data.soap_response.asset_attributes.asset_attribute[attr_index].attr_level_user_fields.asset_attr_level_user_fields.user_fields.user_fields[1]
+            }
+            details.fuel_type = (details.fuel_type === null) ? '' : details.fuel_type
+            Guava.infoFlyout.html(
+              '<div class="basic_tabular">' +
+                '<div><span>Make</span> '+details.make+'</div>' +
+                '<div><span>Model</span> '+details.model+'</div>' +
+                '<div><span>Odometer</span> '+details.odometer+'</div>' +
+                '<div><span>Hours</span> '+details.hours+'</div>' +
+                '<div style="text-transform: capitalize"><span>Fuel Type</span> '+details.fuel_type.toLowerCase()+'</div>'+
+              '</div>'
+            )
+            Guava.infoFlyout.show()
+            $('input[name=odometer]').attr('placeholder', details.odometer)
+            $('input[name=hours]').attr('placeholder', details.hours)
+            $('select[name=fuel_type] option[value='+details.fuel_type+']').attr('selected', 'selected')
+            Guava.form.setFieldStatus(key_field_name, 'checked')
+          }
+        },
+        complete: function () { this.loading = null }
+      })
+    },
+    loadJobNumber: function (key_field_name) {
+      requestData = {job_number: $('input[name='+key_field_name+']').val()}      
+      return $.ajax({
+        url: '/soap_request/f1_chart_account_do_get_list',
+        data: requestData,
+        error: function (request, status) {
+          if (status != 'abort') {
+            alert('Could not contact the server. Verify network connectivity, and try refreshing this web page.')
+          } else {
+            Guava.form.setFieldStatus(key_field_name, null)
+            $('input[name='+key_field_name+']').val('')
+          }
+        },
+        success: function (data) {
+          console.log(data)
+          if(data.request_error) {
+            alert('An error occured while requesting data from the server. This is most likely to be a program bug. Please notify the IT department.')
+          } else if (data.soap_error) {
+            $('#key_field_error').text("Error: " + data.soap_error_message).slideDown(Guava.stdFxDuration)
+            Guava.form.setFieldStatus(key_field_name, 'crossed')
+          } else {            
+            if(data.soap_response.chart_accounts != null &&
+               data.soap_response.chart_accounts.chart_account_item.length == 3)
+            {                
+              data.soap_response.chart_accounts.chart_account_item.reverse()
+              accounts = data.soap_response.chart_accounts.chart_account_item
+              account_descriptions = []
+              for(var i in accounts)
+              {
+                account_descriptions.push(accounts[i]['@description_line1'])
+              }
+              Guava.infoFlyout.html(account_descriptions.join('<br />'))
+              Guava.infoFlyout.show()
+              Guava.form.setFieldStatus(key_field_name, 'checked')
+            } else {
+              $('#key_field_error').text("Job Number was not found.").slideDown(Guava.stdFxDuration)
+              Guava.form.setFieldStatus(key_field_name, 'crossed')
+            }              
+          }
+        },
+        complete: function () { this.loading = null }
+      })
+    },
+    form: {
+      errorize: function (fields, messages) {
+        this.unerrorize()
+        if (fields.length > 0) {
+          $('#fuel_form').find(fields.map( function (val) { return "[name='"+ val +"']" }).join(", ")).
+          each( function () { $(this).addClass('field_error') } )
+        }
+        if (messages.length > 0) {
+          result_block = $('#validation_errors')
+          result_block.empty()
+          messages.forEach( function (message) {
+            result_block.append("<li>"+ message +"</li>\n")
+          })
+          result_block.slideDown(Guava.stdFxDuration)
+        }
+      },
+      unerrorize: function () {
+        $('#fuel_form [name]').removeClass('field_error')
+        $('#validation_errors').slideUp(Guava.stdFxDuration)
+      },
+      clearPlaceHolders: function () {
+        $('input').attr('placeholder', '')
+      },
+      setFieldStatus: function (name, status) {
+        $('input[name='+name+']').removeClass('checked crossed loading')
+        if(status == 'checked' || status == 'crossed' || status == 'loading') {
+          $('input[name='+name+']').addClass('with_icon ' + status)
+        }
+      },
+      submit: function () {
+        if (confirm('Are you sure you want to submit this form into Fleet & Plant?')) {        
+          $('#submit_fuel_form').showLoadingIndicator()
+          $.ajax({
+            type: "POST",
+            url: "/submit",  
+            data: $('#fuel_form').serialize(),  
+            success: function(data) {  
+              console.log(data)
+              if (data.validation.errors > 0) {
+                Guava.form.errorize(data.validation.fields, data.validation.messages)
+                $('#submit_fuel_form').hideLoadingIndicator()
+              } else if (data.success == false) {
+                alert('Something went wrong. The message was: '+ data.message)
+                $('#submit_fuel_form').hideLoadingIndicator()
+              } else {
+                Guava.form.unerrorize()
+                $('#confirm_fuel_form').next().attr('src', '/images/check-24.png')
+                setTimeout('window.location = "/"', 1000)
+              }
+            },
+            error: function () { alert('An error occured while trying to validate the form. This could indicate that the server is unavailable.') },
+          })        
+        } else {
+          return false
+        }
+      },
+    },
+    infoFlyout: {
+      endPosition: function () {
+        return {right: - $('#info_flyout > div').outerWidth(), top: $('#key_fields').offset().top}
+      },
+      startPosition: function () {
+        return {right: 10, top: $('#key_fields').offset().top}
+      },
+      show: function (animate, callback) {
+        duration = (animate == false) ? 0 : Guava.stdFxDuration
+        $('#info_flyout > div').css(this.startPosition())
+        $('#info_flyout > div').animate({right: this.endPosition().right}, duration, callback)
+      },
+      hide: function (animate, callback) {
+        duration = (animate == false) ? 0 : Guava.stdFxDuration
+        $('#info_flyout > div').animate(this.startPosition(), duration, callback)
+      },
+      html: function (value) {
+        if(value == undefined) {
+          return $('#info_flyout > div').html()
+        } else {
+          return $('#info_flyout > div').html(value)
+        }
+      }
+    }
+  }
+  
+  $( function () {
+    Guava.init()
+  })
+</script>
+<div id="info_flyout">
+  <div></div>
+</div>
+<div id="container">  
+  <h1>Fuel Entry Form</h1>  
+  <form id="fuel_form" action="/" method="post" class="vertical">
+    <div class="vertical_form">
+      <div id="key_fields" class="inline_layout">
+        <label style="width: 44%;">
+          <span class="field">Asset Number</span>
+          <input type="text" name="asset_number" maxlength="8" autofocus="enabled" class="with_icon" />          
+        </label>
+        <div class="separator" style="width: 12%;">
+          <span>OR</span>
+          <div></div>
+        </div>
+        <label style="width: 44%;">
+          <span class="field">Job Number</span>
+          <input type="text" name="job_number" maxlength="18" class="with_icon"/>          
+        </label>
+      </div>
+      <div id="key_field_error" style="display: none;"></div>
+      <ul id="validation_errors" style="display: none;"><li>No validation errors ecountered.</li></ul> 
+      <label>
+        <span class="field">Operator Name</span>
+        <input type="text" name="operator" style="width: 260px;" />
+      </label>      
+      <div class="inline_layout">
+        <label>
+          <span class="field">Odometer</span>
+          <input type="text" name="odometer" maxlength="7" style="width: 120px" />
+        </label>
+        <label style="margin-left: 20px">
+          <span class="field">Hours Meter</span>
+          <input type="text" name="hours" maxlength="7" style="width: 120px" />
+        </label>
+        <br />
+        <em style="padding: 8px 0 3px; color: #666;">At least one meter reading must be provided.</em>
+      </div>        
+      <div class="inline_layout">
+        <label>
+          <span class="field">Fuel Type</span>
+          <select name="fuel_type" style="width: 120px;">
+            <% settings.config[:fuel_types].each do |name, value| %>
+              <option value="<%= value %>"><%= name %></option>
+            <% end %>
+          </select>
+        </label>
+        <label style="margin-left: 20px;">
+          <span class="field">Fuel Quantity</span>
+          <div style="position: relative; display: inline-block;">
+            <span style="position: absolute; right: 10px; top: 7px; color: gray;">Litres</span>
+            <input type="text" name="fuel_quantity" maxlength="6" style="width: 120px; text-align: right; padding-right: 50px" />
+          </div>
+        </label>
+      </div>
+      <label>
+        <span class="field">Fuel Source</span>
+        <select type="text" name="fuel_source">
+          <% settings.config[:fuel_sources].each do |name, properties| %>
+            <option value="<%= name %>"><%= name %></option>
+          <% end %>
+        </select>
+      </label>        
+      <label>
+        <span class="field">Refuel Date</span>
+        <input type="text" name="date" style="width: 120px;" value="<%= Date.today.strftime('%d/%m/%Y') %>" />          
+      </label>        
+      <label>
+        <span class="field"></span>
+        <div class="vertical_center">
+          <input id="submit_fuel_form" type="submit" value="Submit" />
+        </div>
+      </label>          
+    </div>      
+  </form>
+</div>
