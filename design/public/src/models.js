@@ -31,9 +31,9 @@ Ts.Role = Backbone.Model.extend({
 	defaults: {
     id: undefined,
 		type: null,
-		person: null,
-		residential_address: null,
-		mailing_address: null
+		person: new Ts.Person,
+		residential_address: new Ts.Address,
+		mailing_address: new Ts.Address,
 	}
 })
 

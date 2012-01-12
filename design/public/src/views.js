@@ -1,26 +1,35 @@
 // JavaScript Document
 $( function () {
-  Ts.GenericForm = Backbone.View.extend({
-    tagName: 'form',
-		className: 'rowed',
-		events: {
-      'change': 'formChanged',
+  Ts.BasePage = Backbone.View.extend({
+    events: {
       'click input[type=submit],input[type=button]': 'doAction'
-		},
+    },
 		initialize: function (opts) {
       this.wizard = opts.wizard
+      _.bindAll(this, 'doAction')
+		},
+    doAction: function (e) {
+			var action = $(e.target).attr('action')
+      this.wizard[action](this.model)
+      return false
+		}
+  })
+  
+  Ts.GenericForm = Ts.BasePage.extend({
+    tagName: 'form',
+		className: 'rowed',
+    events: _.extend({}, Ts.BasePage.prototype.events, {
+      'change' : 'formChanged'
+    }),
+		initialize: function (opts) {
+      Ts.BasePage.prototype.initialize.apply(this, arguments);
       this.model.bind('change', this.modelChanged, this)
-			_.bindAll(this, 'doAction', 'formChanged');
+			_.bindAll(this, 'formChanged');
 		},
 		render: function () {
 			$(this.el).html(this.template({data: this.model.toJSON()}));
       this.populateForm(this.model.toJSON())
-			return this;
-		},
-		doAction: function (e) {
-			var action = $(e.target).attr('action')
-      this.wizard[action](this.model)
-      return false
+			return this
 		},
     formChanged: function (e) {
       var target = $(e.target)
@@ -44,8 +53,15 @@ $( function () {
     }
   })
   
-	Ts.PersonForm = Ts.GenericForm.extend({
-		template: _.template($('#person_form_template').html()),
+	Ts.FindPersonForm = Ts.GenericForm.extend({
+		template: _.template($('#find_person_form_template').html()),
+		initialize: function (opts) {
+      Ts.GenericForm.prototype.initialize.apply(this, arguments);
+		}
+	})
+  
+  Ts.CreatePersonForm = Ts.GenericForm.extend({
+		template: _.template($('#create_person_form_template').html()),
 		initialize: function (opts) {
       Ts.GenericForm.prototype.initialize.apply(this, arguments);
 		}
@@ -58,40 +74,50 @@ $( function () {
 		}
 	})
 	
-  Ts.GenericResults = Backbone.View.extend({
-		tagName: 'div',
-    events: {
-      'click input[type=submit]': 'doAction'
-    },
+  Ts.GenericResults = Ts.BasePage.extend({
     blockView: null,
 		initialize: function (opts) {
-      this.wizard = opts.wizard
-      _.bindAll(this, 'doAction')
+      Ts.BasePage.prototype.initialize.apply(this, arguments);
 		},
     render: function () {
       $(this.el).html(this.template())
       console.log(this.collection)
       this.collection.each(function (person) {
-        this.$('.results').append((new this.blockView({model: person, wizard: this.wizard})).render().el)
+        this.$('.blocks').append((new this.blockView({model: person, wizard: this.wizard})).render().el)
       }, this)
 			return this
-    },
-    doAction: function (e) {
-			var action = $(e.target).attr('action')
-      this.wizard[action]()
-      return false
-		}
+    }
 	})
   
-	Ts.PersonResults = Ts.GenericResults.extend({
+	Ts.PersonResults = Ts.BasePage.extend({
 		template: _.template($('#person_results_template').html()),
-		initialize: function (opts) {
-      Ts.GenericResults.prototype.initialize.apply(this, arguments)
-      this.blockView = Ts.PersonResultBlock
-		}
+		initialize: function () {
+      Ts.BasePage.prototype.initialize.apply(this, arguments)
+		},
+    render: function () {
+      $(this.el).html(this.template())
+      this.collection.each(function (person) {
+        this.$('.blocks').append((new Ts.PersonBlock({model: person, wizard: this.wizard})).render().el)
+      }, this)
+			return this
+    }
 	})
   
-  Ts.PersonResultBlock = Backbone.View.extend({
+  Ts.AddressResults = Ts.BasePage.extend({
+		template: _.template($('#address_results_template').html()),
+		initialize: function () {
+      Ts.BasePage.prototype.initialize.apply(this, arguments)
+		},
+    render: function () {
+      $(this.el).html(this.template())
+      this.collection.each(function (address) {
+        this.$('.blocks').append((new Ts.AddressBlock({model: address, wizard: this.wizard})).render().el)
+      }, this)
+			return this
+    }
+	})
+  
+  Ts.PersonBlock = Backbone.View.extend({
     className: 'row_block clickable',
     template: _.template($('#person_block_template').html()),
     events: {
@@ -107,20 +133,12 @@ $( function () {
     },
     doAction: function (e) {
       var action = $(e.target).attr('action')
-      this.wizard.findAddresses(this.model)
+      this.wizard.savePerson(this.model)
       return false
     }
   })
-	
-	Ts.AddressResults = Ts.GenericResults.extend({
-		template: _.template($('#address_results_template').html()),
-		initialize: function (opts) {
-      Ts.GenericResults.prototype.initialize.apply(this, arguments)
-      this.blockView = Ts.AddressResultBlock
-		}
-	})
   
-  Ts.AddressResultBlock = Backbone.View.extend({
+  Ts.AddressBlock = Backbone.View.extend({
     className: 'row_block clickable',
     template: _.template($('#address_block_template').html()),
     events: {
@@ -136,17 +154,25 @@ $( function () {
     },
     doAction: function (e) {
       var action = $(e.target).attr('action')
-      this.wizard[action]()
+      this.wizard.saveAddress(this.model)
       return false
     }
   })
 	
-	Ts.RoleReview = Backbone.View.extend({
-		
+	Ts.RoleReview = Ts.BasePage.extend({
+		template: _.template($('#role_review_template').html()),
+		initialize: function (opts) {
+      Ts.BasePage.prototype.initialize.apply(this, arguments)
+		},
+    render: function () {
+      $(this.el).html(this.template())
+      this.$('.blocks').append((new Ts.PersonBlock({model: this.model.get('person'), wizard: this.wizard})).render().el)
+      this.$('.blocks').append((new Ts.AddressBlock({model: this.model.get('residential_address'), wizard: this.wizard})).render().el)
+			return this
+    }
 	})
 	
 	Ts.WizardView = Backbone.View.extend({
-		tagName: 'div',
 		className: 'overlay_background',
 		template: _.template($('#wizard_template').html()),
 		events: {
@@ -158,7 +184,7 @@ $( function () {
 			_.bindAll(this, 'hide', 'goBack', 'hideOnBlur')
 			this.model.bind('change:currentPage', this.renderPage, this)
       this.model.bind('change:isLoading', this.renderLoader, this)
-      this.personForm = new Ts.PersonForm({model: new Ts.Person({}), wizard: this})
+      this.role = new Ts.Role()
       this.showFindPersonForm()
 		},
 		render: function () {
@@ -183,10 +209,16 @@ $( function () {
       }
     },
     showFindPersonForm: function () {
-      this.model.set({currentPage: this.personForm})
+      var findPersonForm = new Ts.FindPersonForm({model: this.role.get('person'), wizard: this})
+      this.model.set({currentPage: findPersonForm})
     },
     showCreatePersonForm: function () {
-      this.model.set({currentPage: this.personForm})
+      var createPersonForm = new Ts.CreatePersonForm({model: this.role.get('person'), wizard: this}, 'savePerson')
+      this.model.set({currentPage: createPersonForm})
+    },
+    showCreateAddressForm: function () {
+      var addressForm = new Ts.AddressForm({model: this.role.get('residential_address'), wizard: this})
+      this.model.set({currentPage: addressForm})
     },
     findPeople: function (person) {
       var matches = new Ts.People()
@@ -203,7 +235,7 @@ $( function () {
         data: person.toJSON()
       })
     },
-    findAddresses: function (address) {
+    findAddresses: function (person) {
       var matches = new Ts.Addresses()
       var self = this
       this.model.set({isLoading: true})
@@ -216,11 +248,20 @@ $( function () {
           self.model.set({isLoading: false})
         }
       },{
-        data: address.toJSON()
+        data: person.toJSON()
       })
     },
-    savePerson: function () {
-      
+    savePerson: function (person) {
+      if(person.get('id')) {
+        this.findAddresses(person)
+      } else {
+        this.showCreateAddressForm()
+      }
+    },
+    saveAddress: function (address) {
+      this.role.set({residential_address: address})
+      var roleReview = new Ts.RoleReview({model: this.role, wizard: this})
+      this.model.set({currentPage: roleReview})
     },
     goBack: function () {
       this.model.set({currentPage: this.model.get('pageHistory').pop()}, {silent: true})
