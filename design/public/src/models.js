@@ -3,6 +3,7 @@ Ts = {}
 
 Ts.Person = Backbone.Model.extend({
 	defaults: {
+    id: undefined,
 		title: null,
 		surname: null,
 		given_name: null,
@@ -16,8 +17,8 @@ Ts.Person = Backbone.Model.extend({
 
 Ts.Address = Backbone.Model.extend({
 	defaults: {
-		type: 'residential',
-		address: null,
+    id: undefined,
+		street_address: null,
 		town: null,
 		state: null,
 		postal_code: null,
@@ -28,6 +29,7 @@ Ts.Address = Backbone.Model.extend({
 
 Ts.Role = Backbone.Model.extend({
 	defaults: {
+    id: undefined,
 		type: null,
 		person: null,
 		residential_address: null,
@@ -38,6 +40,16 @@ Ts.Role = Backbone.Model.extend({
 Ts.Wizard = Backbone.Model.extend({
 	defaults: {
 		title: 'Untitled',
-		body: null
-	}
+		currentPage: null,
+    pageHistory: [],
+    isLoading: false
+	},
+  initialize: function () {
+    this.bind('change:currentPage', this.currentPageChanged, this)
+  },
+  currentPageChanged: function () {
+    if(this.previous('currentPage')) {
+      this.get('pageHistory').push(this.previous('currentPage'))
+    }
+  }
 })

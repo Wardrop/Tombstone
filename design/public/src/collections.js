@@ -5,7 +5,8 @@ Ts.Roles = Backbone.Collection.extend({
 })
 
 Ts.Addresses = Backbone.Collection.extend({
-	model: Ts.Address
+	model: Ts.Address,
+  url: '/addresses'
 })
 
 Ts.People = Backbone.Collection.extend({
