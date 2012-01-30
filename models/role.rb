@@ -13,7 +13,3 @@ class Role < Sequel::Model
     self.relationships_from + self.relationships_to
   end
 end
-
-Role.set_primary_key()
-
-Role.new.relationships

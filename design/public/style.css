@@ -432,7 +432,7 @@ a.row_button:hover {
 .multibutton > input[type=button]:hover, .multibutton > a.button:hover {
 	background: #5499d6;
 }
-.multibutton > span {
+.multibutton > span.dropdown_button {
 	display: block;
 	position: absolute;
 	top: 1px;
@@ -551,6 +551,20 @@ a.row_button:hover {
 	box-sizing: border-box;
 	padding: 3%;
 	overflow: hidden;
+}
+
+.validation_errors {
+  padding: 10px 20px;
+  background: #a73232;
+  font-family: Verdana, Arial;
+  font-size: 11px;
+  color: white;
+  margin: 6px 0;
+  box-sizing: content-box;
+}
+.validation_errors li {
+  list-style: outside disc;
+  margin-left: 14px;
 }
 
 /* LEGACY */

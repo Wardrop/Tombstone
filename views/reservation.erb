@@ -1,0 +1,85 @@
+<%
+@document[:title] = 'Reservation'
+@document[:scripts] << 'views/role_wizard.js'
+@document[:scripts] << 'views/form.js'
+@document[:head] << <<-HEAD
+  <script type="text/javascript">
+    $( function () {
+      var roles = {}
+      roles.reservee = new Ts.FormViews.RoleBlock({role_name: 'Reservee', role_type: 'reservee', el: $('#reservee_section')})
+      roles.reservee.render()
+      roles.applicant = new Ts.FormViews.RoleBlock({role_name: 'Applicant', role_type: 'applicant', el: $('#applicant_section')})
+      roles.applicant.render()
+      roles.next_of_kin = new Ts.FormViews.RoleBlock({role_name: 'Next of Kin', role_type: 'next_of_kin', el: $('#next_of_kin_section')})
+      roles.next_of_kin.render()
+
+      new Ts.FormViews.PlacesView({el: $('#places_section label')})
+      
+      var multibutton = new Ts.FormViews.Multibutton({name: 'submit', options: ['Submit', 'Approve', 'Inter', 'Save']})
+      $('#actions_section > div').append(multibutton.render().el)
+      
+      $('#actions_section input[type=button]').click(function (e) {
+        var data = $('#reservation_form').serializeObject();
+        data.action = $(e.currentTarget).val()
+        _.each(roles, function (role, name) {
+          if(role.model) {
+            data[name] = role.model.recursiveToJSON()
+          }
+        })
+        
+        $.ajax('#{url "/reservation"}', {
+          type: 'POST',
+          data: data,
+          success: function (response) {
+            console.log(response)
+          },
+          error: function () { console.log('Error'); }
+        })
+      })
+    })
+  </script>
+HEAD
+
+include_script_templates('role_wizard/', 'form/')
+%>
+<div id="navigation_bar">
+	<a href="<%= url '/' %>" class="breadcrumb home"></a>
+  <span class="breadcrumb div">/</span>
+	<a href="reservation.html" class="breadcrumb">New Reservation</a>
+</div>
+<form id="reservation_form" class="rowed">
+  <h2 class="underline">Reserved For</h2>
+  <div id="reservee_section" class="section padded"></div>
+  <h2 class="underline">Applicant</h2>
+  <div id="applicant_section" class="section padded"></div>
+  <h2 class="underline">Next of Kin</h2>
+  <div id="next_of_kin_section" class="section padded"></div>
+  <h2 class="underline">Location</h2>
+  <div id="places_section" class="section padded">
+      <label>
+      <span><%= @root_places[0][:type].capitalize %></span>
+        <select>
+        	<option value=""></option>
+          <% @root_places.each do |place| %>
+            <option value="<%= place[:id] %>"><%= place[:name] %> (<%= place[:child_count].to_i %>)</option>
+          <% end %>
+        </select>
+       </label>
+      <label>
+    </div>
+    <h2 class="underline">Other Details</h2>
+    <div class="section padded">
+    	<label>
+        <span class="align_top">Location Description</span>
+        <textarea name="adjacent_interment" style="width: 100%; height: 56px;"></textarea>
+      </label>
+      <label>
+        <span class="align_top">Comments</span>
+        <textarea name="comments" style="width: 100%; height: 82px;"></textarea>
+      </label>
+    </div>
+    <h2 class="underline">Actions</h2>
+    <div id="actions_section" class="section padded">
+      <div class="inline_layout"></div>
+    </div>
+</form>

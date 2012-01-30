@@ -12,7 +12,18 @@ Ts.Person = Backbone.Model.extend({
 		date_of_birth: null,
 		date_of_death: null
 	},
-  urlRoot: '/person'
+  errors: [],
+  urlRoot: '/person',
+  validate: function () {
+    this.errors.length = 0
+    if(!this.get("given_name")) {
+      this.errors.push("A given name must be entered.")
+    }
+    
+    if(this.errors.length > 0) {
+      return true
+    }
+  }
 })
 
 Ts.Address = Backbone.Model.extend({
@@ -24,7 +35,18 @@ Ts.Address = Backbone.Model.extend({
 		postal_code: null,
 		primary_phone: null,
 		secondary_phone: null
-	}
+	},
+  errors: [],
+  validate: function () {
+    this.errors.length = 0
+    if(!this.get("street_address")) {
+      this.errors.push("A street address must be entered.")
+    }
+    
+    if(this.errors.length > 0) {
+      return true
+    }
+  }
 })
 
 Ts.Role = Backbone.Model.extend({

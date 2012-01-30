@@ -1,9 +1,5 @@
 require_relative '../spec_helper'
 require_relative './models_spec_helper'
-require_relative '../../models/role'
-require_relative '../../models/relationship'
-require_relative '../../models/party'
-require_relative '../../models/address'
 
 module Tombstone
   describe Role do

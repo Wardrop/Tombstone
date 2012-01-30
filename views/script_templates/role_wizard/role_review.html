@@ -1,0 +1,37 @@
+<h3 class="underline">Review</h3>
+<div class="rowed display wide">
+  <div class="row">
+    <span>Name</span>
+    <div><%= person.title %> <%= person.given_name %> <%= person.surname %></div>
+  </div>
+  <div class="row">
+    <span>Gender</span>
+    <div><%= person.gender %></div>
+  </div>
+  <div class="row">
+    <span>Date of Birth</span>
+    <div><%= (new Date(person.date_of_birth).toLocaleDateString()) %></div>
+  </div>
+  <div class="row">
+    <span class="align_top">Residential Address</span>
+    <div>
+      <%= residential_address.street_address %><br />
+      <%= residential_address.town %>, <%= residential_address.state %> <%= residential_address.postal_code %><br />
+      <%= residential_address.primary_phone %> <%= (residential_address.secondary_phone) ? ", "+residential_address.secondary_phone : '' %>
+    </div>
+  </div>
+  <div class="row">
+    <span class="align_top">Mailing Address</span>
+    <% if(mailing_address.street_address) { %>
+      <div>
+        <% console.log(mailing_address.secondary_phone) %>
+        <%= mailing_address.street_address %><br />
+        <%= mailing_address.town %>, <%= mailing_address.state %> <%= mailing_address.postal_code %><br />
+        <%= mailing_address.primary_phone %> <%= (mailing_address.secondary_phone) ? ", "+mailing_address.secondary_phone : '' %>
+      </div>
+    <% } else { %>
+      <div>None</div>
+    <% } %>
+  </div>
+</div>
+<div style="text-align: right;"><input type="submit" value="Save" action="saveRole" /></div>

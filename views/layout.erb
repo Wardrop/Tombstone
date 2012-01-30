@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= @document[:title] %></title>
+  <link rel="stylesheet" href="reset.css" />
+  <link rel="stylesheet" href="style.css" />
+  <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-1.7.1.min.js' %>"></script>
+  <% @document[:scripts].each do |file| %>
+    <script type="text/javascript" src="<%= url "/scripts/#{file}" %>"></script>
+  <% end %>
+  <%= @document[:head] %>
+  <% @document[:script_templates].each do |template| %>
+    <script type="text/template" id="<%= template.gsub('/', ':') %>_template">
+      <%= File.read("views/script_templates/#{template}.html") %>
+    </script>
+  <% end %>
+</head>
+<body>
+	<div id="container">
+  	<div class="info">Hello, <a href="#">Tom Wardrop</a></div>
+    <div id="banner">Tombstone</div>
+    <%= yield %>
+  </div>
+</body>
+</html>

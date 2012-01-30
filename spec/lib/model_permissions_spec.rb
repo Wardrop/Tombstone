@@ -1,5 +1,5 @@
 require_relative '../spec_helper'
-require_relative '../models_spec_helper'
+require_relative '../models/models_spec_helper'
 
 class SpecialPerson < Sequel::Model(:party)
   plugin Tombstone::ModelPermissions

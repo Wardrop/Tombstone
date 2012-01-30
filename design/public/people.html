@@ -16,7 +16,6 @@
     $( function () {
 			var wizard = new Ts.Wizard({title: 'Test'})
 			var wizardView = new Ts.WizardView({model: wizard})
-      window.wizzy = wizard
 			$('body').append(wizardView.render().el)
 		})
   </script>
@@ -26,10 +25,9 @@
 				<h2 class="underline"><%= data.title %></h2>
 				<a class="close" href="javascript:void(0)" title="Close"></a>
 			</div>
-  		<div class="body">
-			</div>
-      <div class="loading">
-			</div>
+      <ul class="validation_errors"></ul>
+  		<div class="body"></div>
+      <div class="loading"></div>
 		</div>
 	</script>
   <script type="text/template" id="find_person_form_template">

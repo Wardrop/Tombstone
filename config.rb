@@ -60,8 +60,8 @@
   development: {
     db: {
       host: 'trcsql02.trc.local',
-      user: 'trc\trcadmin',
-      password: 'Tr@1nWrk',
+      user: 'trc\tombstone_user',
+      password: '10Pippl$ah',
       database: 'Tombstone_Dev'
     }
   }

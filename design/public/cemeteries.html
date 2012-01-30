@@ -13,95 +13,95 @@
 
     $( function () {
       Ts.PlaceList = Backbone.Model.extend({
-				defaults: {
-					type: null,
-					places: null,
-					selected: null
-				}
-			})
-			
-			Ts.PlaceLists = Backbone.Collection.extend({
-				model: Ts.PlaceList,
-				initialize: function () {
-					this.bind('change:selected', this.modelSelected, this)
-				},
-				modelSelected: function (model, index) {
-					var modelIndex = null
-					this.each( function (val,idx) {
-						if(val == model) {
-							modelIndex = idx
-						}
-					})
-					_.each(this.rest(modelIndex+1), function (val,idx) {
-						val.destroy()
-					})
-					if(model.get("selected") >= 0) {
-						this.add(
-							new Ts.PlaceList({type: 'Section', places: [{name: 'Plaque'}, {name: 'Beamstone'}]})
-						)
-					}
-				}
-			})
-			
-			Ts.PlaceListView = Backbone.View.extend({
-				tagName: 'label',
-				template: _.template($('#place_list').html()),
-				events: {
-					'click option': 'selectPlace',
-					'change select': 'selectPlace'
-				},
-				initialize: function () {
-					this.model.bind('change', this.render, this)
-				},
-				render: function () {
-					$(this.el).html(this.template({model: this.model}))
-					return this
-				},
-				selectPlace: function (e) {
-					this.model.set({selected: this.$('select').get(0).selectedIndex - 1})
-				}
-			})
-			
-			Ts.PlaceListsView = Backbone.View.extend({
-				tagName: 'div',
-				initialize: function () {
-					this.collection.bind('change', this.render, this)
-				},
-				render: function () {
-					$(this.el).empty()
-					this.collection.each(function (model) {
-						$(this.el).append( (new Ts.PlaceListView({model: model})).render().el )
-					}, this)
-					return this
-				}
-			})
-			
-			window.placeList = new Ts.PlaceList({
-				type: 'Cemetery',
-				places: [
-					{name: 'Atherton'},
-					{name: 'Malanda'},
-					{name: 'Mareeba'}
-				]
-			})
-			window.placeLists = new Ts.PlaceLists([placeList])
-			
-			// window.placeListView = new Ts.PlaceListView({model: placeList})
-			
-			window.placeListsView = new Ts.PlaceListsView({collection: placeLists})
-			
-			$('body').append(placeListsView.render().el)
+        defaults: {
+          type: null,
+          places: null,
+          selected: null
+        }
+      })
+      
+      Ts.PlaceLists = Backbone.Collection.extend({
+        model: Ts.PlaceList,
+        initialize: function () {
+          this.bind('change:selected', this.modelSelected, this)
+        },
+        modelSelected: function (model, index) {
+          var modelIndex = null
+          this.each( function (val,idx) {
+            if(val == model) {
+              modelIndex = idx
+            }
+          })
+          _.each(this.rest(modelIndex+1), function (val,idx) {
+            val.destroy()
+          })
+          if(model.get("selected") >= 0) {
+            this.add(
+              new Ts.PlaceList({type: 'Section', places: [{name: 'Plaque'}, {name: 'Beamstone'}]})
+            )
+          }
+        }
+      })
+      
+      Ts.PlaceListView = Backbone.View.extend({
+        tagName: 'label',
+        template: _.template($('#place_list').html()),
+        events: {
+          'click option': 'selectPlace',
+          'change select': 'selectPlace'
+        },
+        initialize: function () {
+          this.model.bind('change', this.render, this)
+        },
+        render: function () {
+          $(this.el).html(this.template({model: this.model}))
+          return this
+        },
+        selectPlace: function (e) {
+          this.model.set({selected: this.$('select').get(0).selectedIndex - 1})
+        }
+      })
+      
+      Ts.PlaceListsView = Backbone.View.extend({
+        tagName: 'div',
+        initialize: function () {
+          this.collection.bind('change', this.render, this)
+        },
+        render: function () {
+          $(this.el).empty()
+          this.collection.each(function (model) {
+            $(this.el).append( (new Ts.PlaceListView({model: model})).render().el )
+          }, this)
+          return this
+        }
+      })
+      
+      window.placeList = new Ts.PlaceList({
+        type: 'Cemetery',
+        places: [
+          {name: 'Atherton'},
+          {name: 'Malanda'},
+          {name: 'Mareeba'}
+        ]
+      })
+      window.placeLists = new Ts.PlaceLists([placeList])
+      
+      // window.placeListView = new Ts.PlaceListView({model: placeList})
+      
+      window.placeListsView = new Ts.PlaceListsView({collection: placeLists})
+      
+      $('body').append(placeListsView.render().el)
     })
   </script>
   <script type="text/template" id="place_list">
-		<span><%= model.get("type") %></span>
-		<select>
-			<option>Please select...</option>
-			<% _.each(model.get("places"), function (place, index) { %>
-				<option <%= (model.get("selected") == index) ? 'selected="selected"' : '' %>><%= place.name %></option>
-			<% }, this) %>
-		</select>
-	</script>
+    <span><%= model.get("type") %></span>
+    <select>
+      <option>Please select...</option>
+      <% _.each(model.get("places"), function (place, index) { %>
+        <option <%= (model.get("selected") == index) ? 'selected="selected"' : '' %>><%= place.name %></option>
+      <% }, this) %>
+    </select>
+  </script>
   <style>
     select {
       display: block;

@@ -6,3 +6,19 @@ Requirements
 * FreeTDS 0.9.x or later is required to compile the required gem 'tiny_tds'. At the time of writing, 0.9.x was not available via
   apt-get. In this case, download the latest and most stable 0.9.x branch and compile. Configure with: ./configure --enable-msdblib. FreeTDS 0.8.x will not work.
   Note, libsybdb5 is required at runtime by tiny_tds. Install with: sudo apt-get install libsybdb5.
+  
+Installation
+------------
+1) Get a copy of the files by either copying and pasting, or pushing/pulling from git.
+2) `cd` into directory.
+3) ```gem install bundler
+4) ```bundle install
+
+Migrations
+----------
+SQL migrations are located in the root of the application in the /db directory. To run, use the _sequel_ command line tool. As an example:
+
+```sequel -m /db "tinytds://server.trc.local/database?username=username&password=password"
+
+Note, if the username or password contain special characters that invalidate the URI, such as a backslash, you must URI encode them, so for example,
+the backslash would become %5C.

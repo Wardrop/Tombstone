@@ -81,7 +81,6 @@ $( function () {
 		},
     render: function () {
       $(this.el).html(this.template())
-      console.log(this.collection)
       this.collection.each(function (person) {
         this.$('.blocks').append((new this.blockView({model: person, wizard: this.wizard})).render().el)
       }, this)
@@ -197,6 +196,15 @@ $( function () {
 		},
     renderPage: function () {
       this.$('.body').children().detach()
+      model = this.model.get('currentPage').model
+      if(model && model.errors.length > 0) {
+        errorContainer = this.$('.validation_errors').empty().css({display: ''})
+        _.each(model.errors, function (error) {
+          errorContainer.append('<li>'+error+'</li>')
+        }, this)
+      } else {
+        this.$('.validation_errors').empty().css({display: 'none'})
+      }
       this.$('.body').append(this.model.get('currentPage').render().el)
     },
     renderLoader: function () {
@@ -253,9 +261,15 @@ $( function () {
     },
     savePerson: function (person) {
       if(person.get('id')) {
+        this.role.set({person: person})
         this.findAddresses(person)
       } else {
-        this.showCreateAddressForm()
+        hasErrors = person.validate()
+        if(hasErrors) {
+          this.showCreatePersonForm()
+        } else {
+          this.showCreateAddressForm()
+        }
       }
     },
     saveAddress: function (address) {
