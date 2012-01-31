@@ -47,6 +47,11 @@ module Tombstone
     get "/" do
       erb :index
     end
+    
+    get "/find" do
+      @results = Reservation.all
+      erb :find
+    end
         
     get "/reservation" do
       @root_places = Place.with_child_count.filter(:parent_id => nil).order(:name).naked.all
@@ -57,8 +62,8 @@ module Tombstone
       content_type :json
       response = {success: false, form_errors: {}}
       response[:form_errors]['reservee'] = "Reservee must be added to reservation." unless params['reservee'].is_a? Hash
-      response[:form_errors]['next_of_kin'] = "Next of Kin must be added to reservation." unless params['next_of_kin'].is_a? Hash
-      response[:form_errors]['applicant'] = "Applicant must be added to reservation." unless params['applicant'].is_a? Hash
+      #response[:form_errors]['next_of_kin'] = "Next of Kin must be added to reservation." unless params['next_of_kin'].is_a? Hash
+      #response[:form_errors]['applicant'] = "Applicant must be added to reservation." unless params['applicant'].is_a? Hash
       response[:form_errors]['place'] = "A place must be selected." unless params['place']
       
       if response[:form_errors].empty?
@@ -101,15 +106,15 @@ module Tombstone
             role = Role.new.set({type: (name == 'reservee' ? 'reservee' : 'contact') , party: party, residential_address: res_address})
             if role.valid?
               role.save
-              roles[name] = roles
+              roles[name] = role
             else
               response[:form_errors][name] = role.errors
               raise Sequel::Rollback
             end
           end
           
-          Relationship.new.set({source_role: role['reservee'], target_role: role['next_of_kin']}).save
-          Relationship.new.set({source_role: role['reservee'], target_role: role['applicant']}).save
+          Relationship.new.set({source_role: roles['reservee'], target_role: roles['next_of_kin']}).save
+          Relationship.new.set({source_role: roles['reservee'], target_role: roles['applicant']}).save
           
           place = Place[params['place']]
           if place.nil?
@@ -118,7 +123,7 @@ module Tombstone
           end
           
           reservation = Reservation.new.set({place: place, reservee: roles['reservee']})
-          if reservation.is_valid?
+          if reservation.valid?
             reservation.save
           else
             response[:form_errors].merge!(reservation.errors)

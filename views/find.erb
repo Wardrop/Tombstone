@@ -1,0 +1,18 @@
+<%
+@document[:title] = 'Reservation'
+%>
+<div id="navigation_bar">
+	<a href="<%= url '/' %>" class="breadcrumb home"></a>
+  <span class="breadcrumb div">/</span>
+	<a href="<%= url '/find' %>" class="breadcrumb">Find</a>
+</div>
+<div>
+  <h2 class="underline">Find</h2>
+  <div class="list_rows padded"</div>
+  <% @results.each do |row| %>
+    <div>
+      <%= row.place.name %>: <%= row.reservee.party.given_name %> <%= row.reservee.party.surname %>
+      <a class="goto" href="<%= url '/reservation' %>"></a>
+    </div>
+  <% end %>
+</div>

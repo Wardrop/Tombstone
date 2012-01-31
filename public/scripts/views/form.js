@@ -100,16 +100,13 @@ $( function () {
 			$(window).unbind('blur', this.hideList)
 			$(document).unbind('keydown', this.keydownHideEvent)
     },
-    selectButton: function(selected, loading) {
+    selectButton: function(selected) {
       $(this.el).children('input').remove()
 			$(this.el).prepend($(selected).clone(true))
 		  this.$('ul > li').removeClass('selected').find(selected).parent().addClass('selected')
-			if(loading && !$(this.el).next().hasClass('loading')) {
-				$(this.el).after('<div class="loading" style="width: 38px;" />')
-			}
 		},
     onSelectListItem: function (e) {
-      this.selectButton(e.currentTarget, true)
+      this.selectButton(e.currentTarget)
     },
     keydownHideEvent: function (e) {
       if (e.keyCode == 27) this.hideList();

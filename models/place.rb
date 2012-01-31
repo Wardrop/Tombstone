@@ -4,7 +4,7 @@ class Place < Sequel::Model
   set_primary_key :id
   many_to_one :parent, :class => self, :key => :parent_id
   one_to_many :children, :class => self, :key => :parent_id
-  one_to_one :reservation, :class => :Reservation, :key => :place_id
+  one_to_many :reservation, :class => :Reservation, :key => :place_id
   # one_to_many :interments
   
   def_dataset_method(:with_child_count) do
