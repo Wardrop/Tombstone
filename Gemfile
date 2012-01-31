@@ -1,3 +1,5 @@
+source :rubygems
+
 gem "sequel", ">= 3.29.0"
 gem "sinatra"
 gem "sinatra-contrib"
