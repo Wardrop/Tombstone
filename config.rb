@@ -55,14 +55,15 @@
         :can_delete_photos => false,
         :can_manage_cemeteries => false
       }
-    }
-  },
-  development: {
+    },
     db: {
       host: 'trcsql02.trc.local',
       user: 'trc\tombstone_user',
       password: '10Pippl$ah',
       database: 'Tombstone_Dev'
     }
+  },
+  development: {
+    
   }
 }
