@@ -6,12 +6,12 @@ Ts.Roles = Backbone.Collection.extend({
 
 Ts.Contacts = Backbone.Collection.extend({
 	model: Ts.Contact,
-  url: '/contacts'
+  url: '/person/contacts'
 })
 
 Ts.People = Backbone.Collection.extend({
 	model: Ts.Person,
-  url: '/people'
+  url: '/person/all'
 })
 
 Ts.Places = Backbone.Collection.extend({

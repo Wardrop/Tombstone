@@ -1,4 +1,4 @@
-require_relative '../../lib/permissions'
+require_relative '../spec_helper'
 
 module Tombstone
   describe Permissions do

@@ -1,4 +1,4 @@
-* Add email to contact forms
+* Add email to contact details form.
 * Package up front-end JavaScript componants and resources so they can be included on a page with a single expression, e.g. load_js_component(:role_wizard)
 * Define consistant terminology for reservee, interment/burial, 
 * Fix issues with the back behaviour of role wizard.

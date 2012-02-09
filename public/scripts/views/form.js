@@ -147,7 +147,9 @@ $( function () {
     },
     loadPlaceList: function (parent_id) {
       $(this.el).append('<div class="loading" />')
-      $.ajax('/places/'+parent_id, {
+      $.ajax('/place/children/'+parent_id, {
+				type: 'GET',
+				dataType: 'json',
         success: _.bind(function (data) {
           var places = new Ts.Places(data)
           if(places.length > 0) {
@@ -169,8 +171,9 @@ $( function () {
     },
     nextAvailable: function (parent_id) {
       $(this.el).append('<div class="loading" />')
-      $.ajax('/places/next_available/'+parent_id, {
+      $.ajax('/place/next_available/'+parent_id, {
         type: 'GET',
+				dataType: 'json',
         success: _.bind(function (data) {
           _.each(data, function (place) {
             this.renderPlaces(new Ts.Places(place.siblings), place.id)

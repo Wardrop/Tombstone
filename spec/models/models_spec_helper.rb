@@ -4,16 +4,14 @@ require 'sequel'
 current_dir = File.dirname(__FILE__)
 
 Sequel.extension :migration 
-db = Sequel.connect({:adapter => 'tinytds'}.merge(SPEC_CONFIG[:db]))
-
-Dir.glob(File.join(current_dir, "/../../models/*.rb")) { |file| require file }
+db = Sequel::Model.db
 
 # Recreate the database tables
 db.drop_table(*db.tables)
-Sequel::Migrator.apply(db, File.join(current_dir, '/../../db'))
+Sequel::Migrator.apply(db, File.join(current_dir, '/../../db/migrations'))
 
 # Setup Permissions object
-Tombstone::Permissions.map = SPEC_CONFIG[:roles]
+# Tombstone::Permissions.map = SPEC_CONFIG[:roles]
 
 # Pre-populate the database with test data
 db[:person] << {title: 'Mr', surname: 'Fickle', given_name: 'Roger', middle_initials: 'D', gender: 'Male', date_of_birth: Date.parse('09/03/1934'), date_of_death: nil}

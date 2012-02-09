@@ -16,7 +16,7 @@ namespace :db do
     
     # Recreate the database tables
     db.drop_table(*db.tables)
-    Sequel::Migrator.apply(db, File.join(File.dirname(__FILE__), '/db'))
+    Sequel::Migrator.apply(db, File.join(File.dirname(__FILE__), '/db/migrations'))
   end
   
   desc "Populates the database with dummy data"

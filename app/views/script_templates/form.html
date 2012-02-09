@@ -1,0 +1,44 @@
+<script type="text/template" id="form:multibutton_template">
+  <span class="dropdown_button"></span>
+  <ul>
+    <% _.each(options, function (value) { %>
+    	<li><input type="button" name="<%= name %>" value="<%= value %>" /></li>
+    <% }) %>
+  </ul>
+</script>
+
+<script type="text/template" id="form:place_list_template">
+  <span><%= capitalize(type) %></span>
+  <select data-place-type="<%= type %>">
+    <option value=""></option>
+    <% _.each(places, function (place) { %>
+      <option value="<%= place.id %>" <%= (place.id == selected) ? 'selected="selected"' : '' %>><%= place.name %> (<%= place.child_count ? place.child_count : 0 %>)</option>
+    <% }) %>
+  </select>
+</script>
+
+<script type="text/template" id="form:role_block_template">
+  <% if (model) { %>
+    <div class="row_block clickable" title="Click to change">
+      <span><strong><%= model.person.given_name %> <%= model.person.surname %></strong></span>
+      <div><%= model.residential_contact.street_address %>, <%= model.residential_contact.town %>, <%= model.residential_contact.state %> <%= model.residential_contact.postal_code %></div>
+      <div class="actions">
+        <a href="javascript:void(0);" class="delete" confirm="Are you sure you want to delete this object?" action="/delete/stuff" data="id=56&amp;delete=now" title="Delete"></a>
+      </div>
+    </div>
+    <%
+    /*
+    _.each(model, function (role_val, role_key) {
+      if(typeof role_val == "object") {
+        _.each(role_val, function (val, key) {
+        %>
+          <input type="hidden" name="role[<%= model.type %>][<%= role_key %>][<%= key %>]" value="<%= val %>">
+        <%
+        })
+      }
+    })
+    */
+  } else { %>
+    <a class="add" href="#">Click to add&hellip;</a>
+  <% } %>
+</script>

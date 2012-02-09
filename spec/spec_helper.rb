@@ -1,3 +1,15 @@
-require "bundler/setup"
+PADRINO_ENV = 'spec' unless defined?(PADRINO_ENV)
+require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 
-SPEC_CONFIG = eval(File.read(File.join(File.dirname(__FILE__), 'spec_config.rb')))
+# RSpec.configure do |conf|
+#   conf.include Rack::Test::Methods
+# end
+
+p 'wWWWWWWwwwwWWW'
+
+# def app
+#   ##
+#   # You can handle all padrino applications using instead:
+#   #   Padrino.application
+#   Pilot.tap { |app|  }
+# end

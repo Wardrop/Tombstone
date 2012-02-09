@@ -1,0 +1,100 @@
+<%
+@document[:title] = 'Create Reservation'
+content_for :head do
+  <<-HEAD
+    <script type="text/javascript">
+      $( function () {
+        var roles = {}
+        roles.reservee = new Ts.FormViews.RoleBlock({role_name: 'Reservee', role_type: 'reservee', el: $('#reservee_section')})
+        roles.reservee.render()
+        roles.applicant = new Ts.FormViews.RoleBlock({role_name: 'Applicant', role_type: 'applicant', el: $('#applicant_section')})
+        roles.applicant.render()
+
+        new Ts.FormViews.PlacesView({el: $('#places_section label')})
+      
+        var multibutton = new Ts.FormViews.Multibutton({name: 'submit', options: ['Submit', 'Approve', 'Inter', 'Save']})
+        $('#actions_section > div').append(multibutton.render().el)
+      
+        $('input[type=button]', multibutton.el).click(function (e) {
+          var data = $('#reservation_form').serializeObject()
+          data.action = $(e.currentTarget).val()
+          _.each(roles, function (role, name) {
+            if(role.model) {
+              data[name] = role.model.recursiveToJSON()
+            }
+          })
+        
+          $('#reservation_form > .validation_errors').remove()
+          $('#reservation_form [name]').removeClass('field_error')
+          $(multibutton.el).after('<div class="loading" />')
+        
+          $.ajax('#{url "/reservation/new"}', {
+            type: 'POST',
+            data: data,
+            success: function (response) {
+              console.log(response)
+              if(response.success== false) {
+                var errorsList = $('<ul class="validation_errors" />')
+                _.each(response.form_errors, function (value, key) {
+                  $('[name='+key+']').addClass('field_error')
+                  errorsList.append('<li>'+value+'</li>')
+                })
+              
+                $('#reservation_form').prepend(errorsList)
+              } else {
+                $(multibutton.el).next('.loading').attr('class', 'success')
+              }
+            },
+            error: function () { console.log('Error'); },
+            complete: function () {
+              $(multibutton.el).next('.loading').remove()
+            }
+          })
+        })
+      })
+    </script>
+  HEAD
+end
+
+include_script_views('role_wizard', 'form')
+%>
+<div id="navigation_bar">
+	<a href="<%= url '/' %>" class="breadcrumb home"></a>
+  <span class="breadcrumb div">/</span>
+	<a href="<%= url '/find' %>" class="breadcrumb">Reservation</a>
+  <span class="breadcrumb div">/</span>
+	<a href="<%= url '/reservation' %>" class="breadcrumb">Create</a>
+</div>
+<form id="reservation_form" class="rowed">
+  <h2 class="underline">Reserved For</h2>
+  <div id="reservee_section" class="section padded" name="reservee"></div>
+  <h2 class="underline">Applicant</h2>
+  <div id="applicant_section" class="section padded" name="applicant"></div>
+  <h2 class="underline">Location</h2>
+  <div id="places_section" class="section padded" name="place">
+    <label>
+      <span><%= @root_places[0][:type].capitalize %></span>
+      <select data-place-type="<%= @root_places[0][:type] %>">
+      	<option value=""></option>
+        <% @root_places.each do |place| %>
+          <option value="<%= place[:id] %>"><%= place[:name] %> (<%= place[:child_count].to_i %>)</option>
+        <% end %>
+      </select>
+    </label>
+  </div>
+  <h2 class="underline">Other Details</h2>
+  <div class="section padded">
+  	<label>
+      <span class="align_top">Location Description</span>
+      <textarea name="location_description" style="width: 100%; height: 56px;"></textarea>
+    </label>
+    <label>
+      <span class="align_top">Comments</span>
+      <textarea name="comments" style="width: 100%; height: 82px;"></textarea>
+    </label>
+  </div>
+  <h2 class="underline">Actions</h2>
+  <div id="actions_section" class="section padded">
+    <div class="inline_layout"></div>
+  </div>
+</form>
