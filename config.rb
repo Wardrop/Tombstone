@@ -1,4 +1,14 @@
-{
+class << (config = Hash.new)
+  def for_environment(env = nil)
+    if env && !self[env.to_sym].nil?
+      self[:default].merge(self[env.to_sym])
+    else
+      self[:default]
+    end
+  end
+end
+
+config.merge!({
   default: {
     roles: {
       :operator => {
@@ -66,4 +76,4 @@
   development: {
     
   }
-}
+})

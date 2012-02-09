@@ -1,8 +1,8 @@
-require_relative './models_helper'
+require_relative './base'
 require_relative '../lib/model_permissions'
 
 module Tombstone
-  class User < Sequel::Model
+  class User < BaseModel
     plugin ModelPermissions
     set_primary_key :id
     

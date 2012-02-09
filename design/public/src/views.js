@@ -67,8 +67,8 @@ $( function () {
 		}
 	})
 	
-	Ts.AddressForm = Ts.GenericForm.extend({
-		template: _.template($('#address_form_template').html()),
+	Ts.ContactForm = Ts.GenericForm.extend({
+		template: _.template($('#contact_form_template').html()),
 		initialize: function (opts) {
       Ts.GenericForm.prototype.initialize.apply(this, arguments);
 		}
@@ -102,15 +102,15 @@ $( function () {
     }
 	})
   
-  Ts.AddressResults = Ts.BasePage.extend({
-		template: _.template($('#address_results_template').html()),
+  Ts.ContactResults = Ts.BasePage.extend({
+		template: _.template($('#contact_results_template').html()),
 		initialize: function () {
       Ts.BasePage.prototype.initialize.apply(this, arguments)
 		},
     render: function () {
       $(this.el).html(this.template())
-      this.collection.each(function (address) {
-        this.$('.blocks').append((new Ts.AddressBlock({model: address, wizard: this.wizard})).render().el)
+      this.collection.each(function (contact) {
+        this.$('.blocks').append((new Ts.ContactBlock({model: contact, wizard: this.wizard})).render().el)
       }, this)
 			return this
     }
@@ -137,9 +137,9 @@ $( function () {
     }
   })
   
-  Ts.AddressBlock = Backbone.View.extend({
+  Ts.ContactBlock = Backbone.View.extend({
     className: 'row_block clickable',
-    template: _.template($('#address_block_template').html()),
+    template: _.template($('#contact_block_template').html()),
     events: {
       'click' : 'doAction'
     },
@@ -148,12 +148,12 @@ $( function () {
       _.bindAll(this, 'doAction')
     },
     render: function () {
-      $(this.el).html(this.template({address: this.model.toJSON()}))
+      $(this.el).html(this.template({contact: this.model.toJSON()}))
 			return this
     },
     doAction: function (e) {
       var action = $(e.target).attr('action')
-      this.wizard.saveAddress(this.model)
+      this.wizard.saveContact(this.model)
       return false
     }
   })
@@ -166,7 +166,7 @@ $( function () {
     render: function () {
       $(this.el).html(this.template())
       this.$('.blocks').append((new Ts.PersonBlock({model: this.model.get('person'), wizard: this.wizard})).render().el)
-      this.$('.blocks').append((new Ts.AddressBlock({model: this.model.get('residential_address'), wizard: this.wizard})).render().el)
+      this.$('.blocks').append((new Ts.ContactBlock({model: this.model.get('residential_contact'), wizard: this.wizard})).render().el)
 			return this
     }
 	})
@@ -224,9 +224,9 @@ $( function () {
       var createPersonForm = new Ts.CreatePersonForm({model: this.role.get('person'), wizard: this}, 'savePerson')
       this.model.set({currentPage: createPersonForm})
     },
-    showCreateAddressForm: function () {
-      var addressForm = new Ts.AddressForm({model: this.role.get('residential_address'), wizard: this})
-      this.model.set({currentPage: addressForm})
+    showCreateContactForm: function () {
+      var contactForm = new Ts.ContactForm({model: this.role.get('residential_contact'), wizard: this})
+      this.model.set({currentPage: contactForm})
     },
     findPeople: function (person) {
       var matches = new Ts.People()
@@ -243,13 +243,13 @@ $( function () {
         data: person.toJSON()
       })
     },
-    findAddresses: function (person) {
-      var matches = new Ts.Addresses()
+    findContacts: function (person) {
+      var matches = new Ts.Contacts()
       var self = this
       this.model.set({isLoading: true})
       matches.fetch({
         success: function (results) {
-          var resultsView = new Ts.AddressResults({collection: results, wizard: self})
+          var resultsView = new Ts.ContactResults({collection: results, wizard: self})
           self.model.set({currentPage: resultsView, isLoading: false})
         },
         error: function () {
@@ -262,13 +262,13 @@ $( function () {
     savePerson: function (person) {
       if(person.get('id')) {
         this.role.set({person: person})
-        this.findAddresses(person)
+        this.findContacts(person)
       } else {
         hasErrors = person.validate()
         if(hasErrors) {
           this.showCreatePersonForm()
         } else {
-          this.showCreateAddressForm()
+          this.showCreateContactForm()
         }
       }
     },

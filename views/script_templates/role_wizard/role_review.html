@@ -13,21 +13,20 @@
     <div><%= (new Date(person.date_of_birth).toLocaleDateString()) %></div>
   </div>
   <div class="row">
-    <span class="align_top">Residential Address</span>
+    <span class="align_top">Residential Contact</span>
     <div>
-      <%= residential_address.street_address %><br />
-      <%= residential_address.town %>, <%= residential_address.state %> <%= residential_address.postal_code %><br />
-      <%= residential_address.primary_phone %> <%= (residential_address.secondary_phone) ? ", "+residential_address.secondary_phone : '' %>
+      <%= residential_contact.street_address %><br />
+      <%= residential_contact.town %>, <%= residential_contact.state %> <%= residential_contact.postal_code %><br />
+      <%= residential_contact.primary_phone %><%= (residential_contact.secondary_phone) ? ", "+residential_contact.secondary_phone : '' %>
     </div>
   </div>
   <div class="row">
-    <span class="align_top">Mailing Address</span>
-    <% if(mailing_address.street_address) { %>
+    <span class="align_top">Mailing Contact</span>
+    <% if(mailing_contact.street_address) { %>
       <div>
-        <% console.log(mailing_address.secondary_phone) %>
-        <%= mailing_address.street_address %><br />
-        <%= mailing_address.town %>, <%= mailing_address.state %> <%= mailing_address.postal_code %><br />
-        <%= mailing_address.primary_phone %> <%= (mailing_address.secondary_phone) ? ", "+mailing_address.secondary_phone : '' %>
+        <%= mailing_contact.street_address %><br />
+        <%= mailing_contact.town %>, <%= mailing_contact.state %> <%= mailing_contact.postal_code %><br />
+        <%= mailing_contact.primary_phone %><%= (mailing_contact.secondary_phone) ? ", "+mailing_contact.secondary_phone : '' %>
       </div>
     <% } else { %>
       <div>None</div>

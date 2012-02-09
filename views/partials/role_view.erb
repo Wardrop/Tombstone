@@ -1,0 +1,34 @@
+<div class="row">
+  <span>Name</span>
+  <div><%= role.person.title %> <%= role.person.given_name %> <%= role.person.surname %></div>
+</div>
+<div class="row">
+  <span>Gender</span>
+  <div><%= role.person.gender %></div>
+</div>
+<div class="row">
+  <span>Date of Birth</span>
+  <div><%= role.person.date_of_birth.strftime('%d/%m/%Y') %></div>
+</div>
+<div class="row">
+  <span class="align_top">Residential Contact</span>
+  <div>
+    <%= role.residential_contact.street_address %><br />
+    <%= role.residential_contact.town %>, <%= role.residential_contact.state %> <%= role.residential_contact.postal_code %><br />
+    <%= role.residential_contact.primary_phone %><%= (role.residential_contact.secondary_phone) ? ", "+role.residential_contact.secondary_phone : '' %><br />
+    <%= role.residential_contact.email %>
+  </div>
+</div>
+<div class="row">
+  <span class="align_top">Mailing Contact</span>
+  <% if role.mailing_contact %>
+    <div>
+      <%= role.mailing_contact.street_address %><br />
+      <%= role.mailing_contact.town %>, <%= role.mailing_contact.state %> <%= role.mailing_contact.postal_code %><br />
+      <%= role.mailing_contact.primary_phone %><%= (role.mailing_contact.secondary_phone) ? ", "+role.mailing_contact.secondary_phone : '' %><br />
+      <%= role.mailing_contact.email %>
+    </div>
+  <% else %>
+    <div>None</div>
+  <% end %>
+</div>

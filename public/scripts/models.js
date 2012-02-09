@@ -26,7 +26,7 @@ Ts.Person = Backbone.Model.extend({
   }
 })
 
-Ts.Address = Backbone.Model.extend({
+Ts.Contact = Backbone.Model.extend({
 	defaults: {
     id: undefined,
 		street_address: null,
@@ -56,21 +56,13 @@ Ts.Role = Backbone.Model.extend({
     id: undefined,
 		type: null,
 		person: null,
-		residential_address: null,
-		mailing_address: null,
+		residential_contact: null,
+		mailing_contact: null,
 	},
   initialize: function () {
     if(!this.get('person')) this.set({person: new Ts.Person})
-    if(!this.get('residential_address')) this.set({residential_address: new Ts.Address})
-    if(!this.get('mailing_address')) this.set({mailing_address: new Ts.Address})
-  }
-})
-
-Ts.PlaceList = Backbone.Model.extend({
-  defaults: {
-    type: null,
-    places: null,
-    selected: null
+    if(!this.get('residential_contact')) this.set({residential_contact: new Ts.Contact})
+    if(!this.get('mailing_contact')) this.set({mailing_contact: new Ts.Contact})
   }
 })
 

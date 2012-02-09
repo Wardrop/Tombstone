@@ -8,6 +8,7 @@ body {
   font-size: 13px;
 	letter-spacing: 0.1pt;
 	background: #fafafa;
+  line-height: 125%;
 }
 html {
   overflow-y: scroll;
@@ -40,7 +41,7 @@ form {
 }
 h2 {
 	font-size: 18px;
-	margin: 24px 0 12px;
+	margin: 24px 0 16px;
 	padding-left: 2%;
 	padding-bottom: 4px;
 }
@@ -54,7 +55,10 @@ h3 {
 	padding-bottom: 4px;
 }
 h3.underline {
-	border-bottom: 1px solid #aaa;
+	border-bottom: 1px solid #bbb;
+}
+small {
+  color: #666;
 }
 
 #container {
@@ -84,9 +88,9 @@ h3.underline {
 #banner {
 	position: relative;
   background: url('images/logo_icon.png') no-repeat 30px center;
-  padding: 28px 0 28px 142px;
+  padding: 32px 0 32px 142px;
   font-size: 30px;
-  margin: 16px 0;
+  margin: 12px 0 16px;
 }
 #navigation_bar {
 	display: table;
@@ -167,21 +171,52 @@ h3.underline {
 .padded {
 	padding: 8px 12px;
 }
+.v_padded {
+	padding: 8px 0
+}
+.h_padded {
+	padding: 0 12px;
+}
 
-.section {
+section, .section {
 	margin-bottom: 34px;
 }
-.section:last-child {
+section:last-child, .section:last-child {
 	margin-bottom: 0;	
 }
 
-.list_rows > div {
-	position: relative;
-	padding: 10px 14px;
-	background: #ebf3fa;
+.clickable {
+  cursor: pointer;
 }
-.list_rows > div:nth-child(2) {
+
+.list_rows > div {
+  background: #ebf3fa;
+  margin-bottom: 1px;
+  position: relative;
+}
+.list_rows > div:nth-child(even) {
 	background: none;
+}
+.list_rows > div > .summary {
+  position: relative;
+  padding: 12px 14px;
+}
+.list_rows > div > .details {
+  display: none;
+  padding: 0 14px 4px;
+  font-size: 11px;
+  overflow: auto; /* Required for clearing the container for floating children */
+}
+.list_rows > div > .details > .left {
+  float: left;
+  width: 50%;
+}
+.list_rows > div > .details > .right {
+  float: right;
+  width: 50%;
+}
+.list_rows > div.expanded > .details {
+  display: block;
 }
 
 .list_rows .goto, .list_rows .goto {
@@ -250,7 +285,6 @@ a.button:hover, input[type=submit]:hover, input[type=button]:hover {
 	border: 1px solid #c5d4e0;
 }
 .row_block.clickable:hover {
-	cursor: pointer;
 	background: #eff5fb;
 }
 .row_block .actions {
@@ -291,6 +325,7 @@ a.row_button:hover {
 }
 
 .rowed label, .rowed div.row {
+  position: relative;
 	display: block;
 	padding: 4px 0;
 	margin-left: 112px;
@@ -301,7 +336,7 @@ a.row_button:hover {
 }
 .rowed label > *, .rowed div.row > * {
   display: inline-block;
-  vertical-align: top;
+  vertical-align: middle;
 }
 .rowed label > span:first-child, .rowed div.row > span:first-child {
 	display: inline-block;
@@ -309,11 +344,14 @@ a.row_button:hover {
 	padding-right: 8px;
 	width: 107px;
 	text-align: right;
-  vertical-align: middle;
+  vertical-align: top;
 }
 .rowed.wide label > span:first-child, .rowed.wide div.row > span:first-child {
 	margin-left: -162px;
 	width: 157px;
+}
+.rowed.view label > span:first-child, .rowed.view div.row > span:first-child {
+  font-weight: bold;
 }
 .rowed.display label > span:first-child, .rowed.display div.row > span:first-child {
 	font-weight: bold;
@@ -403,6 +441,18 @@ a.row_button:hover {
   left: 50%;
 }
 
+.action_button {
+	display: inline-block;
+	border-radius: 5px;
+	padding: 10px 16px;
+	text-decoration: none;
+	background: #2980cc;
+	color: white;
+	border: none;
+	vertical-align: middle;
+	height: auto;
+}
+
 .multibutton {
 	position: relative;
 	padding: 1px 28px 1px 0;
@@ -461,7 +511,7 @@ a.row_button:hover {
 }
 .multibutton > ul {
 	position: absolute;
-	right: 0;
+	left: 0;
 	background: #2980cc;
 	margin: 1px 0;
 }

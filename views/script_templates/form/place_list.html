@@ -1,7 +1,7 @@
 <span><%= capitalize(type) %></span>
-<select>
+<select data-place-type="<%= type %>">
   <option value=""></option>
   <% _.each(places, function (place) { %>
-  <option value="<%= place.id %>"><%= place.name %> (<%= place.child_count ? place.child_count : 0 %>)</option>
+    <option value="<%= place.id %>" <%= (place.id == selected) ? 'selected="selected"' : '' %>><%= place.name %> (<%= place.child_count ? place.child_count : 0 %>)</option>
   <% }) %>
 </select>

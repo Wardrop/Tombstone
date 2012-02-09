@@ -4,9 +4,9 @@ Ts.Roles = Backbone.Collection.extend({
 	model: Ts.Role
 })
 
-Ts.Addresses = Backbone.Collection.extend({
-	model: Ts.Address,
-  url: '/addresses'
+Ts.Contacts = Backbone.Collection.extend({
+	model: Ts.Contact,
+  url: '/contacts'
 })
 
 Ts.People = Backbone.Collection.extend({

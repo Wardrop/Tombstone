@@ -9,17 +9,14 @@ Dir.glob('./lib/**/*.rb') { |file| require file }
 module Tombstone
   class Main < Sinatra::Base
     
+    helpers Helpers
+    
     configure do
-      config_hash = eval(File.read('./config.rb'))
-      set :config, config_hash[:default]
-      if(config_hash[settings.environment])
-        settings.config.merge!(config_hash[settings.environment])
-      end
+      config = eval(File.read('./config.rb'))
+      set :config, config.for_environment(settings.environment)
       set :log, Logger.new(settings.config[:log_file])
       use Rack::Session::Pool, :expire => 900
     end
-    
-    helpers Helpers
 
     configure :development do
       set :log, Logger.new(STDOUT)
@@ -31,7 +28,7 @@ module Tombstone
     
     before do
       @document = {
-        title: 'Untitled',
+        title: 'Tombstone',
         head: '',
         scripts: [
           'vendor/underscore.js',
@@ -49,13 +46,22 @@ module Tombstone
     end
     
     get "/find" do
-      @results = Reservation.all
+      @records = Allocation.filter(type: 'reservation').all
       erb :find
     end
         
-    get "/reservation" do
+    get "/reservation/new" do
       @root_places = Place.with_child_count.filter(:parent_id => nil).order(:name).naked.all
-      erb :reservation
+      erb :'reservation/new'
+    end
+    
+    get "/reservation/view/:id" do
+      @reservation = Allocation.with_pk([params[:id], 'reservation'])
+      if @reservation
+        erb :'reservation/view'
+      else
+        erb :'reservation/not_found' 
+      end
     end
     
     post "/reservation", :provides => 'json' do
@@ -67,43 +73,43 @@ module Tombstone
       response[:form_errors]['place'] = "A place must be selected." unless params['place']
       
       if response[:form_errors].empty?
-        Reservation.db.transaction do
+        Allocation.db.transaction do
           
           roles = {}
-          params.select { |k,v| ['reservee', 'next_of_kin', 'applicant'].include? k}.each do |name, data|
+          params.select { |k,v| ['reservee', 'applicant'].include? k}.each do |name, data|
             if data['person']['id']
-              party = Party[data['person']['id']]
-              if party.nil?
+              person = Person[data['person']['id']]
+              if person.nil?
                 response[:form_errors][name] = "The selected '#{name.capitalize}' does not exist."
                 raise Sequel::Rollback
               end
             else
-              party = Party.new.set(data['person'])
-              if party.is_valid?
-                party.save
+              person = Person.new.set(data['person'])
+              if person.is_valid?
+                person.save
               else
-                response[:form_errors][name] = party.errors
+                response[:form_errors][name] = person.errors
                 raise Sequel::Rollback
               end
             end
             
-            if data['residential_address']['id']
-              res_address = Address[data['residential_address']['id']]
-              if res_address.nil?
-                response[:form_errors][name] = "The selected address for the selected '#{name.capitalize}' does not exist."
+            if data['residential_contact']['id']
+              res_contact = Contact[data['residential_contact']['id']]
+              if res_contact.nil?
+                response[:form_errors][name] = "The selected contact for the selected '#{name.capitalize}' does not exist."
                 raise Sequel::Rollback
               end
             else
-              res_address = Address.new.set(data['residential_address'])
-              if res_address.is_valid?
-                res_address.save
+              res_contact = Contact.new.set(data['residential_contact'])
+              if res_contact.is_valid?
+                res_contact.save
               else
-                response[:form_errors][name] = res_address.errors
+                response[:form_errors][name] = res_contact.errors
                 raise Sequel::Rollback
               end
             end
             
-            role = Role.new.set({type: (name == 'reservee' ? 'reservee' : 'contact') , party: party, residential_address: res_address})
+            role = Role.new.set({type: name, person: person, residential_contact: res_contact})
             if role.valid?
               role.save
               roles[name] = role
@@ -113,21 +119,22 @@ module Tombstone
             end
           end
           
-          Relationship.new.set({source_role: roles['reservee'], target_role: roles['next_of_kin']}).save
-          Relationship.new.set({source_role: roles['reservee'], target_role: roles['applicant']}).save
-          
           place = Place[params['place']]
           if place.nil?
             response[:form_errors]['place'] = "The selected place does not exist."
             raise Sequel::Rollback
           end
           
-          reservation = Reservation.new.set({place: place, reservee: roles['reservee']})
-          if reservation.valid?
-            reservation.save
+          allocation = Allocation.new.set({type: 'reservation', place: place})
+          if allocation.valid?
+            allocation.save
           else
-            response[:form_errors].merge!(reservation.errors)
+            response[:form_errors].merge!(allocation.errors)
             raise Sequel::Rollback
+          end
+
+          roles.each do |type, role|
+            role.add_allocation(allocation)
           end
           
           response[:success] = true
@@ -137,32 +144,52 @@ module Tombstone
       response.to_json
     end
     
-    get "/places", :provides => 'json' do
+    get "/places/:parent_id", :provides => 'json' do
+      content_type :json
+      Place.with_child_count.filter(:parent_id => params[:parent_id]).order(:name).naked.all.to_json
+    end
+    # 
+    # get "/places/:parent_id", :provides => 'json' do
+    #   content_type :json
+    #   Place.filter(:parent_id => params[:parent_id]).order(:name).naked.all.to_json
+    # end
+    
+    get "/places/next_available/:parent_id", :provides => 'json' do
+      content_type :json
+      next_available = Place.with_pk(params[:parent_id]).next_available
+      ancestors = next_available.ancestors(params[:parent_id])
+      chain = ancestors.reverse.push(next_available)
+      
+      result = []
+      chain.each do |p|
+        place = p.values
+        place[:siblings] = Place.with_child_count.filter(:parent_id => place[:parent_id]).order(:id).naked.all
+        result << place
+      end
+      result.to_json
+    end
+    
+    get "/places/ancestors", :provides => 'json' do
       content_type :json
       Place.with_child_count.filter(:parent_id => params[:parent_id]).order(:name).naked.all.to_json
     end
     
-    get "/places/:parent_id", :provides => 'json' do
-      content_type :json
-      Place.filter(:parent_id => params[:parent_id]).order(:name).naked.all.to_json
-    end  
-    
     get "/person/:id", :provides => 'json' do
       content_type :json
-      Party.filter(:id => params[:id]).naked.all.to_json
+      Person.filter(:id => params[:id]).naked.all.to_json
     end
 
     get "/people", :provides => 'json' do
       content_type :json
       filter = params.reject{ |k,v| !v || v.empty? || v == 'null'}.symbolize_keys!
-      Party.filter(filter).naked.all.to_json
+      Person.filter(filter).naked.all.to_json
     end
 
-    get "/addresses", :provides => 'json' do
+    get "/contacts", :provides => 'json' do
       content_type :json
-      Party.select_all(:address).distinct.filter(:party__id => params[:party_id]).
-        join(:role, :role__party_id => :party__id).
-        join(:address, :address__id => [:role__residential_address_id, :role__mailing_address_id])
+      Person.select_all(:contact).distinct.filter(:person__id => params[:person_id]).
+        join(:role, :role__person_id => :person__id).
+        join(:contact, :contact__id => [:role__residential_contact_id, :role__mailing_contact_id])
         .naked.all.to_json
     end
     

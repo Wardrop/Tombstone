@@ -1,0 +1,17 @@
+* Add email to contact forms
+* Package up front-end JavaScript componants and resources so they can be included on a page with a single expression, e.g. load_js_component(:role_wizard)
+* Define consistant terminology for reservee, interment/burial, 
+* Fix issues with the back behaviour of role wizard.
+  - Going to the review page, pressing back, selecting the same address, and selecting back again, causes nothing to happen.
+    If back is then pressed again, jumps back to people page.
+* Simplify breadcrumb into a list (<ul>) and use the CSS pseudo element :before to render the slashes in-between.
+* Fix display of multibutton when option in drop down is significantly longer than the default option.
+* In location drop-down's on allocation form, check for plot availability (status = available, unot associated with any places)
+  
+    
+Refactor Oppurtunities
+----------------------
+* Convert project to padrino
+  - Convert controllers into namespaced controllers.
+  - Use content_for.
+* Add autoloading to models so class names in associations can be referenced by name rather than symbol.

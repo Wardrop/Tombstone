@@ -1,0 +1,11 @@
+<%
+@document[:title] = 'Create Reservation'
+%>
+<div id="navigation_bar">
+	<a href="<%= url '/' %>" class="breadcrumb home"></a>
+  <span class="breadcrumb div">/</span>
+	<a href="<%= url '/find' %>" class="breadcrumb">Reservation</a>
+</div>
+<div>
+  The reservation with ID #<%= params[:id] %> could not be found.
+</div>

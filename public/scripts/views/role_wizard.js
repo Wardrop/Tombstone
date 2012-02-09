@@ -69,8 +69,8 @@ $( function () {
 		}
 	})
 	
-	Ts.RoleWizardViews.AddressForm = Ts.RoleWizardViews.GenericForm.extend({
-		template: _.template($('#role_wizard\\:create_address_form_template').html()),
+	Ts.RoleWizardViews.ContactForm = Ts.RoleWizardViews.GenericForm.extend({
+		template: _.template($('#role_wizard\\:create_contact_form_template').html()),
 		initialize: function (opts) {
       Ts.RoleWizardViews.GenericForm.prototype.initialize.apply(this, arguments);
 		}
@@ -90,15 +90,15 @@ $( function () {
     }
 	})
   
-  Ts.RoleWizardViews.AddressResults = Ts.RoleWizardViews.BasePage.extend({
-		template: _.template($('#role_wizard\\:address_results_template').html()),
+  Ts.RoleWizardViews.ContactResults = Ts.RoleWizardViews.BasePage.extend({
+		template: _.template($('#role_wizard\\:contact_results_template').html()),
 		initialize: function () {
       Ts.RoleWizardViews.BasePage.prototype.initialize.apply(this, arguments)
 		},
     render: function () {
       $(this.el).html(this.template())
-      this.collection.each(function (address) {
-        this.$('.blocks').append((new Ts.RoleWizardViews.AddressBlock({model: address, wizard: this.wizard})).render().el)
+      this.collection.each(function (contact) {
+        this.$('.blocks').append((new Ts.RoleWizardViews.ContactBlock({model: contact, wizard: this.wizard})).render().el)
       }, this)
 			return this
     }
@@ -125,9 +125,9 @@ $( function () {
     }
   })
   
-  Ts.RoleWizardViews.AddressBlock = Backbone.View.extend({
+  Ts.RoleWizardViews.ContactBlock = Backbone.View.extend({
     className: 'row_block clickable',
-    template: _.template($('#role_wizard\\:address_block_template').html()),
+    template: _.template($('#role_wizard\\:contact_block_template').html()),
     events: {
       'click' : 'doAction'
     },
@@ -136,12 +136,12 @@ $( function () {
       _.bindAll(this, 'doAction')
     },
     render: function () {
-      $(this.el).html(this.template({address: this.model.toJSON()}))
+      $(this.el).html(this.template({contact: this.model.toJSON()}))
 			return this
     },
     doAction: function (e) {
       var action = $(e.target).attr('action')
-      this.wizard.saveAddress(this.model)
+      this.wizard.saveContact(this.model)
       return false
     }
   })
@@ -210,9 +210,9 @@ $( function () {
       var createPersonForm = new Ts.RoleWizardViews.CreatePersonForm({model: this.model.get('role').get('person'), wizard: this}, 'savePerson')
       this.model.set({currentPage: createPersonForm})
     },
-    showCreateAddressForm: function () {
-      var addressForm = new Ts.RoleWizardViews.AddressForm({model: this.model.get('role').get('residential_address'), wizard: this})
-      this.model.set({currentPage: addressForm})
+    showCreateContactForm: function () {
+      var contactForm = new Ts.RoleWizardViews.ContactForm({model: this.model.get('role').get('residential_contact'), wizard: this})
+      this.model.set({currentPage: contactForm})
     },
     showRoleReview: function () {
       var roleReview = new Ts.RoleWizardViews.RoleReview({model: this.model.get('role'), wizard: this})
@@ -234,43 +234,43 @@ $( function () {
         data: person.toJSON()
       })
     },
-    findAddresses: function (person) {
-      var matches = new Ts.Addresses()
+    findContacts: function (person) {
+      var matches = new Ts.Contacts()
       var self = this
       this.model.set({isLoading: true})
       matches.fetch({
         success: function (results) {
-          var resultsView = new Ts.RoleWizardViews.AddressResults({collection: results, wizard: self})
+          var resultsView = new Ts.RoleWizardViews.ContactResults({collection: results, wizard: self})
           self.model.set({currentPage: resultsView, isLoading: false})
         },
         error: function () {
           self.model.set({isLoading: false})
           // TODO
         },
-        data: {party_id: person.get('id')}
+        data: {person_id: person.get('id')}
       })
     },
     savePerson: function (person) {
       if(person.get('id')) {
         this.model.get('role').set({person: person})
-        this.findAddresses(person)
+        this.findContacts(person)
       } else {
         hasErrors = person.validate()
         if(hasErrors) {
           this.showCreatePersonForm()
         } else {
-          this.showCreateAddressForm()
+          this.showCreateContactForm()
         }
       }
     },
-    saveAddress: function (address) {
-      if(address.get('id')) {
-        this.model.get('role').set({residential_address: address})
+    saveContact: function (contact) {
+      if(contact.get('id')) {
+        this.model.get('role').set({residential_contact: contact})
         this.showRoleReview()
       } else {
-        hasErrors = address.validate()
+        hasErrors = contact.validate()
         if(hasErrors) {
-          this.showCreateAddressForm()
+          this.showCreateContactForm()
         } else {
           this.showRoleReview()
         }

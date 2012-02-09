@@ -26,7 +26,7 @@ Ts.Person = Backbone.Model.extend({
   }
 })
 
-Ts.Address = Backbone.Model.extend({
+Ts.Contact = Backbone.Model.extend({
 	defaults: {
     id: undefined,
 		street_address: null,
@@ -54,8 +54,8 @@ Ts.Role = Backbone.Model.extend({
     id: undefined,
 		type: null,
 		person: new Ts.Person,
-		residential_address: new Ts.Address,
-		mailing_address: new Ts.Address,
+		residential_contact: new Ts.Contact,
+		mailing_contact: new Ts.Contact,
 	}
 })
 

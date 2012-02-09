@@ -1,0 +1,65 @@
+<%
+@document[:title] = "View Reservation ##{@reservation.id}"
+@document[:scripts] << 'views/form.js'
+@document[:head] << <<-HEAD
+  <script type="text/javascript">
+  $( function () {
+      var multibutton = new Ts.FormViews.Multibutton({name: 'action', options: ['Edit', 'Delete', 'Create Burial']})
+      $('#actions_section > div').append(multibutton.render().el)
+      
+      $('input[type=button]', multibutton.el).click(function (e) {
+        alert('This function is not currently implemented.')
+      })
+    })
+  </script>
+HEAD
+
+include_script_templates('form/')
+%>
+<div id="navigation_bar">
+	<a href="<%= url '/' %>" class="breadcrumb home"></a>
+  <span class="breadcrumb div">/</span>
+	<a href="<%= url '/find' %>" class="breadcrumb">Reservation</a>
+  <span class="breadcrumb div">/</span>
+	<a href="<%= url '/reservation/new' %>" class="breadcrumb">View</a>
+</div>
+<div class="rowed wide view">
+  <% @reservation.roles.each do |role| %>
+    <section>
+      <h2 class="underline"><%= role.type.capitalize %></h2>
+      <div id="reservee_section" class="section padded" name="reservee">
+        <%= erb :'partials/role_view', :locals => {role: role} %>
+      </div>
+    </section>
+  <% end %>
+  <section>
+    <h2 class="underline">Location</h2>
+    <div id="places_section" class="section padded" name="place">
+    <% @reservation.place.ancestors.reverse.push(@reservation.place).each do |place| %>
+      <div class="row">
+        <span><%= place.type.capitalize %></span>
+        <div><%= place.name %></div>
+      </div>
+    <% end %>
+    </div>
+  </section>
+  <section>
+    <h2 class="underline">Other Details</h2>
+    <div class="section padded">
+    	<label>
+        <span>Location Description</span>
+        <div><%= @reservation.location_description || '<small>none</small>' %></div>
+      </label>
+      <label>
+        <span>Comments</span>
+        <div><%= @reservation.comments || '<small>none</small>' %></div>
+      </label>
+    </div>
+  </section>
+  <section>
+    <h2 class="underline">Actions</h2>
+    <div id="actions_section" class="section padded">
+      <div class="inline_layout"></div>
+    </div>
+  </section>
+</div>

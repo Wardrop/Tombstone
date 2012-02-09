@@ -4,40 +4,28 @@ require_relative './models_spec_helper'
 module Tombstone
   describe Role do
     
-    it "has an associated mailing and residential address" do
-      role1 = Role.with_pk(1)
-      role1.residential_address.should be_a(Address)
-      role1.mailing_address.should be_a(Address)
-      role1.residential_address.should_not == role1.mailing_address
+    it "is configured correctly" do
+      role = Role.with_pk(1)
+      role.type.should == 'reservee'
     end
     
-    it "has an associated party" do
-      role1 = Role.with_pk(1)
-      role1.party.should be_a(Party)
+    it "has an associated person" do
+      role = Role.with_pk(1)
+      role.person.should be_a(Person)
     end
     
-    context "relationships" do
-      it "has relationships from" do
-        role3 = Role.with_pk(3)
-        role3.relationships_from.count.should == 1
-        role3.relationships_from.first.should be_a(Relationship)
-      end
-      
-      it "has relationships to" do
-        role3 = Role.with_pk(3)
-        role3.relationships_to.count.should == 1
-        role3.relationships_to.first.should be_a(Relationship)
-      end
-      
-      it "can provide all relationships" do
-        role3 = Role.with_pk(3)
-        role3.relationships.length.should == 2
-        role3.relationships.each do |rel|
-          rel.should be_a(Relationship)
-          rel.primary_role.should == role3
-        end
-      end
+    it "has an associated mailing and residential contact" do
+      role = Role.with_pk(1)
+      role.residential_contact.should be_a(Contact)
+      role.mailing_contact.should be_a(Contact)
+      role.residential_contact.should_not == role.mailing_contact
     end
+    
+    it "has many associated allocations" do
+      role = Role.with_pk(1)
+      role.allocations.should be_a(Array)
+      role.allocations[0].should be_a(Allocation)
+    end
+    
   end
-  
 end

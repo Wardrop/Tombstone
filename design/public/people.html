@@ -102,7 +102,7 @@
 			</div>
 		</div>
 	</script>
-  <script type="text/template" id="address_form_template">
+  <script type="text/template" id="contact_form_template">
 		<div class="section padded">
 			<label>
 				<span>Street Address</span>
@@ -134,7 +134,7 @@
 				<input type="text" name="secondary_phone" style="width: 24%;" />
 			</label>
       <div class="row">
-				<input type="submit" value="Save" action="saveAddress" />
+				<input type="submit" value="Save" action="saveContact" />
 			</div>
 		</div>
 	</script>
@@ -147,14 +147,14 @@
     <span><strong><%= person.given_name %> <%= person.surname %></strong></span>
     Todo: Display extra details such as date of birth, etc.
 	</script>
-  <script type="text/template" id="address_results_template">
-    <h3 class="underline">Addresses Found</h3>
+  <script type="text/template" id="contact_results_template">
+    <h3 class="underline">Contacts Found</h3>
 		<div class="blocks"></div>
-    <div style="text-align: right;"><input type="submit" value="Create New Address" action="showCreateAddressForm" /></div>
+    <div style="text-align: right;"><input type="submit" value="Create New Contact" action="showCreateContactForm" /></div>
 	</script>
-  <script type="text/template" id="address_block_template">
-    <span><strong><%= address.street_address %></strong></span>
-    <div><%= address.town %>, <%= address.state %> <%= address.postal_code %></div>
+  <script type="text/template" id="contact_block_template">
+    <span><strong><%= contact.street_address %></strong></span>
+    <div><%= contact.town %>, <%= contact.state %> <%= contact.postal_code %></div>
 	</script>
   <script type="text/template" id="role_review_template">
     <h3 class="underline">Review</h3>

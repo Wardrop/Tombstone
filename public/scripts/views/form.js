@@ -29,8 +29,8 @@ $( function () {
       clonedModel = new Ts.Role({
         type: this.role_type,
         person: this.model.get("person").clone(),
-        residential_address: this.model.get("residential_address").clone(),
-        mailing_address: this.model.get("mailing_address").clone()
+        residential_contact: this.model.get("residential_contact").clone(),
+        mailing_contact: this.model.get("mailing_contact").clone()
       })
       clonedModel.get("person").set({id: null})
       wizard = new Ts.RoleWizard({title: "Change "+this.role_name, role: clonedModel})
@@ -119,39 +119,71 @@ $( function () {
     events: {
       'change': 'selectPlace'
     },
-    initialize: function () {
+    initialize: function (opts) {
+      this.selected = opts.selected
       _.bindAll(this, 'selectPlace')
-      // this.collection.bind('change', this.render, this)
     },
     render: function () {
-      $(this.el).html(this.template({type: this.collection.first().get('type'), places: this.collection.toJSON()}))
+      $(this.el).html(this.template({type: this.collection.first().get('type'), places: this.collection.toJSON(), selected: this.selected}))
       return this
     },
+    renderPlaces: function (places, selected) {
+      var view = (new Ts.FormViews.PlacesView({collection: places, selected: selected}))
+      $(this.el).parent().append(view.render().el)
+    },
     selectPlace: function (e) {
-      var placeId = $(e.target).children(':selected').attr('value')
+      var target = $(e.target)
+      var placeId = target.children(':selected').attr('value')
       if(placeId) {
-        var childPlaces = new Ts.Places()
         $(this.el).nextAll().remove()
-        $(this.el).append('<div class="loading" />')
-        childPlaces.fetch({
-          success: _.bind(function (results) {
-            if(results.length > 0) {
-              this.$('select').attr('name', '')
-              var childPlacesView = new Ts.FormViews.PlacesView({collection: results})
-              $(this.el).parent().append(childPlacesView.render().el)
-            } else {
-              this.$('select').attr('name', 'place')
-            }
-            this.$('.loading').remove()
-          }, this),
-          error: function () {
-            // TODO
-          },
-          data: {parent_id: placeId}
-        })
+        if(target.data('placeType') == 'section') {
+          this.nextAvailable(placeId)
+        } else {
+          this.loadPlaceList(placeId)
+        }
       } else {
         $(this.el).nextAll().remove()
       }
+    },
+    loadPlaceList: function (parent_id) {
+      $(this.el).append('<div class="loading" />')
+      $.ajax('/places/'+parent_id, {
+        success: _.bind(function (data) {
+          var places = new Ts.Places(data)
+          if(places.length > 0) {
+            this.$('select').attr('name', '')
+            var childPlacesView = new Ts.FormViews.PlacesView({collection: places})
+            $(this.el).parent().append(childPlacesView.render().el)
+          } else {
+            this.$('select').attr('name', 'place')
+          }
+        }, this),
+        error: function () {
+          // TODO
+          alert('Some went wrong!')
+        },
+        complete: _.bind(function () {
+          this.$('.loading').remove()
+        }, this)
+      })
+    },
+    nextAvailable: function (parent_id) {
+      $(this.el).append('<div class="loading" />')
+      $.ajax('/places/next_available/'+parent_id, {
+        type: 'GET',
+        success: _.bind(function (data) {
+          _.each(data, function (place) {
+            this.renderPlaces(new Ts.Places(place.siblings), place.id)
+          }, this)
+        }, this),
+        error: function (data) {
+          // TODO
+          alert('Some went wrong!')
+        },
+        complete: _.bind(function () {
+          this.$('.loading').remove()
+        }, this)
+      })
     }
   })
 })
