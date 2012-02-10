@@ -8,7 +8,8 @@ module Tombstone
     enable :sessions
     
     configure do
-      set :config, File.read(File.expand_path('../config.rb', __FILE__))
+      set :config, eval(File.read(File.expand_path('../config.rb', __FILE__)))
+      Tombstone::Permissions.map = config[:roles]
       # use Rack::Session::Pool, :expire => 900
     end
 
@@ -23,6 +24,7 @@ module Tombstone
           'vendor/underscore.js',
           'vendor/backbone.js',
           'helpers.js',
+          'common.js',
           'models.js',
           'collections.js'
         ]

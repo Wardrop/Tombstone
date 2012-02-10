@@ -1,3 +1,5 @@
+Sequel::Model.plugin :validation_helpers
+
 Sequel::Model.db = case Padrino.env
   when :development then
     Sequel.connect({

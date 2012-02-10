@@ -1,6 +1,6 @@
 module Tombstone
   App.helpers do
-    
+
     def include_script_views(*names)
       names.each do |name|
         @document[:scripts] << "views/#{name}.js"

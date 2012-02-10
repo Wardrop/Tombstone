@@ -10,9 +10,6 @@ db = Sequel::Model.db
 db.drop_table(*db.tables)
 Sequel::Migrator.apply(db, File.join(current_dir, '/../../db/migrations'))
 
-# Setup Permissions object
-# Tombstone::Permissions.map = SPEC_CONFIG[:roles]
-
 # Pre-populate the database with test data
 db[:person] << {title: 'Mr', surname: 'Fickle', given_name: 'Roger', middle_initials: 'D', gender: 'Male', date_of_birth: Date.parse('09/03/1934'), date_of_death: nil}
 db[:person] << {title: 'Mr', surname: 'Bunson', given_name: 'Sam', middle_initials: 'F', gender: 'Male', date_of_birth: Date.parse('27/11/1971'), date_of_death: nil}

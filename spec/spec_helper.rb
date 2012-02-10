@@ -5,8 +5,6 @@ require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
 #   conf.include Rack::Test::Methods
 # end
 
-p 'wWWWWWWwwwwWWW'
-
 # def app
 #   ##
 #   # You can handle all padrino applications using instead:

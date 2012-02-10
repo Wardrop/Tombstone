@@ -10,6 +10,17 @@ module Tombstone
       left_join(Place.group(:parent_id).select{[count(parent_id).as(child_count), :parent_id___child_parent_id]}, :child_parent_id => :id)
     end
     
+    class << self
+      def valid_states
+        ['available', 'unavailable']
+      end
+    end
+    
+    def validate
+      errors.add(:state, "must be one of: #{self.class.valid_states.join(', ')}") if !self.class.valid_states.include? state
+      validates_min_length 2, :type
+    end
+    
     def ancestors(upto = 0)
       column_string = self.class.dataset.columns.map { |v| "[#{v}]"}.join(', ')
       aliased_column_string = self.class.dataset.columns.map { |v| "p.[#{v}]"}.join(', ')

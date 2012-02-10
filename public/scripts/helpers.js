@@ -57,7 +57,11 @@ _.extend(Backbone.Model.prototype, {
   };
 })(jQuery);
 
-function capitalize(string)
-{
-    return string.charAt(0).toUpperCase() + string.slice(1);
+
+Ts.capitalize = function (string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+Ts.toTitleCase = function (str) {
+  return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }

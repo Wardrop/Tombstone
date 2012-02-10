@@ -95,8 +95,8 @@ $( function () {
     },
     hideList: function () {
       this.$('ul').css('display', 'none')
-			$(this.el).removeClass('top bottom');
-      $(document).unbind('click', this.hideList);
+			$(this.el).removeClass('top bottom')
+      $(document).unbind('click', this.hideList)
 			$(window).unbind('blur', this.hideList)
 			$(document).unbind('keydown', this.keydownHideEvent)
     },
@@ -136,6 +136,7 @@ $( function () {
       var placeId = target.children(':selected').attr('value')
       if(placeId) {
         $(this.el).nextAll().remove()
+        this.$('.loading').remove()
         if(target.data('placeType') == 'section') {
           this.nextAvailable(placeId)
         } else {
@@ -146,23 +147,21 @@ $( function () {
       }
     },
     loadPlaceList: function (parent_id) {
+      this.lastRequest && this.lastRequest.abort()
       $(this.el).append('<div class="loading" />')
-      $.ajax('/place/children/'+parent_id, {
+      this.lastRequest = $.ajax('/place/children/'+parent_id, {
 				type: 'GET',
 				dataType: 'json',
-        success: _.bind(function (data) {
+        success: _.bind(function (data, textStatus, jqXHR) {
           var places = new Ts.Places(data)
           if(places.length > 0) {
-            this.$('select').attr('name', '')
             var childPlacesView = new Ts.FormViews.PlacesView({collection: places})
             $(this.el).parent().append(childPlacesView.render().el)
-          } else {
-            this.$('select').attr('name', 'place')
           }
         }, this),
-        error: function () {
+        error: function (jqXHR, textStatus, errorThrown) {
           // TODO
-          alert('Some went wrong!')
+          if(textStatus != 'abort') alert('Some went wrong!')
         },
         complete: _.bind(function () {
           this.$('.loading').remove()
@@ -170,18 +169,19 @@ $( function () {
       })
     },
     nextAvailable: function (parent_id) {
+      this.lastRequest && this.lastRequest.abort()
       $(this.el).append('<div class="loading" />')
-      $.ajax('/place/next_available/'+parent_id, {
+      this.lastRequest = $.ajax('/place/next_available/'+parent_id, {
         type: 'GET',
 				dataType: 'json',
-        success: _.bind(function (data) {
+        success: _.bind(function (data, textStatus, jqXHR) {
           _.each(data, function (place) {
             this.renderPlaces(new Ts.Places(place.siblings), place.id)
           }, this)
         }, this),
-        error: function (data) {
+        error: function (jqXHR, textStatus, errorThrown) {
           // TODO
-          alert('Some went wrong!')
+          if(textStatus != 'abort') alert('Some went wrong!')
         },
         complete: _.bind(function () {
           this.$('.loading').remove()
@@ -189,4 +189,34 @@ $( function () {
       })
     }
   })
+  
+  // $('[name='+field+']').addClass('field_error')
+  
+  // Ts.FormViews.Multibutton = Backbone.View.extend({
+  //   tagName: 'ul',
+  //   className: 'validation_errors',
+  //   initialize: function (errors) {
+  //     this.errors = errors
+  //     
+  //     var errorsList = $('<ul class="validation_errors" />')
+  //     _.each(response.form_errors, function (value, field) {
+  //       $('[name='+field+']').addClass('field_error')
+  //       if(value instanceof Array == false) value = [value]
+  //       _.each(value, function (v) {
+  //         errorsList.append('<li>'+Ts.toTitleCase(field.split('_').join(' '))+' '+v+'.</li>')
+  //       })
+  //     })
+  //   },
+  //   render: function () {
+  //     
+  //     if(value instanceof Array == false) value = [value]
+  //     _.each( function (field, errors) {
+  //       _.each(errors, function (error) {
+  //         errorsList.append('<li>'+Ts.toTitleCase(field.split('_').join(' '))+' '+error+'.</li>')
+  //       })
+  //       $(this.el)
+  //     })
+  //     
+  //   }
+  // })
 })

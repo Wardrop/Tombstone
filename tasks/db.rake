@@ -1,29 +1,19 @@
-require 'logger'
-
-ENVIRONMENT = ENV['RACK_ENV'] ? ENV['RACK_ENV'] : :development
-CONFIG = eval(File.read('./config.rb')).for_environment(ENVIRONMENT)
+db = Sequel::Model.db
+db.loggers << Logger.new(STDOUT)
 
 namespace :db do
-  require 'sequel'
   
   desc "Recreate database schema"
   task :recreate do
-    db = Sequel.connect({:adapter => 'tinytds'}.merge(CONFIG[:db]))
-    db.loggers << Logger.new(STDOUT)
-  
     Sequel.extension :migration 
-    db.loggers << Logger.new(STDOUT)
-    
+
     # Recreate the database tables
     db.drop_table(*db.tables)
-    Sequel::Migrator.apply(db, File.join(File.dirname(__FILE__), '/db/migrations'))
+    Sequel::Migrator.apply(db, File.expand_path('../../db/migrations', __FILE__))
   end
   
   desc "Populates the database with dummy data"
   task :populate do
-    db = Sequel.connect({:adapter => 'tinytds'}.merge(CONFIG[:db]))
-    db.loggers << Logger.new(STDOUT)
-    
     db.execute("EXEC sp_MSForEachTable 'TRUNCATE TABLE ?'")
     
     db[:person] << {title: 'Mr', surname: 'Fickle', given_name: 'Roger', middle_initials: 'D', gender: 'Male', date_of_birth: Date.parse('09/03/1934'), date_of_death: nil}

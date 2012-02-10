@@ -195,10 +195,8 @@ $( function () {
     },
     renderLoader: function () {
       if(this.model.get('isLoading')) {
-        // this.$('.body').css('display', 'none')
         this.$('.loading').css('display', '')
       } else {
-        // this.$('.body').css('display', '')
         this.$('.loading').css('display', 'none')
       }
     },
@@ -235,10 +233,10 @@ $( function () {
       })
     },
     findContacts: function (person) {
-      var matches = new Ts.Contacts()
+      var contacts = new Ts.Contacts()
       var self = this
       this.model.set({isLoading: true})
-      matches.fetch({
+      contacts.fetch({
         success: function (results) {
           var resultsView = new Ts.RoleWizardViews.ContactResults({collection: results, wizard: self})
           self.model.set({currentPage: resultsView, isLoading: false})
