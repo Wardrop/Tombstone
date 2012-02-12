@@ -3,6 +3,7 @@ module Tombstone
   class Allocation < BaseModel
     set_primary_key [:id, :type]
     unrestrict_primary_key
+    
     many_to_one :place, :class => :'Tombstone::Place', :key => :place_id
     many_to_many :roles, :join_table => :role_association, :left_key => [:allocation_id, :allocation_type], :right_key => :role_id, :class => :'Tombstone::Role'
     many_to_one :funeral_director, {:key => :funeral_director_id, :class => :'Tombstone::FuneralDirector'}
@@ -14,7 +15,11 @@ module Tombstone
     end
     
     def validate
-      errors.add(:place, 'must be associated with a place/plot') if !place
+      validates_presence :place
+      unless place.allocations.reject{ |v| v.type != 'reservation' }.empty?
+        errors.add(:place, "is already associated with another allocation of the same type (#{type})")
+      end
+      errors.add(:place, 'must not have any children') if place.children.length >= 1
       validates_min_length 2, :status
       errors.add(:status, "must be one of: #{self.class.valid_states.join(', ')}") if !status || status.empty? || !self.class.valid_states.include?(status)
     end
@@ -38,11 +43,6 @@ module Tombstone
   
   class Reservation < Allocation
     set_dataset dataset.filter(:type => 'reservation')
-    
-    def validate
-      super
-      # errors.add(:reservation, 'cannot be empty') if !name || name.empty?
-    end
     
     class << self      
       def with_pk(id)

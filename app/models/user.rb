@@ -1,4 +1,3 @@
-require_relative '../lib/model_permissions'
 
 module Tombstone
   class User < BaseModel

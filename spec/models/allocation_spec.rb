@@ -28,12 +28,12 @@ module Tombstone
     
     it "auto-increments ID if none given" do
       max_id = Allocation.order(:id.desc).first.id
-      new_alloc = Allocation.create({type: 'reservation'})
+      new_alloc = Allocation.new.set(type: 'reservation').save(:validate => false)
       new_alloc.id.should == max_id+1
     end
     
     it "allows ID to be set manually" do
-      new_alloc = Allocation.create({id: 65, type: 'reservation'})
+      new_alloc = Allocation.new.set(id: 65, type: 'reservation').save(:validate => false)
       new_alloc.id.should == 65
     end
     

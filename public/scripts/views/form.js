@@ -8,9 +8,9 @@ $( function () {
       'click a.add' : 'addRole',
       'click .actions a.delete' : 'removeRole'
     },
-    initialize: function (opts) {
-      this.role_name = opts.role_name
-      this.role_type = opts.role_type
+    initialize: function () {
+      this.role_type = this.options.role_type
+			this.role_name = this.options.role_name || this.role_type.split('_').join(' ').toTitleCase()
       _.bindAll(this, 'render', 'addRole', 'changeRole', 'onCompleteCallback')
     },
     render: function () {
@@ -61,12 +61,11 @@ $( function () {
       'click span.dropdown_button' : 'toggleList',
       'click ul input' : 'onSelectListItem'
     },
-    initialize: function (opts) {
-      this.opts = opts
+    initialize: function () {
       _.bindAll(this, 'hideList', 'showList', 'keydownHideEvent')
     },
     render: function () {
-      $(this.el).html(this.template({name: this.opts.name, options: this.opts.options}))
+      $(this.el).html(this.template({name: this.options.name, options: this.options.options}))
       var list = this.$('ul')
       list.css('display', 'none')
       this.selectButton(list.find('input:first'))
@@ -119,12 +118,17 @@ $( function () {
     events: {
       'change': 'selectPlace'
     },
-    initialize: function (opts) {
-      this.selected = opts.selected
+    initialize: function () {
+      this.selected = this.options.selected
       _.bindAll(this, 'selectPlace')
     },
     render: function () {
-      $(this.el).html(this.template({type: this.collection.first().get('type'), places: this.collection.toJSON(), selected: this.selected}))
+      $(this.el).html(this.template({
+					type: this.collection.first().get('type'),
+					places: this.collection.toJSON(),
+					selected: this.selected
+			}))
+			setTimeout("this.$('select').focus()")
       return this
     },
     renderPlaces: function (places, selected) {
@@ -189,34 +193,104 @@ $( function () {
       })
     }
   })
-  
-  // $('[name='+field+']').addClass('field_error')
-  
-  // Ts.FormViews.Multibutton = Backbone.View.extend({
-  //   tagName: 'ul',
-  //   className: 'validation_errors',
-  //   initialize: function (errors) {
-  //     this.errors = errors
-  //     
-  //     var errorsList = $('<ul class="validation_errors" />')
-  //     _.each(response.form_errors, function (value, field) {
-  //       $('[name='+field+']').addClass('field_error')
-  //       if(value instanceof Array == false) value = [value]
-  //       _.each(value, function (v) {
-  //         errorsList.append('<li>'+Ts.toTitleCase(field.split('_').join(' '))+' '+v+'.</li>')
-  //       })
-  //     })
-  //   },
-  //   render: function () {
-  //     
-  //     if(value instanceof Array == false) value = [value]
-  //     _.each( function (field, errors) {
-  //       _.each(errors, function (error) {
-  //         errorsList.append('<li>'+Ts.toTitleCase(field.split('_').join(' '))+' '+error+'.</li>')
-  //       })
-  //       $(this.el)
-  //     })
-  //     
-  //   }
-  // })
+
+	Ts.FormViews.AllocationForm = Backbone.View.extend({
+  	events: {
+			'click #actions_section input[type=button]' : 'submit'
+		},
+		initialize: function () {
+			this.roles = this.options.roles
+			this.loader = $('<div class="loading" />')
+			_.bindAll(this, 'submit')
+		},
+		submit: function (e) {
+			var data = this.formData()
+			data.status = $(e.currentTarget).val()
+			this.loader.attr('class', 'loading').insertAfter('#actions_section .multibutton')
+			this.hideFormErrors()
+			if(this.lastRequest && this.lastRequest.state() == 'pending') {
+				alert('The last submit operation has not completed. Please wait...')
+				return false
+			}
+			console.log(data)
+      this.lastRequest = $.ajax(this.el.action, {
+        type: 'POST',
+        data: data,
+        success: _.bind( function (data, textStatus, jqXHR) {
+          console.log(data)
+          if(data.success == false) {
+            this.showFormErrors(data.form_errors)
+          } else {
+            this.loader.attr('class', 'success')
+						// window.location = data.nextUrl
+          }
+        }, this),
+        error: function (jqXHR, textStatus, errorThrown) {
+					// TODO
+          if(textStatus != 'abort') alert('Some went wrong!')
+				},
+        complete: _.bind( function () {
+          this.loader.detach()
+        }, this)
+      })
+		},
+		formData: function () {
+			var data = $(this.el).serializeObject()
+			data.what = null
+      _.each(this.roles, function (role, name) {
+        if (role.model) {
+          data[name] = role.model.recursiveToJSON()
+        }
+      })
+			return data
+		},
+		// field.split('_').join(' ')).toTitleCase()
+		showFormErrors: function (errors) {
+			var container = $('<ul class="validation_errors" />')
+			// var iterateErrors = function (prefix, errors) {
+			// 				_.each(errors, function (error, field) {
+			// 				  if (error.constructor == Array) {
+			// 						_.each(error, function (message) {
+			// 							errorObj = {}; errorObj[field] = message
+			// 							iterateErrors(((prefix) ? prefix+' -> ' : '')+field.split('_').join(' ').toTitleCase(),  errorObj)
+			// 						})
+			// 					} else if (error.constructor == Object) {
+			// 						iterateErrors(prefix, error)
+			// 					} else {
+			// 						container.append('<li>'+prefix+' '+error+'.</li>')
+			// 					}
+			// 				})
+			// 			}
+			var iterateErrors = function (ul, errors) {
+				_.each(errors, function (error, field) {
+				  if (error.constructor == Array) {
+						_.each(error, function (message) {
+							errorObj = {}; errorObj[field] = message
+							ul.append('<li>'+field.split('_').join(' ').toTitleCase()+'</li>')
+							ul.append(iterateErrors($('<ul />'), errorObj))
+						})
+					} else if (error.constructor == Object) {
+						ul.append(iterateErrors($('<ul />'), error))
+					} else {
+						ul.append('<li>'+error+'.</li>')
+					}
+				})
+				return ul
+			}
+			
+			iterateErrors(container, errors)
+			
+      _.each(errors, function (value, field) {
+        this.$('[name='+field+']').addClass('field_error')
+      })
+
+      container.css({display: 'none'}).prependTo(this.el).slideDown(300)
+			this.$(':first').scrollTo(300, -10);
+		},
+		hideFormErrors: function () {
+			this.$('.validation_errors').remove()
+      this.$('[name]').removeClass('field_error')
+		}
+	})
+
 })

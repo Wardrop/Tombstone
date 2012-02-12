@@ -16,86 +16,55 @@ module Tombstone
     end
 
     post :new, :provides => :json do
-      response = {success: false, form_errors: {}}
-      response[:form_errors]['place'] = "must be selected" if params['place'].reject { |v| v.empty? }.empty?
-      
-      Allocation.db.transaction {
+      form_errors = Sequel::Model::Errors.new
+      response = {success: false, nextUrl: nil, form_errors: form_errors}
+
+      Reservation.db.transaction {
         roles = {}
-        ['reservee', 'applicant', 'next_of_kin'].each do |name|
-          data = params[name]
-          if data.nil? || !data.is_a?(Hash)
-            response[:form_errors][name] = "must be added"
+        [:reservee, :applicant, :next_of_kin].each do |role_name|
+          role_data = params[role_name.to_s]
+          if role_data.nil? || !role_data.is_a?(Hash)
+            form_errors.add(role_name, "must be added")
           else
-            if data['person']['id']
-              person = Person[data['person']['id']]
-              if person.nil?
-                response[:form_errors][name] = "does not exist"
-                raise Sequel::Rollback
-              end
-            else
-              person = Person.new.set(data['person'])
-              if person.valid?
-                person.save
-              else
-                response[:form_errors][name] = person.errors
-                raise Sequel::Rollback
-              end
-            end
-
-            if data['residential_contact']['id']
-              res_contact = Contact[data['residential_contact']['id']]
-              if res_contact.nil?
-                response[:form_errors][name] = "for the selected '#{name.demodulize.titlecase}' does not exist"
-                raise Sequel::Rollback
-              end
-            else
-              res_contact = Contact.new.set(data['residential_contact'])
-              if res_contact.valid?
-                res_contact.save
-              else
-                response[:form_errors][name] = res_contact.errors
-                raise Sequel::Rollback
-              end
-            end
-
-            role = Role.new.set({type: name, person: person, residential_contact: res_contact})
-            if role.valid?
-              role.save
-              roles[name] = role
-            else
-              response[:form_errors][name] = role.errors
-              raise Sequel::Rollback
+            role_errors = Sequel::Model::Errors.new
+            begin
+              roles[role_name] = Role.create_from(role_data, role_errors)
+            rescue Sequel::Rollback => e
+              form_errors.add(role_name, role_errors)
             end
           end
-          
         end
 
-        place = Place[params['place'][-1]]
+        if !params['place'].is_a?(Hash) || params['place'].reject { |v| v.empty? }.empty?
+          form_errors.add(:place, "must be selected")
+          raise Sequel::Rollback
+        end
+        
+        place = Place.with_pk(params['place'][-1])
         if place.nil?
-          response[:form_errors]['place'] = "does not exist"
-          raise Sequel::Rollback
-        elsif place.allocations.empty? == false && place.allocations.reject{ |v| v.type != 'reservation' }.empty? == false
-          response[:form_errors]['place'] = "is already associated with another reservation"
+          form_errors.add(:place, "does not exist")
           raise Sequel::Rollback
         end
 
-        allocation = Allocation.new.set({type: 'reservation', place: place})
-        if allocation.valid?
-          allocation.save
+        reservation = Reservation.new.set({
+          place: place,
+          status: params[:status],
+          location_description: params[:location_description],
+          comments: params[:comments]
+        })
+        if reservation.valid?
+          reservation.save
         else
-          response[:form_errors].merge!(allocation.errors)
+          form_errors.merge!(reservation.errors)
           raise Sequel::Rollback
         end
 
-        roles.each do |type, role|
-          role.add_allocation(allocation)
-        end
-
-        response[:success] = true
+        roles.each { |type, role| role.add_allocation(reservation) }
+        response[:nextUrl] = url(:view, :id => reservation.id)
       }
-
+      response[:success] = true if response[:form_errors].empty?
       response.to_json
     end
-    
+
   end
 end

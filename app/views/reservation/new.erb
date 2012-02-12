@@ -1,65 +1,25 @@
 <%
 @document[:title] = 'Create Reservation'
 content_for :head do
-  <<-HEAD
-    <script type="text/javascript">
-      $( function () {
-        var roles = {}
-        roles.reservee = new Ts.FormViews.RoleBlock({role_name: 'Reservee', role_type: 'reservee', el: $('#reservee_section')})
-        roles.reservee.render()
-        roles.applicant = new Ts.FormViews.RoleBlock({role_name: 'Applicant', role_type: 'applicant', el: $('#applicant_section')})
-        roles.applicant.render()
-        roles.next_of_kin = new Ts.FormViews.RoleBlock({role_name: 'Next of Kin', role_type: 'next_of_kin', el: $('#next_of_kin_section')})
-        roles.next_of_kin.render()
-    
-        var rootPlaces = new Ts.Places(#{@root_places.to_json})
-        $('#places_section').append(new Ts.FormViews.PlacesView({collection: rootPlaces}).render().el)
-      
-        var multibutton = new Ts.FormViews.Multibutton({name: 'submit', options: ['Submit', 'Approve', 'Inter', 'Save']})
-        $('#actions_section > div').append(multibutton.render().el)
-      
-        $('input[type=button]', multibutton.el).click(function (e) {
-          var data = $('#reservation_form').serializeObject()
-          data.action = $(e.currentTarget).val()
-          _.each(roles, function (role, name) {
-            if(role.model) {
-              data[name] = role.model.recursiveToJSON()
-            }
-          })
-        
-          $('#reservation_form > .validation_errors').remove()
-          $('#reservation_form [name]').removeClass('field_error')
-          $(multibutton.el).after('<div class="loading" />')
-        
-          $.ajax('#{url "/reservation/new"}', {
-            type: 'POST',
-            data: data,
-            success: function (response) {
-              console.log(response)
-              if(response.success== false) {
-                var errorsList = $('<ul class="validation_errors" />')
-                _.each(response.form_errors, function (value, field) {
-                  $('[name='+field+']').addClass('field_error')
-                  if(value instanceof Array == false) value = [value]
-                  _.each(value, function (v) {
-                    errorsList.append('<li>'+Ts.toTitleCase(field.split('_').join(' '))+' '+v+'.</li>')
-                  })
-                })
-              
-                $('#reservation_form').prepend(errorsList)
-              } else {
-                $(multibutton.el).next('.loading').attr('class', 'success')
-              }
-            },
-            error: function () { console.log('Error'); },
-            complete: function () {
-              $(multibutton.el).next('.loading').remove()
-            }
-          })
-        })
+%>
+  <script type="text/javascript">
+    $( function () {
+      var roles = {}
+      _.each({reservee: 'Reservee', applicant: 'Applicant', next_of_kin: 'Next of Kin'}, function (name, role) {
+        roles[role] = new Ts.FormViews.RoleBlock({role_type: role, role_name: name, el: $('#'+role+'_section')})
+        roles[role].render()
       })
-    </script>
-  HEAD
+      
+      var rootPlaces = new Ts.Places(<%= @root_places.to_json %>)
+      $('#places_section').append(new Ts.FormViews.PlacesView({collection: rootPlaces}).render().el)
+      
+      var multibutton = new Ts.FormViews.Multibutton({name: 'submit', options: ['Submit', 'Approve', 'Inter', 'Save']})
+      $('#actions_section > div').append(multibutton.render().el)
+    
+      new Ts.FormViews.AllocationForm({el: $('#reservation_form'), roles: roles})
+    })
+  </script>
+<%
 end
 
 include_script_views('role_wizard', 'form')
@@ -71,7 +31,7 @@ include_script_views('role_wizard', 'form')
   <span class="breadcrumb div">/</span>
 	<a href="<%= url '/reservation/new' %>" class="breadcrumb">Create</a>
 </div>
-<form id="reservation_form" class="rowed">
+<form id="reservation_form" class="rowed" action="<%= url '/reservation/new' %>">
   <section>
     <h2 class="underline">Reserved For</h2>
     <div id="reservee_section" class="section padded" name="reservee"></div>

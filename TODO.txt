@@ -1,5 +1,5 @@
 * Add email to contact details form.
-* Define consistant terminology for reservee, interment/burial, 
+* Define consistent terminology for reservee, interment/burial, 
 * Fix issues with the back behaviour of role wizard.
   - Going to the review page, pressing back, selecting the same address, and selecting back again, causes nothing to happen.
     If back is then pressed again, jumps back to people page.
@@ -8,6 +8,7 @@
 * In location drop-down's on allocation form, check for plot availability (status = available, unit associated with any places)
 * Indicate which form fields are required.
 * Add hooks to models for cleaning and formatting data, e.g. capitalizing names, lower casing gender, etc.
+* Add validation rules to specs.
   
     
 Refactor Oppurtunities

@@ -3,8 +3,8 @@ db.loggers << Logger.new(STDOUT)
 
 namespace :db do
   
-  desc "Recreate database schema"
-  task :recreate do
+  desc "Create/recreate database schema"
+  task :create do
     Sequel.extension :migration 
 
     # Recreate the database tables

@@ -34,6 +34,7 @@ input[type=submit], input[type=reset], input[type=button], button {
 }
 input[type=checkbox], input[type=radio] {
 	vertical-align: middle !important;
+	margin: auto 0.4em;
 }
 
 form {
@@ -655,6 +656,9 @@ a.row_button:hover {
   list-style: outside disc;
   margin-left: 14px;
   padding: 3px 0;
+}
+.validation_errors ul {
+	margin-left: 20px;
 }
 
 /* LEGACY */

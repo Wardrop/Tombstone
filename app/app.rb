@@ -17,17 +17,11 @@ module Tombstone
       set :log, Logger.new(STDOUT)
     end
     
+    
     before do
       @document = {
         title: 'Tombstone',
-        scripts: [
-          'vendor/underscore.js',
-          'vendor/backbone.js',
-          'helpers.js',
-          'common.js',
-          'models.js',
-          'collections.js'
-        ]
+        scripts: []
       }
     end
 

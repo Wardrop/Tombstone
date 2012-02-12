@@ -1,4 +1,3 @@
-require_relative './permissions.rb'
 
 module Tombstone
   module ModelPermissions

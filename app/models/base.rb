@@ -1,7 +1,20 @@
-require 'sequel'
+class Sequel::Model::Errors
+  alias_method :add_one, :add
+  
+  def add(key, *values)
+    values.each{ |val| add_one(key, val) }
+  end
+end
 
 module Tombstone
   class BaseModel < Class.new(Sequel::Model)
+    set_restricted_columns :modified_by, :modified_at, :created_by, :created_at
+    
+    def validate
+      datetime_columns = db_schema.select { |col, info| info[:type] == :datetime }.map { |k,v| k }
+      validates_not_string datetime_columns
+    end
+    
     remove_instance_variable(:@dataset)
     def self.implicit_table_name
       underscore(demodulize(name)).to_sym

@@ -5,6 +5,11 @@
   <link rel="stylesheet" href="<%= url "/reset.css" %>" />
   <link rel="stylesheet" href="<%= url "/style.css" %>" />
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-1.7.1.min.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/vendor/underscore.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/vendor/backbone.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/common.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/models.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/collections.js' %>"></script>
   <% @document[:scripts].each do |file| %>
     <script type="text/javascript" src="<%= url "/scripts/#{file}" %>"></script>
   <% end %>

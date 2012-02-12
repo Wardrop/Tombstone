@@ -2,8 +2,8 @@ module Tombstone
   App.controller :person do
 
     get :all, :provides => :json do
-      filter = params.reject{ |k,v| !v || v.empty? || v == 'null'}.symbolize_keys!
-      Person.filter(filter).naked.all.to_json
+      filter_hash = params.reject{ |k,v| !v || v.empty? }.symbolize_keys!
+      Person.filter(filter_hash).naked.all.to_json
     end
 
     get :contacts, :provides => :json do
