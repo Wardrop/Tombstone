@@ -51,7 +51,8 @@ end
   <section id="search_results">
     <h3 class="underline">Results</h3>
     <div class="list_rows padded">
-    <% @records.each do |row| %>
+    <% @records.each do |row|
+      begin %>
       <div class="clickable">
         <div class="summary">
           Reservation - <%= row.place.name %> - <%= row.roles_by_type('reservee')[0].person.given_name %> <%= row.roles_by_type('reservee')[0].person.surname %>
@@ -66,7 +67,7 @@ end
             </div>
             <div class="row">
               <span>Status:</span>
-              <div><%= row.status.capitalize %></div>
+              <div><%= row.status.demodulize.titleize %></div>
             </div>
           </div>
           <div class="right rowed">
@@ -79,6 +80,9 @@ end
           </div>
         </div>
       </div>
+      <% rescue => e %>
+        Error encountered while rendering record.
+      <% end %>
     <% end %>
   </section>
 </div>

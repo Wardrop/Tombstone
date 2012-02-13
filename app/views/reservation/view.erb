@@ -4,7 +4,7 @@ content_for :head do
   <<-HEAD
     <script type="text/javascript">
     $( function () {
-        var multibutton = new Ts.FormViews.Multibutton({name: 'action', options: ['Edit', 'Delete', 'Create Burial']})
+        var multibutton = new Ts.FormViews.Multibutton({name: 'action', values: {edit: 'Edit', delete: 'Delete', create_burial: 'Create Burial'}})
         $('#actions_section > div').append(multibutton.render().el)
       
         $('input[type=button]', multibutton.el).click(function (e) {
@@ -27,7 +27,7 @@ include_script_views('form')
 <div class="rowed wide view">
   <% @reservation.roles.each do |role| %>
     <section>
-      <h2 class="underline"><%= role.type.capitalize %></h2>
+      <h2 class="underline"><%= role.type.demodulize.titleize %></h2>
       <div id="reservee_section" class="section padded" name="reservee">
         <%= partial 'partials/role_view', :locals => {role: role} %>
       </div>
@@ -38,7 +38,7 @@ include_script_views('form')
     <div id="places_section" class="section padded" name="place">
     <% @reservation.place.ancestors.reverse.push(@reservation.place).each do |place| %>
       <div class="row">
-        <span><%= place.type.capitalize %></span>
+        <span><%= place.type.demodulize.titleize %></span>
         <div><%= place.name %></div>
       </div>
     <% end %>

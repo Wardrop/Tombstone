@@ -23,10 +23,15 @@
     <label class="row">
   		<span>State</span>
   		<select name="state">
-        <option>Please select...</option>
-        <option value="Queensland">Queensland</option>
-        <option value="ACT">ACT</option>
-        <option value="New South Whales">New South Whales</option>
+        <option value=""></option>
+        <option>ACT</option>
+        <option>NT</option>
+        <option>NSW</option>
+        <option>QLD</option>
+        <option>SA</option>
+        <option>TAS</option>
+        <option>VIC</option>
+        <option>WA</option>
       </select>
   	</label>
     <label>
@@ -49,6 +54,16 @@
 
 <script type="text/template" id="role_wizard:create_person_form_template">
   <div class="section padded">
+    <label>
+  		<span>Title</span>
+  		<select type="text" name="title">
+        <option value=""></option>
+        <option>Mr</option>
+        <option>Ms</option>
+        <option>Mrs</option>
+        <option>Miss</option>
+      </select>
+  	</label>
   	<label>
   		<span>Given Name</span>
   		<input type="text" name="given_name" style="width: 60%;" />
@@ -65,7 +80,7 @@
   	</div>
     <label>
   		<span>Date of Birth</span>
-  		<input type="text" name="date_of_birth" />
+  		<input type="date" name="date_of_birth" />
   	</label>
   	<div class="row">
   		<input type="submit" value="Save" action="savePerson" />
@@ -75,6 +90,16 @@
 
 <script type="text/template" id="role_wizard:find_person_form_template">
   <div class="section padded">
+    <label>
+  		<span>Given Name</span>
+      <select type="text" name="title">
+        <option value=""></option>
+        <option>Mr</option>
+        <option>Ms</option>
+        <option>Mrs</option>
+        <option>Miss</option>
+      </select>
+    </label>
   	<label>
   		<span>Given Name</span>
   		<input type="text" name="given_name" style="width: 60%;" />
@@ -91,7 +116,7 @@
   	</div>
     <label>
   		<span>Date of Birth</span>
-  		<input type="text" name="date_of_birth" />
+  		<input type="date" name="date_of_birth" />
   	</label>
   	<div class="row">
   		<input type="submit" value="Next" action="findPeople" />
@@ -123,7 +148,7 @@
     </div>
     <div class="row">
       <span>Date of Birth</span>
-      <div><%= (new Date(person.date_of_birth).toLocaleDateString()) %></div>
+      <div><%= $.datepicker.formatDate('dd/mm/yy', new Date(person.date_of_birth)) %></div>
     </div>
     <div class="row">
       <span class="align_top">Residential Contact</span>
@@ -154,9 +179,8 @@
     <div class="heading">
       <h2 class="underline"><%= data.title %></h2>
       <a class="close" href="javascript:void(0)" title="Close"></a>
-      <a class="back" href="javascript:void(0)" title="Go Back"></a>
     </div>
-    <ul class="validation_errors"></ul>
+    <ul class="form_errors"></ul>
     <div class="body">
       <div class="loading"></div>
     </div>

@@ -31,11 +31,12 @@ module Tombstone
               roles[role_name] = Role.create_from(role_data, role_errors)
             rescue Sequel::Rollback => e
               form_errors.add(role_name, role_errors)
+              raise
             end
           end
         end
 
-        if !params['place'].is_a?(Hash) || params['place'].reject { |v| v.empty? }.empty?
+        if !params[:place].is_a?(Array) || params[:place].reject { |v| v.empty? }.empty?
           form_errors.add(:place, "must be selected")
           raise Sequel::Rollback
         end
@@ -46,7 +47,7 @@ module Tombstone
           raise Sequel::Rollback
         end
 
-        reservation = Reservation.new.set({
+        reservation = Reservation.new({
           place: place,
           status: params[:status],
           location_description: params[:location_description],
@@ -60,7 +61,7 @@ module Tombstone
         end
 
         roles.each { |type, role| role.add_allocation(reservation) }
-        response[:nextUrl] = url(:view, :id => reservation.id)
+        response[:nextUrl] = url(:reservation_view, :id => reservation.id)
       }
       response[:success] = true if response[:form_errors].empty?
       response.to_json

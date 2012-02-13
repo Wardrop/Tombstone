@@ -13,7 +13,7 @@ content_for :head do
       var rootPlaces = new Ts.Places(<%= @root_places.to_json %>)
       $('#places_section').append(new Ts.FormViews.PlacesView({collection: rootPlaces}).render().el)
       
-      var multibutton = new Ts.FormViews.Multibutton({name: 'submit', options: ['Submit', 'Approve', 'Inter', 'Save']})
+      var multibutton = new Ts.FormViews.Multibutton({name: 'submit', values: {active: 'Submit', completed: 'Complete'}})
       $('#actions_section > div').append(multibutton.render().el)
     
       new Ts.FormViews.AllocationForm({el: $('#reservation_form'), roles: roles})

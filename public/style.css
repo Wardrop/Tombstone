@@ -644,7 +644,7 @@ a.row_button:hover {
 .field_error {
   outline: 1px solid #c00;
 }
-.validation_errors {
+.form_errors {
   padding: 10px 20px;
   background: #a73232;
   font-family: Verdana, Arial;
@@ -652,12 +652,12 @@ a.row_button:hover {
   color: white;
   box-sizing: content-box;
 }
-.validation_errors li {
+.form_errors li {
   list-style: outside disc;
   margin-left: 14px;
   padding: 3px 0;
 }
-.validation_errors ul {
+.form_errors ul {
 	margin-left: 20px;
 }
 

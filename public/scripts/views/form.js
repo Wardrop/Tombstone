@@ -65,7 +65,7 @@ $( function () {
       _.bindAll(this, 'hideList', 'showList', 'keydownHideEvent')
     },
     render: function () {
-      $(this.el).html(this.template({name: this.options.name, options: this.options.options}))
+      $(this.el).html(this.template({name: this.options.name, options: this.options.values}))
       var list = this.$('ul')
       list.css('display', 'none')
       this.selectButton(list.find('input:first'))
@@ -205,14 +205,13 @@ $( function () {
 		},
 		submit: function (e) {
 			var data = this.formData()
-			data.status = $(e.currentTarget).val()
+			data.status = $(e.currentTarget).attr('name')
 			this.loader.attr('class', 'loading').insertAfter('#actions_section .multibutton')
 			this.hideFormErrors()
 			if(this.lastRequest && this.lastRequest.state() == 'pending') {
 				alert('The last submit operation has not completed. Please wait...')
 				return false
 			}
-			console.log(data)
       this.lastRequest = $.ajax(this.el.action, {
         type: 'POST',
         data: data,
@@ -220,18 +219,17 @@ $( function () {
           console.log(data)
           if(data.success == false) {
             this.showFormErrors(data.form_errors)
+            this.loader.detach()
           } else {
             this.loader.attr('class', 'success')
-						// window.location = data.nextUrl
+						window.location = data.nextUrl
           }
         }, this),
         error: function (jqXHR, textStatus, errorThrown) {
 					// TODO
-          if(textStatus != 'abort') alert('Some went wrong!')
-				},
-        complete: _.bind( function () {
           this.loader.detach()
-        }, this)
+          if(textStatus != 'abort') alert('Some went wrong!')
+				}
       })
 		},
 		formData: function () {
@@ -246,21 +244,7 @@ $( function () {
 		},
 		// field.split('_').join(' ')).toTitleCase()
 		showFormErrors: function (errors) {
-			var container = $('<ul class="validation_errors" />')
-			// var iterateErrors = function (prefix, errors) {
-			// 				_.each(errors, function (error, field) {
-			// 				  if (error.constructor == Array) {
-			// 						_.each(error, function (message) {
-			// 							errorObj = {}; errorObj[field] = message
-			// 							iterateErrors(((prefix) ? prefix+' -> ' : '')+field.split('_').join(' ').toTitleCase(),  errorObj)
-			// 						})
-			// 					} else if (error.constructor == Object) {
-			// 						iterateErrors(prefix, error)
-			// 					} else {
-			// 						container.append('<li>'+prefix+' '+error+'.</li>')
-			// 					}
-			// 				})
-			// 			}
+			var container = $('<ul class="form_errors" />')
 			var iterateErrors = function (ul, errors) {
 				_.each(errors, function (error, field) {
 				  if (error.constructor == Array) {
@@ -288,7 +272,7 @@ $( function () {
 			this.$(':first').scrollTo(300, -10);
 		},
 		hideFormErrors: function () {
-			this.$('.validation_errors').remove()
+			this.$('.form_errors').remove()
       this.$('[name]').removeClass('field_error')
 		}
 	})

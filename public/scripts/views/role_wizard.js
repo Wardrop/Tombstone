@@ -29,7 +29,6 @@ $( function () {
 		},
 		render: function () {
 			$(this.el).html(this.template({data: this.model.toJSON()}));
-      console.log(this.model.toJSON())
       this.populateForm(this.model.toJSON())
 			return this
 		},
@@ -50,6 +49,9 @@ $( function () {
     populateForm: function (hash) {
       _.each(hash, function (value, key) {
         var field = this.$('[name='+key+']')
+        if(field.attr('type') == 'date' && value) {
+          value = $.datepicker.formatDate('dd/mm/yy', new Date(value))
+        }
         field.fieldValue(value)
       }, this)
     }
@@ -83,9 +85,13 @@ $( function () {
 		},
     render: function () {
       $(this.el).html(this.template())
-      this.collection.each(function (person) {
-        this.$('.blocks').append((new Ts.RoleWizardViews.PersonBlock({model: person, wizard: this.wizard})).render().el)
-      }, this)
+      if(this.collection.length > 0) {
+        this.collection.each(function (person) {
+          this.$('.blocks').append((new Ts.RoleWizardViews.PersonBlock({model: person, wizard: this.wizard})).render().el)
+        }, this)
+      } else {
+        this.$('.blocks').append('<small class="padded">No matches found.</small>')
+      }
 			return this
     }
 	})
@@ -97,9 +103,13 @@ $( function () {
 		},
     render: function () {
       $(this.el).html(this.template())
-      this.collection.each(function (contact) {
-        this.$('.blocks').append((new Ts.RoleWizardViews.ContactBlock({model: contact, wizard: this.wizard})).render().el)
-      }, this)
+      if(this.collection.length > 0) {
+        this.collection.each(function (contact) {
+          this.$('.blocks').append((new Ts.RoleWizardViews.ContactBlock({model: contact, wizard: this.wizard})).render().el)
+        }, this)
+      } else {
+        this.$('.blocks').append('<small class="padded">No matches found.</small>')
+      }
 			return this
     }
 	})
@@ -184,12 +194,9 @@ $( function () {
       this.$('.body').children(':not(.loading)').detach()
       model = this.model.get('currentPage').model
       if(model && model.errors && model.errors.length > 0) {
-        errorContainer = this.$('.validation_errors').empty().css({display: ''})
-        _.each(model.errors, function (error) {
-          errorContainer.append('<li>'+error+'</li>')
-        }, this)
+        this.showErrors(model.errors)
       } else {
-        this.$('.validation_errors').empty().css({display: 'none'})
+        this.hideErrors()
       }
       this.$('.body').append(this.model.get('currentPage').render().el)
     },
@@ -221,14 +228,11 @@ $( function () {
       var self = this
       this.model.set({isLoading: true})
       matches.fetch({
-        success: function (results) {
-          var resultsView = new Ts.RoleWizardViews.PersonResults({collection: results, wizard: self})
-          self.model.set({currentPage: resultsView, isLoading: false})
-        },
-        error: function () {
-          self.model.set({isLoading: false})
-          // TODO
-        },
+        success: _.bind( function (collection, response) {
+          var resultsView = new Ts.RoleWizardViews.PersonResults({collection: collection, wizard: this})
+          this.model.set({currentPage: resultsView, isLoading: false})
+        }, this),
+        error: this.ajaxErrorHandler(this),
         data: person.toJSON()
       })
     },
@@ -241,10 +245,7 @@ $( function () {
           var resultsView = new Ts.RoleWizardViews.ContactResults({collection: results, wizard: self})
           self.model.set({currentPage: resultsView, isLoading: false})
         },
-        error: function () {
-          self.model.set({isLoading: false})
-          // TODO
-        },
+        error: this.ajaxErrorHandler(this),
         data: {person_id: person.get('id')}
       })
     },
@@ -287,6 +288,19 @@ $( function () {
         this.renderPage()
       }
     },
+    showErrors: function (errors) {
+      errors = (errors instanceof Array) ? errors : [errors]
+      if(errors && errors.length > 0) {
+        errorContainer = this.$('.form_errors').empty()
+        _.each(errors, function (error) {
+          errorContainer.append('<li>'+error+'</li>')
+        }, this)
+        errorContainer.css({display: ''})
+      }
+    },
+    hideErrors: function () {
+      this.$('.form_errors').empty().css({display: 'none'})
+    },
 		close: function () {
 			this.remove()
 		},
@@ -294,6 +308,12 @@ $( function () {
 			if(e.target == this.el) {
 				this.close()
       }
-		}
+		},
+    ajaxErrorHandler: function (binding) {
+      return _.bind( function (collection, response) {
+        this.showErrors($.parseJSON(response.responseText).error)
+        this.model.set({isLoading: false})
+      }, binding)
+    }
 	})
 })

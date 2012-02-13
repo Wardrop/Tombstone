@@ -1,5 +1,11 @@
 Ts = {};
 
+$( function () {
+  $('input[type=date]').livequery( function () {
+    $(this).datepicker({ dateFormat: 'dd/mm/yy', showOn: 'button' })
+  })
+})
+
 // Backbone helpers
 _.extend(Backbone.Model.prototype, {
   recursiveToJSON: function () {
@@ -18,7 +24,6 @@ _.extend(Backbone.Model.prototype, {
 
 // jQuery helpers
 (function ($) {
-
   $.fn.serializeJSON = function() {
     var json = {};
     jQuery.map($(this).serializeArray(), function(n, i){

@@ -11,6 +11,7 @@ module Tombstone
       set :config, eval(File.read(File.expand_path('../config.rb', __FILE__)))
       Tombstone::Permissions.map = config[:roles]
       # use Rack::Session::Pool, :expire => 900
+      disable :show_exceptions
     end
 
     configure :development do
@@ -27,6 +28,12 @@ module Tombstone
 
     get "/" do
       render :index
+    end
+    
+    error do |e|
+      if response.content_type.index(mime_type(:json)) == 0
+        halt 400, {error: e.message}.to_json
+      end
     end
     
     ##

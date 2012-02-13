@@ -25,7 +25,7 @@ module Tombstone
               raise Sequel::Rollback
             end
           else
-            person = Person.new.set(hash['person'])
+            person = Person.new(hash['person'])
             if person.valid?
               person.save
             else
@@ -35,7 +35,7 @@ module Tombstone
           end
           
           contacts = {:residential_contact => hash['residential_contact']}
-          unless !hash['mailing_contact'] || hash['mailing_contact'].empty?
+          unless hash['mailing_contact'] || hash['mailing_contact'].empty?
              contacts[:mailing_contact] = hash['mailing_contact']
           end
           contacts.each do |type, data|
@@ -46,18 +46,19 @@ module Tombstone
                 raise Sequel::Rollback
               end
             else
-              contact = Contact.new.set(data)
+              contact = Contact.new(data)
               if contact.valid?
-                contacts[type] = contact.save
+                contact.save
               else
                 errors.add(type, contact.errors)
                 raise Sequel::Rollback
               end
             end
+            contacts[type] = contact
           end
-
-          role = self.new.set({
-            type: hash.type,
+          
+          role = self.new({
+            type: hash['type'],
             person: person,
             residential_contact: contacts[:residential_contact],
             mailing_contact: contacts[:mailing_contact]
