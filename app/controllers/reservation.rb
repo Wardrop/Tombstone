@@ -17,7 +17,7 @@ module Tombstone
 
     post :new, :provides => :json do
       form_errors = Sequel::Model::Errors.new
-      response = {success: false, nextUrl: nil, form_errors: form_errors}
+      response = {success: false, form_errors: form_errors, nextUrl: nil}
 
       Reservation.db.transaction {
         roles = {}

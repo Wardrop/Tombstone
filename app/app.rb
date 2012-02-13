@@ -30,9 +30,11 @@ module Tombstone
       render :index
     end
     
-    error do |e|
-      if response.content_type.index(mime_type(:json)) == 0
-        halt 400, {error: e.message}.to_json
+    error 500 do
+      if response.content_type.index(mime_type :json) == 0
+        halt 500, {success: false, exception: env['sinatra.error'].message}.to_json
+      else
+        raise env['sinatra.error']
       end
     end
     

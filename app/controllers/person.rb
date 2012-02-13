@@ -13,6 +13,12 @@ module Tombstone
         .naked.all.to_json
     end
     
+    get :validate, :provides => :json do
+      person = Person.new(params)
+      p params
+      {valid: person.valid?, errors: person.errors}.to_json
+    end
+    
     get :index, :with => :id, :provides => :json do
       Person.filter(:id => params[:id]).naked.all.to_json
     end

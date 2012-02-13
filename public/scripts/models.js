@@ -1,4 +1,3 @@
-// JavaScript Document
 Ts.Person = Backbone.Model.extend({
 	defaults: {
     id: undefined,
@@ -10,20 +9,24 @@ Ts.Person = Backbone.Model.extend({
 		date_of_birth: null,
 		date_of_death: null
 	},
+	errors: [],
   urlRoot: '/person',
   initialize: function () {
-    this.errors = []
+    this.errors = {}
   },
-  validate: function () {
-    this.errors.length = 0
-    if(!this.get("given_name")) {
-      this.errors.push("A given name must be entered.")
-    }
-    
-    if(this.errors.length > 0) {
-      return true
-    }
-  }
+  serverValidate: function () {
+	  this.errors.length = 0
+		$.ajax(this.urlRoot+'/validate', {
+			async: false,
+			type: 'GET',
+			dataType: 'json',
+			data: this.toJSON(),
+			success: _.bind( function (data, textStatus, jqXHR) {
+				this.errors = data.errors
+			}, this)
+		})
+		return this.errors.length == 0
+	}
 })
 
 Ts.Contact = Backbone.Model.extend({
@@ -36,19 +39,40 @@ Ts.Contact = Backbone.Model.extend({
 		primary_phone: null,
 		secondary_phone: null
 	},
+	errors: [],
+	urlRoot: '/contact',
   initialize: function () {
     this.errors = []
   },
-  validate: function () {
-    this.errors.length = 0
-    if(!this.get("street_address")) {
-      this.errors.push("A street address must be entered.")
-    }
-    
-    if(this.errors.length > 0) {
-      return true
-    }
-  }
+	serverValidate: function () {
+	  this.errors.length = 0
+		$.ajax(this.urlRoot+'/validate', {
+			async: false,
+			type: 'GET',
+			dataType: 'json',
+			data: this.toJSON(),
+			success: _.bind( function (data, textStatus, jqXHR) {
+				this.errors = data.errors
+			}, this)
+		})
+		return this.errors.length == 0
+	}
+	//   validate: function (callbacks) {
+	//   this.errors.length = 0
+	// 	$.ajax(this.urlRoot+'/validate', {
+	// 		type: 'GET',
+	// 		dataType: 'json',
+	// 		success: _.bind( function (data, textStatus, jqXHR) {
+	// 			if(data.valid == true) {
+	// 				callbacks.valid()
+	// 			} else {
+	// 				this.errors = data.errors
+	// 				callbacks.invalid(data.errors)
+	// 			}
+	// 		}),
+	// 		error: callbacks.error
+	// 	})
+	// }
 })
 
 Ts.Role = Backbone.Model.extend({

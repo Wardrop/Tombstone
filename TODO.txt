@@ -9,6 +9,12 @@
 * Indicate which form fields are required.
 * Add hooks to models for cleaning and formatting data, e.g. capitalizing names, lower casing gender, etc.
 * Add validation rules to specs.
+
+* Have Backbone validations go off to the server.
+* Create standard JSON format for all requests,
+    e.g. {success: <bool>, exception: <string>, form_errors: <hash>, ...}
+    Rename form_errors to errors, make anything else reference 'response'.
+* Add a universal error handler to the RoleWizard base view.
   
     
 Refactor Oppurtunities

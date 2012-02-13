@@ -193,7 +193,7 @@ $( function () {
     renderPage: function () {
       this.$('.body').children(':not(.loading)').detach()
       model = this.model.get('currentPage').model
-      if(model && model.errors && model.errors.length > 0) {
+      if(model && model.errors && Object.keys(model.errors).length > 0) {
         this.showErrors(model.errors)
       } else {
         this.hideErrors()
@@ -254,12 +254,11 @@ $( function () {
         this.model.get('role').set({person: person})
         this.findContacts(person)
       } else {
-        hasErrors = person.validate()
-        if(hasErrors) {
-          this.showCreatePersonForm()
-        } else {
-          this.showCreateContactForm()
-        }
+				if(person.serverValidate()) {
+					this.showCreateContactForm()
+				} else {
+					this.showCreatePersonForm()
+				}
       }
     },
     saveContact: function (contact) {
@@ -267,12 +266,16 @@ $( function () {
         this.model.get('role').set({residential_contact: contact})
         this.showRoleReview()
       } else {
-        hasErrors = contact.validate()
-        if(hasErrors) {
-          this.showCreateContactForm()
-        } else {
-          this.showRoleReview()
-        }
+				if(contact.serverValidate()) {
+					this.showRoleReview()
+				} else {
+					this.showCreateContactForm()
+				}
+				// contact.validate({
+				// 	valid: _.bind( function () { this.showRoleReview() }, this),
+				// 	invalid: _.bind( function (errors) { this.showCreateContactForm() }, this),
+				// 	error: ajaxErrorHandler(this, 'jQuery')
+				// })
       }
     },
     saveRole: function () {
@@ -289,14 +292,28 @@ $( function () {
       }
     },
     showErrors: function (errors) {
-      errors = (errors instanceof Array) ? errors : [errors]
-      if(errors && errors.length > 0) {
-        errorContainer = this.$('.form_errors').empty()
-        _.each(errors, function (error) {
-          errorContainer.append('<li>'+error+'</li>')
-        }, this)
-        errorContainer.css({display: ''})
-      }
+			var errorContainer = this.$('.form_errors').empty()
+			if(errors.constructor == Object) {
+				if(Object.keys(errors).length > 0) {
+	        _.each(errors, function (errors, field) {
+						var errors = (errors instanceof Array) ? errors : [errors]
+						_.each(errors, function (error) {
+							errorContainer.append('<li>'+field.split('_').join(' ').toTitleCase()+' '+error+'</li>')
+						})
+	        }, this)
+	        errorContainer.css({display: ''})
+	      }
+			} else {
+				var errors = (errors instanceof Array) ? errors : [errors]
+				if(errors.length > 0) {
+	        _.each(errors, function (error) {
+	          errorContainer.append('<li>'+error+'</li>')
+	        }, this)
+	        errorContainer.css({display: ''})
+	      }
+			}
+      
+      
     },
     hideErrors: function () {
       this.$('.form_errors').empty().css({display: 'none'})
@@ -309,11 +326,19 @@ $( function () {
 				this.close()
       }
 		},
-    ajaxErrorHandler: function (binding) {
-      return _.bind( function (collection, response) {
-        this.showErrors($.parseJSON(response.responseText).error)
-        this.model.set({isLoading: false})
-      }, binding)
+    ajaxErrorHandler: function (binding, context) {
+			context = (context) ? context : 'backbone'
+			if(context == 'jQuery') {
+				return _.bind( function (jqXHR, textStatus, errorThrown) {
+	        this.showErrors($.parseJSON(jqXHR.responseText).exception)
+	        this.model.set({isLoading: false})
+	      }, binding)
+			} else if (context == 'backbone') {
+				return _.bind( function (collection, jqXHR) {
+	        this.showErrors($.parseJSON(jqXHR.responseText).exception)
+	        this.model.set({isLoading: false})
+	      }, binding)
+			}
     }
 	})
 })
