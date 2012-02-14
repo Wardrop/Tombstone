@@ -574,15 +574,17 @@ a.row_button:hover {
 .overlay_container {
 	position: fixed;
 	left: 50%;
-	top: 10%;
+	top: 8%;
 	margin-left: -300px;
 	width: 600px;
-	height: auto;
+  max-height: 84%;
 	display: block;
 	border: 8px solid #2980cc;
 	z-index: 101;
 	background: white;
 	box-shadow: 0px 0px 30px rgba(0,0,0,0.2);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .overlay_container > .heading {
 	position: relative;
@@ -626,7 +628,6 @@ a.row_button:hover {
 	width: 100%;
 	box-sizing: border-box;
 	padding: 3%;
-	overflow: hidden;
 }
 .overlay_container > .body h3 {
 	margin-top: 0;

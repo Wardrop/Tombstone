@@ -13,6 +13,9 @@ module Tombstone
     def validate
       datetime_columns = db_schema.select { |col, info| info[:type] == :datetime }.map { |k,v| k }
       validates_not_string datetime_columns
+      # datetime_columns.each do |field|
+      #   errors.add(field, "must be a valid date or time") if (self[field] && !self[field].is_a?(Time))
+      # end
     end
     
     remove_instance_variable(:@dataset)
