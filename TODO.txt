@@ -16,6 +16,7 @@
 * Receipt no/transactions (many to one) need to be provided.
 * Add mailing contact to RoleWizard.
 * Change reservee doesn't allow you to edit previously entered details. May need to make a new interface for changing a reservee.
+* Limit the number of records returned over JSON.
   
     
 Refactor Oppurtunities

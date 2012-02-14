@@ -23,10 +23,7 @@ module Tombstone
       validates_integer :postal_code
       errors.add(:postal_code, "must be exactly 4 characters long") unless postal_code.to_s.length == 4
       if !email.blank? && !email.match(/.+@.+/)
-        errors.add(:email, ", if given, must be valid")
-      end
-      if !email.blank? && !email.empty?  && !email.match(/.+@.+/)
-        errors.add(:email, ", if given, must be valid")
+        errors.add(:email, "must be valid, if given")
       end
       validates_min_length 6, :primary_phone
       errors.add(:primary_phone, "contains invalid characters.") unless primary_phone.match /^[ 0-9\.\-+()x]*$/
