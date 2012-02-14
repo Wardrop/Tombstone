@@ -17,6 +17,7 @@
 * Add mailing contact to RoleWizard.
 * Change reservee doesn't allow you to edit previously entered details. May need to make a new interface for changing a reservee.
 * Limit the number of records returned over JSON.
+* Add success flash message banner when reservation is submitted.
   
     
 Refactor Oppurtunities

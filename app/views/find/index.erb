@@ -54,6 +54,7 @@ end
     <% @records.each do |record|
       reservee = record.roles_by_type('reservee')[0]
       applicant = record.roles_by_type('applicant')[0]
+      next_of_kin = record.roles_by_type('next_of_kin')[0]
       %>
       <div class="clickable">
         <div class="summary">
@@ -65,6 +66,10 @@ end
             <div class="row">
               <span>Applicant:</span>
               <div><%= (applicant) ? "#{applicant.person.title} #{applicant.person.given_name} #{applicant.person.surname}" : '<small>none</small>'%></div>
+            </div>
+            <div class="row">
+              <span>Next of Kin:</span>
+              <div><%= (next_of_kin) ? "#{next_of_kin.person.title} #{next_of_kin.person.given_name} #{next_of_kin.person.surname}" : '<small>none</small>'%></div>
             </div>
             <div class="row">
               <span>Status:</span>
