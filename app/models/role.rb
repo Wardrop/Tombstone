@@ -76,9 +76,13 @@ module Tombstone
     end
     
     def validate
+      super
       errors.add(:person, "must have an associated person") if !person
       errors.add(:residential_contact, "must have an associated residential contact") if !person
       errors.add(:type, "must be one of: #{self.class.valid_types.join(', ')}") if !self.class.valid_types.include? type.downcase
+      if self.person.roles_by_type('reservee').count > 0
+        errors.add(:type, "cannot be reservee if person is already a reservee of another reservation")
+      end
     end
   end
 end

@@ -49,11 +49,12 @@ include_script_views('form')
     <div class="section padded">
     	<label>
         <span>Location Description</span>
-        <div><%= @reservation.location_description || '<small>none</small>' %></div>
+        <% p @reservation.location_description %>
+        <div><%= (@reservation.location_description.blank?) ? '<small>none</small>' : @reservation.location_description %></div>
       </label>
       <label>
         <span>Comments</span>
-        <div><%= @reservation.comments || '<small>none</small>' %></div>
+        <div><%= (@reservation.comments.blank?) ? '<small>none</small>' : @reservation.comments %></div>
       </label>
     </div>
   </section>

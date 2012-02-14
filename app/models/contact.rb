@@ -14,17 +14,25 @@ module Tombstone
     end
     
     def validate
+      super
       validates_min_length 5, :street_address # Shortest possible street address would be something like a single-residence street, e.g Tu St
       validates_min_length 3, :town
       if state && !state.empty? && !self.class.valid_states.include?(state)
         errors.add(:state, ", if given, must be one of: #{self.class.valid_states.join(', ')}")
       end
       validates_integer :postal_code
-      if email && !email.empty?  && email.match(/.+@.+/)
-        errors.add(:email, ", if given, email address must be valid")
+      errors.add(:postal_code, "must be exactly 4 characters long") unless postal_code.to_s.length == 4
+      if !email.blank? && !email.match(/.+@.+/)
+        errors.add(:email, ", if given, must be valid")
       end
-      if email && !email.empty?  && email.match(/.+@.+/)
-        errors.add(:email, ", if given, email address must be valid")
+      if !email.blank? && !email.empty?  && !email.match(/.+@.+/)
+        errors.add(:email, ", if given, must be valid")
+      end
+      validates_min_length 6, :primary_phone
+      errors.add(:primary_phone, "contains invalid characters.") unless primary_phone.match /^[ 0-9\.\-+()x]*$/
+      unless secondary_phone.blank?
+        validates_min_length 6, :secondary_phone
+        errors.add(:secondary_phone, "contains invalid characters.") unless secondary_phone.match /^[ 0-9\.\-+()x]*$/
       end
     end
   end

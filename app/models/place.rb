@@ -17,6 +17,7 @@ module Tombstone
     end
     
     def validate
+      super
       errors.add(:state, "must be one of: #{self.class.valid_states.join(', ')}") if !self.class.valid_states.include? state
       validates_min_length 2, :type
     end

@@ -9,6 +9,7 @@ module Tombstone
     many_to_one :funeral_director, {:key => :funeral_director_id, :class => :'Tombstone::FuneralDirector'}
     
     def validate
+      super
       validates_presence :place
       unless place.allocations.reject{ |v| v.type != 'reservation' }.empty?
         errors.add(:place, "is already associated with another allocation of the same type (#{type})")

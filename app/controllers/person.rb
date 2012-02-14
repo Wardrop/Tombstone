@@ -14,8 +14,8 @@ module Tombstone
     end
     
     get :validate, :provides => :json do
-      person = Person.new(params)
-      p params
+      p params.reject { |k,v| v.blank? }
+      person = Person.new(params.reject { |k,v| v.blank? })
       {valid: person.valid?, errors: person.errors}.to_json
     end
     

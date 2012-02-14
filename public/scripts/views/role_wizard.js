@@ -208,11 +208,12 @@ $( function () {
       }
     },
     showFindPersonForm: function () {
-      var findPersonForm = new Ts.RoleWizardViews.FindPersonForm({model: this.model.get('role').get('person'), wizard: this})
+      this.findPersonModel = new Ts.Person
+      var findPersonForm = new Ts.RoleWizardViews.FindPersonForm({model: this.findPersonModel, wizard: this})
       this.model.set({currentPage: findPersonForm})
     },
     showCreatePersonForm: function () {
-      var createPersonForm = new Ts.RoleWizardViews.CreatePersonForm({model: this.model.get('role').get('person'), wizard: this}, 'savePerson')
+      var createPersonForm = new Ts.RoleWizardViews.CreatePersonForm({model: this.findPersonModel, wizard: this}, 'savePerson')
       this.model.set({currentPage: createPersonForm})
     },
     showCreateContactForm: function () {
@@ -250,15 +251,17 @@ $( function () {
       })
     },
     savePerson: function (person) {
+      this.model.get('role').set({person: person})
       if(person.get('id')) {
-        this.model.get('role').set({person: person})
         this.findContacts(person)
       } else {
-				if(person.serverValidate()) {
-					this.showCreateContactForm()
-				} else {
-					this.showCreatePersonForm()
-				}
+        this.model.set({isLoading: true})
+				person.serverValidate({
+					valid: _.bind( function () { this.showCreateContactForm() }, this),
+					invalid: _.bind( function (errors) { this.showCreatePersonForm() }, this),
+					error: this.ajaxErrorHandler(this, 'jQuery'),
+          complete: _.bind(function () { this.model.set({isLoading: false}) }, this)
+				})
       }
     },
     saveContact: function (contact) {
@@ -266,16 +269,18 @@ $( function () {
         this.model.get('role').set({residential_contact: contact})
         this.showRoleReview()
       } else {
-				if(contact.serverValidate()) {
-					this.showRoleReview()
-				} else {
-					this.showCreateContactForm()
-				}
-				// contact.validate({
-				// 	valid: _.bind( function () { this.showRoleReview() }, this),
-				// 	invalid: _.bind( function (errors) { this.showCreateContactForm() }, this),
-				// 	error: ajaxErrorHandler(this, 'jQuery')
-				// })
+        this.model.set({isLoading: true})
+				contact.serverValidate({
+					valid: _.bind( function () { this.showRoleReview() }, this),
+					invalid: _.bind( function (errors) { this.showCreateContactForm() }, this),
+					error: this.ajaxErrorHandler(this, 'jQuery'),
+          complete: _.bind(function () { this.model.set({isLoading: false}) }, this)
+				})
+        // if(contact.serverValidate()) {
+				// 	this.showRoleReview()
+				// } else {
+				// 	this.showCreateContactForm()
+				// }
       }
     },
     saveRole: function () {

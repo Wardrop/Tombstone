@@ -345,7 +345,7 @@ a.row_button:hover {
 	padding-right: 8px;
 	width: 107px;
 	text-align: right;
-  vertical-align: top;
+  vertical-align: middle;
 }
 .rowed.wide label > span:first-child, .rowed.wide div.row > span:first-child {
 	margin-left: -162px;

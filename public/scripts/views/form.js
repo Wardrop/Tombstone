@@ -26,14 +26,14 @@ $( function () {
       $('body').prepend(wizardView.render().el)
     },
     changeRole: function () {
-      clonedModel = new Ts.Role({
-        type: this.role_type,
-        person: this.model.get("person").clone(),
-        residential_contact: this.model.get("residential_contact").clone(),
-        mailing_contact: this.model.get("mailing_contact").clone()
-      })
-      clonedModel.get("person").set({id: null})
-      wizard = new Ts.RoleWizard({title: "Change "+this.role_name, role: clonedModel})
+      // clonedModel = new Ts.Role({
+      //   type: this.role_type,
+      //   person: this.model.get("person").clone(),
+      //   residential_contact: this.model.get("residential_contact").clone(),
+      //   mailing_contact: this.model.get("mailing_contact").clone()
+      // })
+      // clonedModel.get("person").set({id: null})
+      wizard = new Ts.RoleWizard({title: "Change "+this.role_name, role: this.model})
 			wizardView = new Ts.RoleWizardViews.WizardView({
         model: wizard,
         onComplete: this.render

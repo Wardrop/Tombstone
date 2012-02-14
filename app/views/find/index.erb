@@ -51,23 +51,24 @@ end
   <section id="search_results">
     <h3 class="underline">Results</h3>
     <div class="list_rows padded">
-    <% @records.each do |row|
-      begin %>
+    <% @records.each do |record|
+      reservee = record.roles_by_type('reservee')[0]
+      applicant = record.roles_by_type('applicant')[0]
+      %>
       <div class="clickable">
         <div class="summary">
-          Reservation - <%= row.place.name %> - <%= row.roles_by_type('reservee')[0].person.given_name %> <%= row.roles_by_type('reservee')[0].person.surname %>
-          <a class="goto" href="<%= url "/reservation/view/#{row.id}" %>" title="View record"></a>
+          <%= record.type.demodulize.titleize %> - <%= record.place.name %> - <%= reservee.person.title %> <%= reservee.person.given_name %> <%= reservee.person.surname %>
+          <a class="goto" href="<%= url "/reservation/view/#{record.id}" %>" title="View record"></a>
         </div>
         <div class="details">
           <div class="left rowed">
-            <% applicant = row.roles_by_type('applicant')[0] %>
             <div class="row">
               <span>Applicant:</span>
               <div><%= (applicant) ? "#{applicant.person.title} #{applicant.person.given_name} #{applicant.person.surname}" : '<small>none</small>'%></div>
             </div>
             <div class="row">
               <span>Status:</span>
-              <div><%= row.status.demodulize.titleize %></div>
+              <div><%= record.status.demodulize.titleize %></div>
             </div>
           </div>
           <div class="right rowed">
@@ -80,9 +81,6 @@ end
           </div>
         </div>
       </div>
-      <% rescue => e %>
-        Error encountered while rendering record.
-      <% end %>
     <% end %>
   </section>
 </div>

@@ -14,11 +14,11 @@
   <div class="section padded">
   	<label>
   		<span>Street Address</span>
-  		<input type="text" name="street_address" style="width: 60%;" />
+  		<input type="text" name="street_address" style="width: 75%;" />
   	</label>
   	<label>
   		<span>Town</span>
-  		<input type="text" name="town" style="width: 60%;" />
+  		<input type="text" name="town" style="width: 75%;" />
   	</label>
     <label class="row">
   		<span>State</span>
@@ -39,12 +39,16 @@
   		<input type="text" name="postal_code" style="width: 12%;" />
   	</label>
     <label>
-  		<span>Primary Phone</span>
-  		<input type="text" name="primary_phone" style="width: 24%;" />
+  		<span>Email</span>
+  		<input type="text" name="email" style="width: 75%;" />
   	</label>
     <label>
-  		<span>Secondary Phone</span>
-  		<input type="text" name="secondary_phone" style="width: 24%;" />
+  		<span>Primary Ph.</span>
+  		<input type="text" name="primary_phone" style="width: 30%;" />
+  	</label>
+    <label>
+  		<span>Secondary Ph.</span>
+  		<input type="text" name="secondary_phone" style="width: 30%;" />
   	</label>
     <div class="row">
   		<input type="submit" value="Save" action="saveContact" />
@@ -144,7 +148,7 @@
     </div>
     <div class="row">
       <span>Gender</span>
-      <div><%= person.gender %></div>
+      <div><%= person.gender.toTitleCase() %></div>
     </div>
     <div class="row">
       <span>Date of Birth</span>

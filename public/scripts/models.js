@@ -1,3 +1,5 @@
+window.contacts = []
+
 Ts.Person = Backbone.Model.extend({
 	defaults: {
     id: undefined,
@@ -9,24 +11,29 @@ Ts.Person = Backbone.Model.extend({
 		date_of_birth: null,
 		date_of_death: null
 	},
-	errors: [],
+	errors: {},
   urlRoot: '/person',
   initialize: function () {
     this.errors = {}
   },
-  serverValidate: function () {
-	  this.errors.length = 0
-		$.ajax(this.urlRoot+'/validate', {
-			async: false,
-			type: 'GET',
-			dataType: 'json',
-			data: this.toJSON(),
-			success: _.bind( function (data, textStatus, jqXHR) {
-				this.errors = data.errors
-			}, this)
-		})
-		return this.errors.length == 0
-	}
+  serverValidate: function (callbacks) {
+    Object.keys(this.errors).length = 0
+    $.ajax(this.urlRoot+'/validate', {
+      type: 'GET',
+      dataType: 'json',
+      data: this.toJSON(),
+      success: _.bind( function (data, textStatus, jqXHR) {
+        if(data.valid == true) {
+          callbacks.valid()
+        } else {
+          this.errors = data.errors
+          callbacks.invalid(data.errors)
+        }
+      }, this),
+      error: callbacks.error,
+      complete: callbacks.complete
+    })
+  }
 })
 
 Ts.Contact = Backbone.Model.extend({
@@ -36,43 +43,47 @@ Ts.Contact = Backbone.Model.extend({
 		town: null,
 		state: null,
 		postal_code: null,
+    email: null,
 		primary_phone: null,
 		secondary_phone: null
 	},
-	errors: [],
+	errors: {},
 	urlRoot: '/contact',
   initialize: function () {
+    window.contacts.push(this)
     this.errors = []
   },
-	serverValidate: function () {
-	  this.errors.length = 0
-		$.ajax(this.urlRoot+'/validate', {
-			async: false,
-			type: 'GET',
-			dataType: 'json',
-			data: this.toJSON(),
-			success: _.bind( function (data, textStatus, jqXHR) {
-				this.errors = data.errors
-			}, this)
-		})
-		return this.errors.length == 0
-	}
-	//   validate: function (callbacks) {
+	// serverValidate: function () {
 	//   this.errors.length = 0
 	// 	$.ajax(this.urlRoot+'/validate', {
+	// 		async: false,
 	// 		type: 'GET',
 	// 		dataType: 'json',
+	// 		data: this.toJSON(),
 	// 		success: _.bind( function (data, textStatus, jqXHR) {
-	// 			if(data.valid == true) {
-	// 				callbacks.valid()
-	// 			} else {
-	// 				this.errors = data.errors
-	// 				callbacks.invalid(data.errors)
-	// 			}
-	// 		}),
-	// 		error: callbacks.error
+	// 			this.errors = data.errors
+	// 		}, this)
 	// 	})
+	// 	return this.errors.length == 0
 	// }
+  serverValidate: function (callbacks) {
+    this.errors.length = 0
+    $.ajax(this.urlRoot+'/validate', {
+      type: 'GET',
+      dataType: 'json',
+      data: this.toJSON(),
+      success: _.bind( function (data, textStatus, jqXHR) {
+        if(data.valid == true) {
+          callbacks.valid()
+        } else {
+          this.errors = data.errors
+          callbacks.invalid(data.errors)
+        }
+      }, this),
+      error: callbacks.error,
+      complete: callbacks.complete
+    })
+  }
 })
 
 Ts.Role = Backbone.Model.extend({
