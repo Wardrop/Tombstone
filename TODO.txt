@@ -1,5 +1,3 @@
-* Add email to contact details form.
-* Define consistent terminology for reservee, interment/burial, 
 * Fix issues with the back behaviour of the role wizard.
   - Going to the review page, pressing back, selecting the same address, and selecting back again, causes nothing to happen.
     If back is then pressed again, jumps back to people page.

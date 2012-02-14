@@ -50,6 +50,17 @@ namespace :db do
     db[:role_association] << {role_id: 4, allocation_id: 3, allocation_type: 'interment'}
     db[:role_association] << {role_id: 5, allocation_id: 1, allocation_type: 'reservation'}
     
+    db[:transaction] << {:allocation_id => 2, :allocation_type => 'interment', :receipt_no => 69242}
+    db[:transaction] << {:allocation_id => 2, :allocation_type => 'reservation', :receipt_no => 72353}
+    
+    db[:funeral_director] << {:name => "Guilfoyles Mareeba", :residential_contact_id => 6, :mailing_contact_id => 6}
+    db[:funeral_director] << {:name => "Guilfoyles Atherton", :residential_contact_id => 7}
+    
+    db[:user] << {id: 'tomw', name: 'Tom Wardrop', role: 'supervisor'}
+    db[:user] << {id: 'tatej', name: 'Tate Jones', role: 'operator'}
+    db[:user] << {id: 'rogerj', name: 'Roger Johnson', role: 'operator'}
+    
+        
     db[:place] << {name: 'Atherton Cemetery', type: 'cemetery', state: 'available'}
     db[:place] << {name: 'Mareeba Cemetery', type: 'cemetery', state: 'available'}
     db[:place] << {parent_id: 2, name: 'Plaque on Beam', type: 'section', state: 'available'}
@@ -61,22 +72,40 @@ namespace :db do
     db[:place] << {parent_id: 5, name: 'Plot 18', type: 'plot', state: 'available'}
     db[:place] << {parent_id: 3, name: 'Row A', type: 'row', state: 'available'}
     db[:place] << {parent_id: 3, name: 'Row B', type: 'row', state: 'available'}
+    db[:place] << {parent_id: 3, name: 'Row C', type: 'row', state: 'available'}
     db[:place] << {parent_id: 10, name: 'Plot 3', type: 'plot', state: 'available'}
     db[:place] << {parent_id: 10, name: 'Plot 4', type: 'plot', state: 'unavailable'}
     db[:place] << {parent_id: 10, name: 'Plot 5', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 10, name: 'Plot 6', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 10, name: 'Plot 7', type: 'plot', state: 'unavailable'}
+    db[:place] << {parent_id: 10, name: 'Plot 8', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 10, name: 'Plot 9', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 10, name: 'Plot 10', type: 'plot', state: 'unavailable'}
+    db[:place] << {parent_id: 10, name: 'Plot 11', type: 'plot', state: 'available'}
     db[:place] << {parent_id: 11, name: 'Plot 37', type: 'plot', state: 'available'}
     db[:place] << {parent_id: 11, name: 'Plot 38', type: 'plot', state: 'available'}
     db[:place] << {parent_id: 11, name: 'Plot 39', type: 'plot', state: 'available'}
-    
-    db[:transaction] << {:allocation_id => 2, :allocation_type => 'interment', :receipt_no => 69242}
-    db[:transaction] << {:allocation_id => 2, :allocation_type => 'reservation', :receipt_no => 72353}
-    
-    db[:funeral_director] << {:name => "Guilfoyles Mareeba", :residential_contact_id => 6, :mailing_contact_id => 6}
-    db[:funeral_director] << {:name => "Guilfoyles Atherton", :residential_contact_id => 7}
-    
-    db[:user] << {id: 'tomw', name: 'Tom Wardrop', role: 'supervisor'}
-    db[:user] << {id: 'tatej', name: 'Tate Jones', role: 'operator'}
-    db[:user] << {id: 'rogerj', name: 'Roger Johnson', role: 'operator'}
+    db[:place] << {parent_id: 11, name: 'Plot 40', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 41', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 42', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 43', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 44', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 45', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 46', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 47', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 48', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 49', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 50', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 51', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 52', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 53', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 54', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 11, name: 'Plot 55', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 12, name: 'Plot 21', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 12, name: 'Plot 22', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 12, name: 'Plot 23', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 12, name: 'Plot 24', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: 12, name: 'Plot 25', type: 'plot', state: 'available'}
   end
   
 end
