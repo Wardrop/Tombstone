@@ -50,7 +50,7 @@ $( function () {
       _.each(hash, function (value, key) {
         var field = this.$('[name='+key+']')
         if(field.attr('type') == 'date' && value) {
-          value = $.datepicker.formatDate('mm/dd/yy', new Date(value)) // We need to reverse the date format due to JavaScript americanised parser.
+          value = Date.parse(value).toString('dd/MM/yyyy') // We need to reverse the date format due to JavaScript americanised parser.
         }
         field.fieldValue(value)
       }, this)

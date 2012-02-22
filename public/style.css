@@ -189,6 +189,21 @@ section:last-child, .section:last-child {
 .clickable {
   cursor: pointer;
 }
+.flash_banner {
+  padding: 8px 12px;
+  margin: 6px 0;
+  color: white;
+  cursor: pointer;
+}
+.flash_banner:hover {
+  opacity: 0.9;
+}
+.flash_banner.success {
+  background: #69ad34;
+}
+.flash_banner.error {
+ background: #a63232; 
+}
 
 .list_rows > div {
   background: #ebf3fa;
@@ -335,6 +350,9 @@ a.row_button:hover {
 .rowed.wide label, .rowed.wide div.row {
 	margin-left: 162px;
 }
+.rowed.very_wide label, .rowed.very_wide div.row {
+	margin-left: 212px;
+}
 .rowed label > *, .rowed div.row > * {
   display: inline-block;
   vertical-align: middle;
@@ -350,6 +368,10 @@ a.row_button:hover {
 .rowed.wide label > span:first-child, .rowed.wide div.row > span:first-child {
 	margin-left: -162px;
 	width: 157px;
+}
+.rowed.very_wide label > span:first-child, .rowed.very_wide div.row > span:first-child {
+	margin-left: -212px;
+	width: 207px;
 }
 .rowed.view label > span:first-child, .rowed.view div.row > span:first-child {
   font-weight: bold;
@@ -545,20 +567,17 @@ a.row_button:hover {
 	background: none;
 }
 
-.loading {
+.indicator {
   display: inline-block;
 	min-height: 24px;
-	background: url('images/loader.gif') no-repeat center right;
   width: 32px;
   vertical-align: middle;
 }
-
-.success {
-  display: inline-block;
-	min-height: 24px;
+.indicator.loading {
+	background: url('images/loader.gif') no-repeat center right;
+}
+.indicator.success {
 	background: url('images/check-24.png') no-repeat center right;
-  width: 32px;
-  vertical-align: middle;
 }
 
 /* OVERLAY */

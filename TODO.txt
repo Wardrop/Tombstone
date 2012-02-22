@@ -1,11 +1,10 @@
 * Fix issues with the back behaviour of the role wizard.
   - Going to the review page, pressing back, selecting the same address, and selecting back again, causes nothing to happen.
     If back is then pressed again, jumps back to people page.
-  - Selecting a person then pressening back and creating a new person, prepopulates the fields with the data of the previously selected person.
-    Probably the same deal with contacts.
 * Simplify breadcrumb into a list (<ul>) and use the CSS pseudo element :before to render the slashes in-between.
 * Fix display of multibutton when option in drop down is significantly longer than the default option.
-* In location drop-down's on allocation form, check for plot availability (status = available, unit associated with any places)
+* In location drop-down's on allocation form, check for plot availability (status = available, unit associated with any places), but still show plots which allow multiple interment.
+  - Also, don't display parents with no available children.
 * Indicate which form fields are required.
 * Add hooks to models for cleaning and formatting data, e.g. capitalizing names, lower casing gender, etc.
 * Add validation rules to specs.
@@ -18,7 +17,7 @@
 * Change reservee doesn't allow you to edit previously entered details. May need to make a new interface for changing a reservee.
 * Limit the number of records returned over JSON.
 * Add success flash message banner when reservation is submitted.
-  
+* Make multibutton fall back to normal input button when only one option is available.
     
 Refactor Oppurtunities
 ----------------------

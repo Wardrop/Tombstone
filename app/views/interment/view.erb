@@ -1,0 +1,88 @@
+<%
+@document[:title] = "View Interment ##{@interment.id}"
+content_for :head do
+  <<-HEAD
+    <script type="text/javascript">
+    $( function () {
+        var multibutton = new Ts.FormViews.Multibutton({name: 'action', values: {edit: 'Edit', delete: 'Delete'}})
+        $('#actions_section > div').append(multibutton.render().el)
+      
+        $('input[type=button]', multibutton.el).click(function (e) {
+          alert('This function is not currently implemented.')
+        })
+      })
+    </script>
+  HEAD
+end
+
+include_script_views('form')
+%>
+<div class="rowed very_wide view">
+  <% @interment.roles.each do |role| %>
+    <section>
+      <h2 class="underline"><%= role.type.demodulize.titleize %></h2>
+      <div id="<%= role.type %>_section" class="section padded" name="deceased">
+        <%= partial 'partials/role_view', :locals => {role: role} %>
+      </div>
+    </section>
+  <% end %>
+  <section>
+    <h2 class="underline">Location</h2>
+    <div id="places_section" class="section padded" name="place">
+    <% @interment.place.ancestors.reverse.push(@interment.place).each do |place| %>
+      <div class="row">
+        <span><%= place.type.demodulize.titleize %></span>
+        <div><%= place.name %></div>
+      </div>
+    <% end %>
+    </div>
+  </section>
+  <section>
+    <h2 class="underline">Funeral Service</h2>
+    <div class="section padded">
+      <label>
+        <span>Director</span>
+        <div><%= print_field @interment.funeral_director.name %></div>
+      </label>
+      <label>
+        <span>Director Name</span>
+        <div><%= print_field @interment.funeral_director_name %></div>
+      </label>
+      <label>
+        <span>Location</span>
+        <div><%= print_field @interment.funeral_service_location %></div>
+      </label>
+    </div>
+  </section>
+  <section>
+    <h2 class="underline">Other Details</h2>
+    <div class="section padded">
+      <label>
+        <span>Interment Type</span>
+        <div><%= print_field @interment.interment_type %></div>
+      </label>
+      <label>
+        <span>Advice Received Date</span>
+        <div><%= print_field @interment.advice_received_date %></div>
+      </label>
+    	<label>
+        <span>Interment Date</span>
+        <div><%= print_field @interment.interment_date %></div>
+      </label>
+      <label>
+        <span class="align_top">Burial Requirements</span>
+        <div><%= print_field @interment.burial_requirements %></div>
+      </label>
+      <label>
+        <span class="align_top">Comments</span>
+        <div><%= print_field @interment.comments %></div>
+      </label>
+    </div>
+  </section>
+  <section>
+    <h2 class="underline">Actions</h2>
+    <div id="actions_section" class="section padded">
+      <div class="inline_layout"></div>
+    </div>
+  </section>
+</div>

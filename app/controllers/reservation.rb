@@ -1,21 +1,36 @@
 module Tombstone
   App.controller :reservation do
     
-    get :new do
-      @root_places = Place.with_child_count.filter(:parent_id => nil).order(:name).naked.all
-      render 'reservation/new'
+    get :index do
+      redirect to(:find)
     end
     
     get :view, :with => :id do
-      @reservation = Allocation.with_pk([params[:id], 'reservation'])
+      @reservation = Reservation.with_pk(params[:id])
       if @reservation
         render 'reservation/view'
       else
-        render 'reservation/not_found'
+        halt 404, render('reservation/not_found')
+      end
+    end
+    
+    get :new do
+      @root_places = Place.filter(:parent_id => nil).order(:name).naked.all
+      render 'reservation/new'
+    end
+    
+    get :edit, :with => :id do
+      @reservation = Reservation.with_pk(params[:id])
+      @places = @reservation.place.ancestors(0, true).reverse
+      if @reservation
+        prepare_form(render('reservation/edit'), {selector: 'form', values: @reservation.values})
+      else
+        halt 404, render('reservation/not_found')
       end
     end
 
     post :new, :provides => :json do
+      params.symbolize_keys!
       form_errors = Sequel::Model::Errors.new
       response = {success: false, form_errors: form_errors, nextUrl: nil}
 
@@ -41,18 +56,9 @@ module Tombstone
           raise Sequel::Rollback
         end
         
-        place = Place.with_pk(params['place'][-1])
-        if place.nil?
-          form_errors.add(:place, "does not exist")
-          raise Sequel::Rollback
-        end
-
-        reservation = Reservation.new({
-          place: place,
-          status: params[:status],
-          location_description: params[:location_description],
-          comments: params[:comments]
-        })
+        reservation = Reservation.new(Reservation.filter_by_columns(params).merge(
+          place_id: params[:place][-1]
+        ))
         if reservation.valid?
           reservation.save
         else
@@ -61,11 +67,27 @@ module Tombstone
         end
 
         roles.each { |type, role| role.add_allocation(reservation) }
-        response[:nextUrl] = url(:reservation_view, :id => reservation.id)
       }
-      response[:success] = true if response[:form_errors].empty?
+      if response[:form_errors].empty?
+        response[:success] = true 
+        response[:nextUrl] = url(:reservation_view, :id => reservation.id)
+        flash[:banner] = ['success', "Reservation created successfully"]
+      end
       response.to_json
     end
-
+    
+    post :edit, :with => :id, :provides => :json do
+      @reservation = Reservation.with_pk(params[:id])
+      return "Reservation with ##{params[:id]} does not exist.".to_json
+      
+      Reservation.db.transaction do
+        @reservation.roles.each { |r| r.destroy }
+        @reservation.remove_all_roles
+        @reservation.values.select { |k,v| Reservation.restricted_columns.push(:id, :type) }
+        
+        saveAllocation(@reservation, params)
+      end
+    end
+    
   end
 end

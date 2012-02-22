@@ -5,15 +5,15 @@ content_for :head do
   <script type="text/javascript">
     $( function () {
       var roles = {}
-      _.each({reservee: 'Reservee', applicant: 'Applicant', next_of_kin: 'Next of Kin'}, function (name, role) {
-        roles[role] = new Ts.FormViews.RoleBlock({role_type: role, role_name: name, el: $('#'+role+'_section')})
-        roles[role].render()
+      _.each({reservee: 'Reservee', applicant: 'Applicant', next_of_kin: 'Next of Kin'}, function (name, type) {
+        roles[type] = new Ts.FormViews.RoleBlock({role_type: type, role_name: name, el: $('#'+type+'_section')})
+        roles[type].render()
       })
       
       var rootPlaces = new Ts.Places(<%= @root_places.to_json %>)
       $('#places_section').append(new Ts.FormViews.PlacesView({collection: rootPlaces}).render().el)
       
-      var multibutton = new Ts.FormViews.Multibutton({name: 'submit', values: {active: 'Submit', completed: 'Complete'}})
+      var multibutton = new Ts.FormViews.Multibutton({name: 'submit', values: {active: 'Submit'}})
       $('#actions_section > div').append(multibutton.render().el)
     
       new Ts.FormViews.AllocationForm({el: $('#reservation_form'), roles: roles})
@@ -24,14 +24,7 @@ end
 
 include_script_views('role_wizard', 'form')
 %>
-<div id="navigation_bar">
-	<a href="<%= url '/' %>" class="breadcrumb home"></a>
-  <span class="breadcrumb div">/</span>
-	<a href="<%= url '/find' %>" class="breadcrumb">Reservation</a>
-  <span class="breadcrumb div">/</span>
-	<a href="<%= url '/reservation/new' %>" class="breadcrumb">Create</a>
-</div>
-<form id="reservation_form" class="rowed" action="<%= url '/reservation/new' %>">
+<form id="reservation_form" class="rowed wide" action="<%= url '/reservation/new' %>">
   <section>
     <h2 class="underline">Reserved For</h2>
     <div id="reservee_section" class="section padded" name="reservee"></div>

@@ -39,15 +39,15 @@ namespace :db do
     # db[:allocation] << {role1_id: 1, role2_id: 3, type: 'Colleague'}
     
     db[:allocation].insert type: 'reservation', place_id: 7,  status: 'approved'
-    id = db[:allocation].insert type: 'reservation', place_id: 8,  status: 'approved'
+    id = db[:allocation].insert type: 'reservation', place_id: 8,  status: 'approved', location_description: 'Next to the big rock.', comments: 'Just some dummy comment text.'
     db.run('SET IDENTITY_INSERT [allocation] ON')
       db[:allocation].insert id: id, type: 'interment', place_id: 8,  status: 'approved', funeral_director_id: 1
     db.run('SET IDENTITY_INSERT [allocation] OFF')
     
     db[:role_association] << {role_id: 1, allocation_id: 2, allocation_type: 'reservation'}
     db[:role_association] << {role_id: 3, allocation_id: 2, allocation_type: 'reservation'}
-    db[:role_association] << {role_id: 2, allocation_id: 3, allocation_type: 'interment'}
-    db[:role_association] << {role_id: 4, allocation_id: 3, allocation_type: 'interment'}
+    db[:role_association] << {role_id: 2, allocation_id: 2, allocation_type: 'interment'}
+    db[:role_association] << {role_id: 4, allocation_id: 2, allocation_type: 'interment'}
     db[:role_association] << {role_id: 5, allocation_id: 1, allocation_type: 'reservation'}
     
     db[:transaction] << {:allocation_id => 2, :allocation_type => 'interment', :receipt_no => 69242}

@@ -12,7 +12,7 @@
   <select data-place-type="<%= type %>" name="place[]">
     <option value=""></option>
     <% _.each(places, function (place) { %>
-      <option value="<%= place.id %>" <%= (place.id == selected) ? 'selected="selected"' : '' %>><%= place.name %> (<%= place.child_count ? place.child_count : 0 %>)</option>
+      <option value="<%= place.id %>" <%= (place.id == selected) ? 'selected="selected"' : '' %>><%= place.name %></option>
     <% }) %>
   </select>
 </script>

@@ -13,22 +13,26 @@
 <div class="row">
   <span class="align_top">Residential Contact</span>
   <div>
-    <%= role.residential_contact.street_address %><br />
-    <%= role.residential_contact.town %>, <%= role.residential_contact.state %> <%= role.residential_contact.postal_code %><br />
-    <%= role.residential_contact.primary_phone %><%= (role.residential_contact.secondary_phone) ? ", "+role.residential_contact.secondary_phone : '' %><br />
-    <%= role.residential_contact.email %>
+    <%=
+    "#{role.residential_contact.street_address}<br />
+    #{role.residential_contact.town}, #{role.residential_contact.state} #{role.residential_contact.postal_code}<br />
+    #{role.residential_contact.primary_phone} #{(role.residential_contact.secondary_phone) ? ", "+role.residential_contact.secondary_phone : ''}<br />
+    #{role.residential_contact.email}"
+    %>
   </div>
 </div>
 <div class="row">
   <span class="align_top">Mailing Contact</span>
-  <% if role.mailing_contact %>
-    <div>
-      <%= role.mailing_contact.street_address %><br />
-      <%= role.mailing_contact.town %>, <%= role.mailing_contact.state %> <%= role.mailing_contact.postal_code %><br />
-      <%= role.mailing_contact.primary_phone %><%= (role.mailing_contact.secondary_phone) ? ", "+role.mailing_contact.secondary_phone : '' %><br />
-      <%= role.mailing_contact.email %>
-    </div>
-  <% else %>
-    <div>None</div>
-  <% end %>
+  <div>
+  <%=
+  if role.mailing_contact
+    "#{role.mailing_contact.street_address}<br />
+    #{role.mailing_contact.town}, #{role.mailing_contact.state} #{role.mailing_contact.postal_code}<br />
+    #{role.mailing_contact.primary_phone} #{(role.mailing_contact.secondary_phone) ? ", "+role.mailing_contact.secondary_phone : ''}<br />
+    #{role.mailing_contact.email}"
+  else
+    "<small>none</small>"
+  end
+  %>
+  </div>
 </div>

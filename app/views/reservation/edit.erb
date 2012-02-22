@@ -1,0 +1,94 @@
+<%
+@document[:title] = "Edit Reservation ##{@reservation.id}"
+content_for :head do
+%>
+  <script type="text/javascript">
+    $( function () {
+            
+      var roles = {}
+      var role_data = <%=
+        @reservation.roles.reduce({}) do |memo, role|
+          memo[role.type] = {
+            type: role.type,
+            person: role.person.values,
+            residential_contact: role.residential_contact.values,
+            mailing_contact: (role.mailing_contact) ? role.mailing_contact.values : {}
+          }
+          memo
+        end.to_json
+      %>
+      
+      _.each({reservee: 'Reservee', applicant: 'Applicant', next_of_kin: 'Next of Kin'}, function (name, type) {
+        var model = null
+        if(role_data[type]) {
+          model = new Ts.Role({
+            type: type,
+            person: new Ts.Person(role_data[type].person),
+            residential_contact: new Ts.Contact(role_data[type].residential_contact),
+            mailing_contact: new Ts.Contact(role_data[type].mailing_contact)
+          })
+        }
+        roles[type] = new Ts.FormViews.RoleBlock({role_type: type, role_name: name, model: model, el: $('#'+type+'_section')})
+        roles[type].render()
+      })
+      
+      $('#places_section label').each( function (idx, element) {
+        new Ts.FormViews.PlacesView({el: element})
+      })
+      
+      var multibutton = new Ts.FormViews.Multibutton({name: 'submit', values: {active: 'Submit', completed: 'Complete'}})
+      $('#actions_section > div').append(multibutton.render().el)
+    
+      new Ts.FormViews.AllocationForm({el: $('#reservation_form'), roles: roles})
+    })
+  </script>
+<%
+end
+
+include_script_views('role_wizard', 'form')
+%>
+<form id="reservation_form" class="rowed wide" action="<%= url :reservation_edit, :id => @reservation.id %>">
+  <section>
+    <h2 class="underline">Reserved For</h2>
+    <div id="reservee_section" class="section padded" name="reservee"></div>
+  </section>
+  <section>
+    <h2 class="underline">Applicant</h2>
+    <div id="applicant_section" class="section padded" name="applicant"></div>
+  </section>
+  <section>
+    <h2 class="underline">Next of Kin</h2>
+    <div id="next_of_kin_section" class="section padded" name="next_of_kin"></div>
+  </section>
+  <section>
+    <h2 class="underline">Location</h2>
+    <div id="places_section" class="section padded" name="place">
+    <% @places.each do |place|
+      siblings = place.siblings %>
+      <label>
+        <span><%= place.type.demodulize.titleize %></span>
+        <%= select_tag('place[]', :collection => siblings, :fields => [:name, :id], :selected => place.id, :include_blank => '', :'data-place-type' => place.type) %>
+      </label>
+    <% end %>
+    </div>
+  </section>
+  <section>
+    <h2 class="underline">Other Details</h2>
+    <div class="section padded">
+    	<label>
+        <span class="align_top">Location Description</span>
+        <textarea name="location_description" style="width: 100%; height: 56px;"></textarea>
+      </label>
+      <label>
+        <span class="align_top">Comments</span>
+        <textarea name="comments" style="width: 100%; height: 82px;"></textarea>
+      </label>
+    </div>
+  </section>
+  <section>
+    <h2 class="underline">Actions</h2>
+    <div id="actions_section" class="section padded">
+      <div class="inline_layout"></div>
+    </div>
+  </section>
+</form>

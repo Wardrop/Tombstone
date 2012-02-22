@@ -5,9 +5,12 @@
   <link rel="stylesheet" href="<%= url "/reset.css" %>" />
   <link rel="stylesheet" href="<%= url "/style.css" %>" />
   <link rel="stylesheet" href="<%= url "/scripts/vendor/jquery-ui/cupertino/jquery-ui-1.8.17.custom.css" %>" />
+  <link rel="stylesheet" href="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.css' %>" />
+  <script type="text/javascript" src="<%= url '/scripts/vendor/date-en-AU.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-1.7.1.min.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery.livequery.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-1.8.17.custom.min.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/underscore.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/backbone.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/common.js' %>"></script>
@@ -22,6 +25,16 @@
 	<div id="container">
   	<div class="info">Hello, <a href="#">Tom Wardrop</a></div>
     <div id="banner">Tombstone</div>
+    <%=
+    if(@document[:breadcrumb].is_a? Array)
+      '<div id="navigation_bar">'+build_breadcrumb(@document[:breadcrumb])+'</div>'
+    elsif @document[:breadcrumb] == true
+      '<div id="navigation_bar">'+build_breadcrumb+'</div>'
+    end
+    %>
+    <% if flash[:banner] %>
+      <div onclick="$(this).remove()" title="Click to hide" class="padded flash_banner <%= flash[:banner][0] %>"><%= flash[:banner][1] %></div>
+    <% end %>
     <%= yield %>
   </div>
 </body>

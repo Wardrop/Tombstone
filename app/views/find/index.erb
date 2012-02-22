@@ -26,11 +26,6 @@ content_for :head do
   HEAD
 end
 %>
-<div id="navigation_bar">
-	<a href="<%= url '/' %>" class="breadcrumb home"></a>
-  <span class="breadcrumb div">/</span>
-	<a href="<%= url '/find' %>" class="breadcrumb">Find</a>
-</div>
 <div>
   <section>
     <h2 class="underline">Find</h2>
@@ -52,14 +47,15 @@ end
     <h3 class="underline">Results</h3>
     <div class="list_rows padded">
     <% @records.each do |record|
-      reservee = record.roles_by_type('reservee')[0]
+      main_role = record.roles_by_type('reservee')[0] || record.roles_by_type('deceased')[0]
+      p record.id
       applicant = record.roles_by_type('applicant')[0]
       next_of_kin = record.roles_by_type('next_of_kin')[0]
       %>
       <div class="clickable">
         <div class="summary">
-          <%= record.type.demodulize.titleize %> - <%= record.place.name %> - <%= reservee.person.title %> <%= reservee.person.given_name %> <%= reservee.person.surname %>
-          <a class="goto" href="<%= url "/reservation/view/#{record.id}" %>" title="View record"></a>
+          <%= record.type.demodulize.titleize %> - <%= record.place.name %> - <%= main_role.person.title %> <%= main_role.person.given_name %> <%= main_role.person.surname %>
+          <a class="goto" href="<%= url "/#{record.type.downcase}/view/#{record.id}" %>" title="View record"></a>
         </div>
         <div class="details">
           <div class="left rowed">

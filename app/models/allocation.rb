@@ -10,13 +10,16 @@ module Tombstone
     
     def validate
       super
-      validates_presence :place
-      unless place.allocations.reject{ |v| v.type != 'reservation' }.empty?
+      if not Place === place
+        errors.add(:place, 'cannot be empty and must exist')
+      elsif not place.allocations.select{ |v| v.type == self.type && v.id != self.id }.empty?
         errors.add(:place, "is already associated with another allocation of the same type (#{type})")
+      elsif place.allocations.count >= 1 && place.allocations.first.id != id
+        errors.add(:place, "is already associated with an allocation with a different ID")
+      elsif place.children.length >= 1
+        errors.add(:place, 'must not have any children')
       end
-      errors.add(:place, 'must not have any children') if place.children.length >= 1
       validates_min_length 2, :status
-      validates_includes self.class.valid_states, :status
     end
     
     def roles_by_type(type)
@@ -44,13 +47,58 @@ module Tombstone
         self.first(:id => id)
       end
       
+      def valid_roles
+        ['reservee', 'next_of_kin', 'applicant']
+      end
+      
       def valid_states
         ['active', 'completed', 'deleted']
       end
     end
     
+    def validate
+      super
+      validates_includes self.class.valid_states, :status
+    end
+    
     def before_create
       self.type = 'reservation'
+    end
+  end
+  
+  class Interment < Allocation
+    set_dataset dataset.filter(:type => 'interment')
+    
+    class << self      
+      def with_pk(id)
+        self.first(:id => id)
+      end
+      
+      def valid_roles
+        ['deceased', 'next_of_kin', 'applicant']
+      end
+      
+      def valid_states
+        ['provisional', 'pending', 'approved', 'interred', 'completed', 'deleted']
+      end
+      
+      def valid_interment_types
+        ['coffin', 'ashes']
+      end
+    end
+    
+    def validate
+      super
+      validates_includes self.class.valid_states, :status
+      validates_type FuneralDirector, :funeral_director
+      validates_min_length 5, :funeral_director_name
+      validates_min_length 5, :funeral_service_location
+      validates_presence [:advice_received_date, :interment_date]
+      validates_includes self.class.valid_interment_types, :interment_type
+    end
+    
+    def before_create
+      self.type = 'interment'
     end
   end
 end

@@ -22,7 +22,11 @@ module Tombstone
       validates_min_length 2, :type
     end
     
-    def ancestors(upto = 0)
+    def siblings
+      self.class.filter(:parent_id => parent_id)
+    end
+    
+    def ancestors(upto = 0, include_self = false)
       column_string = self.class.dataset.columns.map { |v| "[#{v}]"}.join(', ')
       aliased_column_string = self.class.dataset.columns.map { |v| "p.[#{v}]"}.join(', ')
       array = self.db["
@@ -46,7 +50,7 @@ module Tombstone
         FROM PlaceAncestors
         GO
       ", {:id => self.id, :upto => upto}].to_a
-      array[1..-1].map { |v| Place.call(v) }
+      ((include_self) ? array : array[1..-1]).map { |v| Place.call(v) }
     end
     
     def next_available

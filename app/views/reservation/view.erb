@@ -17,18 +17,11 @@ end
 
 include_script_views('form')
 %>
-<div id="navigation_bar">
-	<a href="<%= url '/' %>" class="breadcrumb home"></a>
-  <span class="breadcrumb div">/</span>
-	<a href="<%= url '/find' %>" class="breadcrumb">Reservation</a>
-  <span class="breadcrumb div">/</span>
-	<a href="<%= url '/reservation/new' %>" class="breadcrumb">View</a>
-</div>
-<div class="rowed wide view">
+<div class="rowed very_wide view">
   <% @reservation.roles.each do |role| %>
     <section>
       <h2 class="underline"><%= role.type.demodulize.titleize %></h2>
-      <div id="reservee_section" class="section padded" name="reservee">
+      <div id="<%= role.type %>_section" class="section padded" name="reservee">
         <%= partial 'partials/role_view', :locals => {role: role} %>
       </div>
     </section>
@@ -49,12 +42,11 @@ include_script_views('form')
     <div class="section padded">
     	<label>
         <span>Location Description</span>
-        <% p @reservation.location_description %>
-        <div><%= (@reservation.location_description.blank?) ? '<small>none</small>' : @reservation.location_description %></div>
+        <div><%= print_field @reservation.location_description %></div>
       </label>
       <label>
         <span>Comments</span>
-        <div><%= (@reservation.comments.blank?) ? '<small>none</small>' : @reservation.comments %></div>
+        <div><%= print_field @reservation.comments %></div>
       </label>
     </div>
   </section>

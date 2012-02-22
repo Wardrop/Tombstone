@@ -95,7 +95,7 @@
 <script type="text/template" id="role_wizard:find_person_form_template">
   <div class="section padded">
     <label>
-  		<span>Given Name</span>
+  		<span>Title</span>
       <select type="text" name="title">
         <option value=""></option>
         <option>Mr</option>
@@ -129,8 +129,8 @@
 </script>
 
 <script type="text/template" id="role_wizard:person_block_template">
-  <span><strong><%= person.given_name %> <%= person.surname %></strong></span>
-  Todo: Display extra details such as date of birth, etc.
+  <span><strong><%= person.title %> <%= person.given_name %> <%= person.surname %></strong></span>
+  DOB: <%= Date.parse(person.date_of_birth).toString('dd/MM/yyyy') %>, Gender: <%= person.gender %>
 </script>
 
 <script type="text/template" id="role_wizard:person_results_template">
@@ -152,7 +152,7 @@
     </div>
     <div class="row">
       <span>Date of Birth</span>
-      <div><%= $.datepicker.formatDate('dd/mm/yy', new Date(person.date_of_birth)) %></div>
+      <div><%= Date.parse(person.date_of_birth).toString('dd/MM/yyyy') %></div>
     </div>
     <div class="row">
       <span class="align_top">Residential Contact</span>
@@ -183,6 +183,7 @@
     <div class="heading">
       <h2 class="underline"><%= data.title %></h2>
       <a class="close" href="javascript:void(0)" title="Close"></a>
+      <a class="back" href="javascript:void(0)" title="Go Back"></a>
     </div>
     <ul class="form_errors"></ul>
     <div class="body">

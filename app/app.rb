@@ -22,7 +22,8 @@ module Tombstone
     before do
       @document = {
         title: 'Tombstone',
-        scripts: []
+        scripts: [],
+        breadcrumb: true
       }
     end
 

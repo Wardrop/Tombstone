@@ -1,4 +1,6 @@
 Sequel::Model.plugin :validation_helpers
+Sequel::Model.plugin :json_serializer
+Sequel::Model.plugin :association_dependencies
 Sequel::Model.raise_on_typecast_failure = false
 
 Sequel::Model.db = case Padrino.env

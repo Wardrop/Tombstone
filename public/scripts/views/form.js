@@ -131,28 +131,33 @@ $( function () {
 			setTimeout("this.$('select').focus()")
       return this
     },
-    renderPlaces: function (places, selected) {
-      var view = (new Ts.FormViews.PlacesView({collection: places, selected: selected}))
-      $(this.el).parent().append(view.render().el)
+    renderPlaces: function (places, options) {
+      options = options || {}
+      options.insertFunction = options.insertFunction || 'append'
+      var view = (new Ts.FormViews.PlacesView({collection: places, selected: options.selected}))
+      $(this.el).parent()[options.insertFunction](view.render().el)
+      return this
     },
     selectPlace: function (e) {
       var target = $(e.target)
       var placeId = target.children(':selected').attr('value')
       if(placeId) {
         $(this.el).nextAll().remove()
-        this.$('.loading').remove()
+        this.$('.indicator').remove()
         if(target.data('placeType') == 'section') {
           this.nextAvailable(placeId)
         } else {
-          this.loadPlaceList(placeId)
+          this.load(placeId)
         }
       } else {
         $(this.el).nextAll().remove()
       }
+      
+      return this
     },
-    loadPlaceList: function (parent_id) {
+    load: function (parent_id) {
       this.lastRequest && this.lastRequest.abort()
-      $(this.el).append('<div class="loading" />')
+      $(this.el).append('<div class="indicator loading" />')
       this.lastRequest = $.ajax('/place/children/'+parent_id, {
 				type: 'GET',
 				dataType: 'json',
@@ -168,19 +173,20 @@ $( function () {
           if(textStatus != 'abort') alert('Some went wrong!')
         },
         complete: _.bind(function () {
-          this.$('.loading').remove()
+          this.$('.indicator').remove()
         }, this)
       })
+      return this
     },
     nextAvailable: function (parent_id) {
       this.lastRequest && this.lastRequest.abort()
-      $(this.el).append('<div class="loading" />')
+      $(this.el).append('<div class="indicator loading" />')
       this.lastRequest = $.ajax('/place/next_available/'+parent_id, {
         type: 'GET',
 				dataType: 'json',
         success: _.bind(function (data, textStatus, jqXHR) {
           _.each(data, function (place) {
-            this.renderPlaces(new Ts.Places(place.siblings), place.id)
+            this.renderPlaces(new Ts.Places(place.siblings), {selected: place.id})
           }, this)
         }, this),
         error: function (jqXHR, textStatus, errorThrown) {
@@ -188,9 +194,34 @@ $( function () {
           if(textStatus != 'abort') alert('Some went wrong!')
         },
         complete: _.bind(function () {
-          this.$('.loading').remove()
+          this.$('.indicator').remove()
         }, this)
       })
+      return this
+    },
+    loadWithAncestors: function (id) {
+      this.lastRequest && this.lastRequest.abort()
+      $(this.el).append('<div class="indicator loading" />')
+      this.lastRequest = $.ajax('/place/ancestors/'+id, {
+        type: 'GET',
+				dataType: 'json',
+        data: {include_self: true},
+        success: _.bind(function (data, textStatus, jqXHR) {
+          var lastParent = id
+          _.each(data, function (placeList) {
+            this.renderPlaces(new Ts.Places(placeList), {selected: lastParent, insertFunction: 'prepend'})
+            lastParent = placeList[0].parent_id
+          }, this)
+        }, this),
+        error: function (jqXHR, textStatus, errorThrown) {
+          // TODO
+          if(textStatus != 'abort') alert('Some went wrong!')
+        },
+        complete: _.bind(function () {
+          this.$('.indicator').remove()
+        }, this)
+      })
+      return this
     }
   })
 
@@ -200,13 +231,13 @@ $( function () {
 		},
 		initialize: function () {
 			this.roles = this.options.roles
-			this.loader = $('<div class="loading" />')
+			this.loader = $('<div class="indicator loading" />')
 			_.bindAll(this, 'submit')
 		},
 		submit: function (e) {
 			var data = this.formData()
 			data.status = $(e.currentTarget).attr('name')
-			this.loader.attr('class', 'loading').insertAfter('#actions_section .multibutton')
+			this.loader.attr('class', 'indicator loading').insertAfter('#actions_section .multibutton')
 			this.hideFormErrors()
 			if(this.lastRequest && this.lastRequest.state() == 'pending') {
 				alert('The last submit operation has not completed. Please wait...')
@@ -221,7 +252,7 @@ $( function () {
             this.showFormErrors(data.form_errors)
             this.loader.detach()
           } else {
-            this.loader.attr('class', 'success')
+            this.loader.attr('class', 'indicator success')
 						window.location = data.nextUrl
           }
         }, this),
