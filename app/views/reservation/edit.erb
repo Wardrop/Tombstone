@@ -1,5 +1,5 @@
 <%
-@document[:title] = "Edit Reservation ##{@reservation.id}"
+@document[:title] = "Edit Reservation ##{@allocation.id}"
 content_for :head do
 %>
   <script type="text/javascript">
@@ -7,7 +7,7 @@ content_for :head do
             
       var roles = {}
       var role_data = <%=
-        @reservation.roles.reduce({}) do |memo, role|
+        @allocation.roles.reduce({}) do |memo, role|
           memo[role.type] = {
             type: role.type,
             person: role.person.values,
@@ -38,7 +38,7 @@ content_for :head do
       
       var multibutton = new Ts.FormViews.Multibutton({name: 'submit', values: {active: 'Submit', completed: 'Complete'}})
       $('#actions_section > div').append(multibutton.render().el)
-    
+      
       new Ts.FormViews.AllocationForm({el: $('#reservation_form'), roles: roles})
     })
   </script>
@@ -47,7 +47,7 @@ end
 
 include_script_views('role_wizard', 'form')
 %>
-<form id="reservation_form" class="rowed wide" action="<%= url :reservation_edit, :id => @reservation.id %>">
+<form id="reservation_form" class="rowed wide" action="<%= url :reservation, :id => @allocation.id %>">
   <section>
     <h2 class="underline">Reserved For</h2>
     <div id="reservee_section" class="section padded" name="reservee"></div>
@@ -91,4 +91,5 @@ include_script_views('role_wizard', 'form')
       <div class="inline_layout"></div>
     </div>
   </section>
+  <input type="hidden" name="_method" value="put" />
 </form>

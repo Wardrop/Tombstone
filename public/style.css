@@ -194,6 +194,7 @@ section:last-child, .section:last-child {
   margin: 6px 0;
   color: white;
   cursor: pointer;
+	white-space: pre;
 }
 .flash_banner:hover {
   opacity: 0.9;
@@ -381,6 +382,7 @@ a.row_button:hover {
 }
 .rowed label > span.align_top:first-child, .rowed div.row > span.align_top:first-child {
 	vertical-align: top;
+	padding-top: 0.2em;
 }
 .rowed div.row label {
 	display: inline;

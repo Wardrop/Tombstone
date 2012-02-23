@@ -9,7 +9,8 @@ $( function () {
   })
 })
 
-// Backbone helpers
+/**** Backbone helpers ****/
+
 _.extend(Backbone.Model.prototype, {
   recursiveToJSON: function () {
     var json = this.toJSON()
@@ -25,7 +26,8 @@ _.extend(Backbone.Model.prototype, {
 });
 
 
-// jQuery helpers
+/**** jQuery helpers ****/
+
 (function ($) {
   $.fn.serializeJSON = function() {
     var json = {};
@@ -75,15 +77,16 @@ _.extend(Backbone.Model.prototype, {
 })(jQuery)
 
 
-Ts.capitalize = function (string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+/**** Prototype Extensions ****/
+
+String.prototype.capitalize = function () {
+  return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
 /* 
  * To Title Case 2.0.1 – http://individed.com/code/to-title-case/
  * Copyright © 2008–2012 David Gouch. Licensed under the MIT License. 
  */
-
 String.prototype.toTitleCase = function () {
   var smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|vs?\.?|via)$/i;
 

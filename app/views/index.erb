@@ -1,8 +1,8 @@
 <% @document[:breadcrumb] = false %>
 <div id="navigation_bar">
-	<a href="<%= url '/find' %>" class="action find">Find</a>
-	<a href="<%= url '/interment/new' %>" class="action burial">New Burial</a>
-  <a href="<%= url '/reservation/new' %>" class="action reservation">New Reservation</a>
+	<a href="<%= url :find_index %>" class="action find">Find</a>
+	<a href="<%= url :interment_new %>" class="action burial">New Burial</a>
+  <a href="<%= url :reservation_new %>" class="action reservation">New Reservation</a>
   <a href="#" class="action calendar">Calendar</a>
 </div>
 <div class="inline_layout align_top">

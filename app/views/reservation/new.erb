@@ -24,7 +24,7 @@ end
 
 include_script_views('role_wizard', 'form')
 %>
-<form id="reservation_form" class="rowed wide" action="<%= url '/reservation/new' %>">
+<form id="reservation_form" class="rowed wide" action="<%= url :reservation_new %>">
   <section>
     <h2 class="underline">Reserved For</h2>
     <div id="reservee_section" class="section padded" name="reservee"></div>

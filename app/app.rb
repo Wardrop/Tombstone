@@ -27,7 +27,7 @@ module Tombstone
       }
     end
 
-    get "/" do
+    get :index do
       render :index
     end
     

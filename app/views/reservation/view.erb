@@ -1,24 +1,34 @@
 <%
-@document[:title] = "View Reservation ##{@reservation.id}"
+@document[:title] = "View Reservation ##{@allocation.id}"
 content_for :head do
-  <<-HEAD
-    <script type="text/javascript">
-    $( function () {
-        var multibutton = new Ts.FormViews.Multibutton({name: 'action', values: {edit: 'Edit', delete: 'Delete', create_burial: 'Create Burial'}})
-        $('#actions_section > div').append(multibutton.render().el)
-      
-        $('input[type=button]', multibutton.el).click(function (e) {
-          alert('This function is not currently implemented.')
-        })
+%>
+  <script type="text/javascript">
+  $( function () {
+      var multibutton = new Ts.FormViews.Multibutton({
+        name: 'action',
+        values: {edit: 'Edit', delete: 'Delete', create_burial: 'Create Burial'},
+        actions: {
+          edit: function () {
+            window.location = <%= url(:reservation_edit, :id => @allocation.id).to_json %>
+          },
+          delete: function () {
+            $('<form method="post" />').append($('<input type="hidden" name="_method" value="delete" />')).submit()
+          },
+          default: function () {
+            alert('This function is not currently implemented.')
+          }
+        }
       })
-    </script>
-  HEAD
+      $('#actions_section > div').append(multibutton.render().el)
+    })
+  </script>
+<%
 end
 
 include_script_views('form')
 %>
 <div class="rowed very_wide view">
-  <% @reservation.roles.each do |role| %>
+  <% @allocation.roles.each do |role| %>
     <section>
       <h2 class="underline"><%= role.type.demodulize.titleize %></h2>
       <div id="<%= role.type %>_section" class="section padded" name="reservee">
@@ -29,7 +39,7 @@ include_script_views('form')
   <section>
     <h2 class="underline">Location</h2>
     <div id="places_section" class="section padded" name="place">
-    <% @reservation.place.ancestors.reverse.push(@reservation.place).each do |place| %>
+    <% @allocation.place.ancestors.reverse.push(@allocation.place).each do |place| %>
       <div class="row">
         <span><%= place.type.demodulize.titleize %></span>
         <div><%= place.name %></div>
@@ -42,11 +52,15 @@ include_script_views('form')
     <div class="section padded">
     	<label>
         <span>Location Description</span>
-        <div><%= print_field @reservation.location_description %></div>
+        <div><%= print_field @allocation.location_description %></div>
       </label>
       <label>
         <span>Comments</span>
-        <div><%= print_field @reservation.comments %></div>
+        <div><%= print_field @allocation.comments %></div>
+      </label>
+      <label>
+        <span>Status</span>
+        <div><%= print_field @allocation.status %></div>
       </label>
     </div>
   </section>

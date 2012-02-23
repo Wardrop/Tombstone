@@ -15,16 +15,25 @@ module Tombstone
         route_name = route.named.to_s.sub(Regexp.new(/^#{route.controller}_/), '')
         segments = []
         segments << ['', "/"]
-        segments << [route.controller.demodulize.titleize, "/#{route.controller}"]
-        segments << [route_name.demodulize.titleize, "/#{route.controller}/#{request.path_info.slice(/#{route_name}.*$/)}"] unless route_name == 'index'
+        segments << [
+          route.controller.demodulize.titleize,
+          request.path_info.slice(/^\/#{route.controller}(.*(?=\/#{route_name})|.*)/)
+        ]
+        segments << [route_name.demodulize.titleize, request.path_info] unless route_name == 'index'
       end
       segments.dup.map { |title, uri|
         "<a href='#{url uri}' class='breadcrumb #{(title.empty?) ? 'home' : ''}'>#{title}</a>"
       }.join('<span class="breadcrumb div">/</span>')
     end
     
-    def print_field(value)
-      (value.blank?) ? '<small>none</small>' : value
+    def print_field(value, *string_methods)
+      if value.blank?
+        '<small>none</small>'
+      else
+        if String === value
+          string_methods.reduce(value){ |memo, method| value.send(method) }
+        end
+      end
     end
     
     # Takes a plain xml/xhtml string, an array of field names indicating which fields have errors, and an array of
@@ -46,17 +55,31 @@ module Tombstone
       # Repopulate field with the given field values.
       unless opts[:values].nil? || opts[:values].empty?
         values = opts[:values]
-        p values
         doc.css(values.keys.map { |k| "[name='#{k}']" }.join(", ")).each do |v|
+          val = values[v['name']] || values[v['name'].to_sym]
+          val = case val
+            when Time
+              #v.attributes.select{|v| v.name == 'type'}
+              if v['type'] == 'date'
+                val.strftime('%d/%m/%Y')
+              elsif v['type'] == 'datetime'
+                val.strftime('%d/%m/%Y %l:%M:%S%P')
+              else
+                ((val.hour + val.min + val.sec) > 0) ? val.strftime('%d/%m/%Y %l:%M:%S%P') : val.strftime('%d/%m/%Y')
+              end
+            when nil
+              ''
+            else
+              val
+          end
+          
           case v.name
             when 'input'
-              v['value'] = values[v['name']] || values[v['name'].to_sym]
+              v['value'] = val
             when 'select'
-              v.css('option').each do |option|
-                option['selected'] = 'selected' if (values[v['name']] || values[v['name'].to_sym]) == option['value']
-              end
+              v.css('option').each { |option| option['selected'] = 'selected' if val == option['value'] }
             when 'textarea'
-              v.content = values[v['name']] || values[v['name'].to_sym]
+              v.content = val
           end
         end
       end

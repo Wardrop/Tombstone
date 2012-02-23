@@ -14,10 +14,11 @@
   <span class="align_top">Residential Contact</span>
   <div>
     <%=
-    "#{role.residential_contact.street_address}<br />
-    #{role.residential_contact.town}, #{role.residential_contact.state} #{role.residential_contact.postal_code}<br />
-    #{role.residential_contact.primary_phone} #{(role.residential_contact.secondary_phone) ? ", "+role.residential_contact.secondary_phone : ''}<br />
-    #{role.residential_contact.email}"
+    rc = role.residential_contact
+    "#{rc.street_address}<br />
+    #{rc.town}, #{rc.state} #{rc.postal_code}<br />
+    #{rc.primary_phone} #{(rc.secondary_phone.blank?) ? '' : ', '+rc.secondary_phone}<br />
+    #{rc.email}"
     %>
   </div>
 </div>
@@ -25,11 +26,12 @@
   <span class="align_top">Mailing Contact</span>
   <div>
   <%=
-  if role.mailing_contact
-    "#{role.mailing_contact.street_address}<br />
-    #{role.mailing_contact.town}, #{role.mailing_contact.state} #{role.mailing_contact.postal_code}<br />
-    #{role.mailing_contact.primary_phone} #{(role.mailing_contact.secondary_phone) ? ", "+role.mailing_contact.secondary_phone : ''}<br />
-    #{role.mailing_contact.email}"
+  mc = role.mailing_contact
+  if mc
+    "#{mc.street_address}<br />
+    #{mc.town}, #{mc.state} #{mc.postal_code}<br />
+    #{mc.primary_phone} #{(mc.secondary_phone.blank?) ? '' : ', '+mc.secondary_phone}<br />
+    #{mc.email}"
   else
     "<small>none</small>"
   end

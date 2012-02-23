@@ -13,7 +13,10 @@ content_for :head do
       var rootPlaces = new Ts.Places(<%= @root_places.to_json %>)
       $('#places_section').append(new Ts.FormViews.PlacesView({collection: rootPlaces}).render().el)
       
-      var multibutton = new Ts.FormViews.Multibutton({name: 'submit', values: {pending: 'Submit', approved: 'Approve', interred: 'Inter', completed: 'Complete'}})
+      var multibutton = new Ts.FormViews.Multibutton({
+        name: 'submit',
+        values: {pending: 'Submit', approved: 'Approve', interred: 'Inter', completed: 'Complete'}
+      })
       $('#actions_section > div').append(multibutton.render().el)
     
       new Ts.FormViews.AllocationForm({el: $('#interment_form'), roles: roles})
@@ -24,7 +27,7 @@ end
 
 include_script_views('role_wizard', 'form')
 %>
-<form id="interment_form" class="rowed wide" action="<%= url '/interment/new' %>">
+<form id="interment_form" class="rowed wide" action="<%= url :interment_new %>">
   <section>
     <h2 class="underline">Deceased</h2>
     <div id="deceased_section" class="section padded" name="deceased"></div>

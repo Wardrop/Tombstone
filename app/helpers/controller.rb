@@ -1,10 +1,12 @@
 module Tombstone
   App.helpers do
     
-    def saveAllocation(allocation, data)
+    # Takes an optional block which is yielded directly before the allocation is validated and saved.
+    # Block is given the allocation object and data hash as arguments.
+    def save_allocation(allocation, data)
       errors = allocation.errors
       allocation.db.transaction do
-        roles = {}
+        roles = []
         allocation.class.valid_roles.each do |role_name|
           role_data = data[role_name]
           if role_data.nil? || !role_data.is_a?(Hash)
@@ -12,7 +14,7 @@ module Tombstone
           else
             role_errors = Sequel::Model::Errors.new
             begin
-              allocation.add_role(Role.create_from(role_data, role_errors))
+              roles << Role.create_from(role_data, role_errors)
             rescue Sequel::Rollback => e
               errors.add(role_name.to_sym, role_errors)
               raise
@@ -25,14 +27,25 @@ module Tombstone
           raise Sequel::Rollback
         end
         
-        if allocation.valid?
-          reservation.save
+        yield(allocation, data) if block_given?
+        
+        if errors.empty? && allocation.valid?
+          allocation.save
+          roles.each { |role| allocation.add_role(role) }
         else
-          errors.merge!(reservation.errors)
+          errors.merge!(allocation.errors)
           raise Sequel::Rollback
         end
-
-        roles.each { |type, role| role.add_allocation(reservation) }
+      end
+    end
+    
+    # Returns true on success.
+    def delete_allocation(allocation)
+      allocation.db.transaction do
+        allocation.roles_dataset.delete # Remove role records
+        allocation.remove_all_roles # Remove associations in join table
+        allocation.destroy
+        true
       end
     end
     

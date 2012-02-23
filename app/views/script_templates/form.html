@@ -8,7 +8,7 @@
 </script>
 
 <script type="text/template" id="form:place_list_template">
-  <span><%= Ts.capitalize(type) %></span>
+  <span><%= type.capitalize() %></span>
   <select data-place-type="<%= type %>" name="place[]">
     <option value=""></option>
     <% _.each(places, function (place) { %>

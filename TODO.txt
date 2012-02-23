@@ -2,26 +2,20 @@
   - Going to the review page, pressing back, selecting the same address, and selecting back again, causes nothing to happen.
     If back is then pressed again, jumps back to people page.
 * Simplify breadcrumb into a list (<ul>) and use the CSS pseudo element :before to render the slashes in-between.
-* Fix display of multibutton when option in drop down is significantly longer than the default option.
+* Multibutton
+  - Fix display when option in drop down is significantly longer than the default option.
+  - Fall back to normal input button when only one option is available.
 * In location drop-down's on allocation form, check for plot availability (status = available, unit associated with any places), but still show plots which allow multiple interment.
   - Also, don't display parents with no available children.
 * Indicate which form fields are required.
-* Add hooks to models for cleaning and formatting data, e.g. capitalizing names, lower casing gender, etc.
+* Add hooks to models for cleaning and formatting data, e.g. capitalising names, lower casing gender, etc.
 * Add validation rules to specs.
 * Make JavaScript templates dynamic so variable data such as drop-down's can be prepopulated correctly.
-* jQuery DatePicker modifications to the form are not always updated in the model.
-  - Same problem when a form is re-opened. The model is not updated with the formatted date.
-  - American date format seems to be used.
+  - Will need to use alternative delimiters for Backbone.js template parser.
 * Receipt no/transactions (many to one) need to be provided.
 * Add mailing contact to RoleWizard.
-* Change reservee doesn't allow you to edit previously entered details. May need to make a new interface for changing a reservee.
+* The change reservee function doesn't allow you to edit previously entered details. May need to make a new interface for changing a reservee.
 * Limit the number of records returned over JSON.
-* Add success flash message banner when reservation is submitted.
-* Make multibutton fall back to normal input button when only one option is available.
-    
-Refactor Oppurtunities
-----------------------
-* Convert project to padrino
-  - Convert controllers into namespaced controllers.
-  - Use content_for.
-* Add autoloading to models so class names in associations can be referenced by name rather than symbol.
+  - Add pagination?
+
+* Should the reservee/deceased be able to also act as the next of kin and/or applicant?

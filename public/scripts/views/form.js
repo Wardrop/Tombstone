@@ -59,7 +59,7 @@ $( function () {
     template: _.template($('#form\\:multibutton_template').html()),
     events: {
       'click span.dropdown_button' : 'toggleList',
-      'click ul input' : 'onSelectListItem'
+      'click input' : 'onSelectButton'
     },
     initialize: function () {
       _.bindAll(this, 'hideList', 'showList', 'keydownHideEvent')
@@ -100,12 +100,20 @@ $( function () {
 			$(document).unbind('keydown', this.keydownHideEvent)
     },
     selectButton: function(selected) {
-      $(this.el).children('input').remove()
-			$(this.el).prepend($(selected).clone(true))
-		  this.$('ul > li').removeClass('selected').find(selected).parent().addClass('selected')
+			if ($(selected).parent()[0] != this.el) {
+				$(this.el).children('input').remove()
+				$(this.el).prepend($(selected).clone(true))
+			  this.$('ul > li').removeClass('selected').find(selected).parent().addClass('selected')
+			}
 		},
-    onSelectListItem: function (e) {
-      this.selectButton(e.currentTarget)
+    onSelectButton: function (e) {
+			var selected = e.currentTarget
+      this.selectButton(selected)
+			if (this.options.actions && this.options.actions[selected.name]) {
+				this.options.actions[selected.name]()
+			} else if (this.options.actions && this.options.actions['default']) {
+				this.options.actions['default']()
+			}
     },
     keydownHideEvent: function (e) {
       if (e.keyCode == 27) this.hideList();
@@ -247,20 +255,29 @@ $( function () {
         type: 'POST',
         data: data,
         success: _.bind( function (data, textStatus, jqXHR) {
-          console.log(data)
           if(data.success == false) {
             this.showFormErrors(data.form_errors)
             this.loader.detach()
           } else {
             this.loader.attr('class', 'indicator success')
-						window.location = data.nextUrl
+						window.location = data.redirectTo
           }
         }, this),
-        error: function (jqXHR, textStatus, errorThrown) {
+        error: _.bind( function (jqXHR, textStatus, errorThrown) {
 					// TODO
           this.loader.detach()
-          if(textStatus != 'abort') alert('Some went wrong!')
-				}
+					switch(textStatus) {
+						case 'error':
+							try {
+								this.showFormErrors($.parseJSON(jqXHR.responseText).exception.capitalize())
+							} catch (err) {
+								this.showFormErrors("Server error encountered: "+errorThrown+"\n"+jqXHR.responseText)
+							}
+							break;
+						default:
+							this.showFormErrors("Error encountered: "+errorThrown)
+					}
+				}, this)
       })
 		},
 		formData: function () {
@@ -273,21 +290,21 @@ $( function () {
       })
 			return data
 		},
-		// field.split('_').join(' ')).toTitleCase()
 		showFormErrors: function (errors) {
 			var container = $('<ul class="form_errors" />')
+			errors = (errors.constructor == String) ? [errors] : errors
 			var iterateErrors = function (ul, errors) {
 				_.each(errors, function (error, field) {
 				  if (error.constructor == Array) {
 						_.each(error, function (message) {
 							errorObj = {}; errorObj[field] = message
-							ul.append('<li>'+field.split('_').join(' ').toTitleCase()+'</li>')
+							ul.append($('<li />').text(field.split('_').join(' ').toTitleCase()))
 							ul.append(iterateErrors($('<ul />'), errorObj))
 						})
 					} else if (error.constructor == Object) {
 						ul.append(iterateErrors($('<ul />'), error))
 					} else {
-						ul.append('<li>'+error+'.</li>')
+						ul.append($('<li />').text(error))
 					}
 				})
 				return ul

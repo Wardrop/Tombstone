@@ -1,93 +1,96 @@
 module Tombstone
-  App.controller :reservation do
+  
+  allocation = proc do
+    controller = @_controller[0].to_s
+    Allocation = Tombstone.const_get(controller.capitalize)
     
-    get :index do
-      redirect to(:find)
-    end
-    
-    get :view, :with => :id do
-      @reservation = Reservation.with_pk(params[:id])
-      if @reservation
-        render 'reservation/view'
+    get :view, :with => :id, :map => controller do
+      @allocation = Allocation.with_pk(params[:id])
+      if @allocation
+        render "#{controller}/view"
       else
-        halt 404, render('reservation/not_found')
+        halt 404, render("#{controller}/not_found")
       end
     end
     
-    get :new do
+    get :new, :map => controller do
       @root_places = Place.filter(:parent_id => nil).order(:name).naked.all
-      render 'reservation/new'
+      @funeral_directors = FuneralDirector.all
+      render "#{controller}/new"
     end
     
-    get :edit, :with => :id do
-      @reservation = Reservation.with_pk(params[:id])
-      @places = @reservation.place.ancestors(0, true).reverse
-      if @reservation
-        prepare_form(render('reservation/edit'), {selector: 'form', values: @reservation.values})
+    get :edit, :map => "#{controller}/:id/edit" do
+      @allocation = Allocation.with_pk(params[:id])
+      @places = @allocation.place.ancestors(0, true).reverse
+      @funeral_directors = FuneralDirector.all
+      if @allocation
+        prepare_form(render("#{controller}/edit"), {selector: 'form', values: @allocation.values})
       else
-        halt 404, render('reservation/not_found')
+        halt 404, render("#{controller}/not_found")
       end
     end
 
-    post :new, :provides => :json do
-      params.symbolize_keys!
-      form_errors = Sequel::Model::Errors.new
-      response = {success: false, form_errors: form_errors, nextUrl: nil}
-
-      Reservation.db.transaction {
-        roles = {}
-        [:reservee, :applicant, :next_of_kin].each do |role_name|
-          role_data = params[role_name.to_s]
-          if role_data.nil? || !role_data.is_a?(Hash)
-            form_errors.add(role_name, "must be added")
-          else
-            role_errors = Sequel::Model::Errors.new
-            begin
-              roles[role_name] = Role.create_from(role_data, role_errors)
-            rescue Sequel::Rollback => e
-              form_errors.add(role_name, role_errors)
-              raise
-            end
-          end
-        end
-
-        if !params[:place].is_a?(Array) || params[:place].reject { |v| v.empty? }.empty?
-          form_errors.add(:place, "must be selected")
-          raise Sequel::Rollback
-        end
-        
-        reservation = Reservation.new(Reservation.filter_by_columns(params).merge(
-          place_id: params[:place][-1]
-        ))
-        if reservation.valid?
-          reservation.save
-        else
-          form_errors.merge!(reservation.errors)
-          raise Sequel::Rollback
-        end
-
-        roles.each { |type, role| role.add_allocation(reservation) }
-      }
-      if response[:form_errors].empty?
-        response[:success] = true 
-        response[:nextUrl] = url(:reservation_view, :id => reservation.id)
-        flash[:banner] = ['success', "Reservation created successfully"]
+    post :index, :provides => :json do
+      allocation = Allocation.new
+      response = {success: false, form_errors: allocation.errors, redirectTo: nil}
+      save_allocation(allocation, params) do
+        allocation.set_only_valid params.merge(
+          place_id: params['place'][-1],
+          funeral_director_id: params['funeral_director']
+        )
+      end
+    
+      if allocation.errors.empty?
+        response.merge!(success: true, redirectTo: url(:"#{controller}_view", :id => allocation.id))
+        flash[:banner] = ['success', "#{controller.capitalize} was created successfully."]
       end
       response.to_json
     end
     
-    post :edit, :with => :id, :provides => :json do
-      @reservation = Reservation.with_pk(params[:id])
-      return "Reservation with ##{params[:id]} does not exist.".to_json
-      
-      Reservation.db.transaction do
-        @reservation.roles.each { |r| r.destroy }
-        @reservation.remove_all_roles
-        @reservation.values.select { |k,v| Reservation.restricted_columns.push(:id, :type) }
-        
-        saveAllocation(@reservation, params)
+    put :index, :with => :id, :provides => :json do
+      allocation = Allocation.with_pk(params[:id])
+      response = {success: false, form_errors: allocation.errors, redirectTo: nil}
+      if allocation.nil?
+        response[:form_errors] = "Could not amend #{controller} ##{params[:id]} as it does not exist."
+      else
+        Allocation.db.transaction do
+          allocation.roles.each { |r| r.destroy }
+          allocation.remove_all_roles
+          allocation.values.select { |k,v| Allocation.restricted_columns.push(:id, :type) }
+          save_allocation(allocation, params) do
+            allocation.set_only_valid params.merge(
+              place_id: params['place'][-1],
+              funeral_director_id: params['funeral_director']
+            )
+          end
+        end
       end
+      
+      if allocation.errors.empty?
+        response.merge!(success: true, redirectTo: url(:"#{controller}_view", :id => allocation.id))
+        flash[:banner] = ['success', "#{controller.captialize} was amended successfully."]
+      end
+      response.to_json
+    end
+    
+    delete :index, :with => :id do
+      allocation = Allocation.with_pk(params[:id])
+      if allocation.nil?
+        flash[:banner] = ["error", "Could not delete #{controller} ##{params[:id]} as it does not exist."]
+      else
+        begin
+          delete_allocation(allocation)
+          flash[:banner] = ["success", "#{controller.captialize} was deleted successfully."]
+        rescue => e
+          flash[:banner] = ["error", "Error occured while deleting #{controller} ##{params[:id]}. The error was: \n#{e.message}"]
+          redirect url(:"#{controller}_view", :with => params[:id])
+        end
+      end
+      redirect url(:index)
     end
     
   end
+  
+  App.controller :reservation, &allocation
+  App.controller :interment, &allocation
 end

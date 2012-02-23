@@ -1,31 +1,26 @@
 <%
-@document[:title] = 'Reservation'
-content_for :head do
-  <<-HEAD
-    <script type="text/javascript">
-    //<![CDATA[
-      $( function () {
-        $('input[type=submit]').click(function (e) {
-          alert('This function is not currently implemented.')
-        })
-      
-        $('#search_results .clickable').click( function (e) {
-          if(e.target.tagName != 'A') {
-            if($(this).hasClass('expanded')) {
-              $(this).removeClass('expanded')
-              $(this).attr('title', 'Click to expand')
-            } else {
-              $(this).addClass('expanded')
-              $(this).attr('title', 'Click to collapse')
-            }
-          }
-        }).attr('title', 'Click to expand')
+@document[:title] = 'Find'
+content_for :head do %>
+  <script type="text/javascript">
+    $( function () {
+      $('input[type=submit]').click(function (e) {
+        alert('This function is not currently implemented.')
       })
-    // ]]>
-    </script>
-  HEAD
-end
-%>
+    
+      $('#search_results .clickable').click( function (e) {
+        if(e.target.tagName != 'A') {
+          if($(this).hasClass('expanded')) {
+            $(this).removeClass('expanded')
+            $(this).attr('title', 'Click to expand')
+          } else {
+            $(this).addClass('expanded')
+            $(this).attr('title', 'Click to collapse')
+          }
+        }
+      }).attr('title', 'Click to expand')
+    })
+  </script>
+<% end %>
 <div>
   <section>
     <h2 class="underline">Find</h2>
@@ -48,14 +43,13 @@ end
     <div class="list_rows padded">
     <% @records.each do |record|
       main_role = record.roles_by_type('reservee')[0] || record.roles_by_type('deceased')[0]
-      p record.id
       applicant = record.roles_by_type('applicant')[0]
       next_of_kin = record.roles_by_type('next_of_kin')[0]
       %>
       <div class="clickable">
         <div class="summary">
           <%= record.type.demodulize.titleize %> - <%= record.place.name %> - <%= main_role.person.title %> <%= main_role.person.given_name %> <%= main_role.person.surname %>
-          <a class="goto" href="<%= url "/#{record.type.downcase}/view/#{record.id}" %>" title="View record"></a>
+          <a class="goto" href="<%= url :"#{record.type.downcase}_view", :id => record.id %>" title="View record"></a>
         </div>
         <div class="details">
           <div class="left rowed">
