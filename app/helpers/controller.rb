@@ -39,15 +39,5 @@ module Tombstone
       end
     end
     
-    # Returns true on success.
-    def delete_allocation(allocation)
-      allocation.db.transaction do
-        allocation.roles_dataset.delete # Remove role records
-        allocation.remove_all_roles # Remove associations in join table
-        allocation.destroy
-        true
-      end
-    end
-    
   end
 end

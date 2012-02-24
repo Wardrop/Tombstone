@@ -16,48 +16,8 @@ content_for :head do
       var multibutton = new Ts.FormViews.Multibutton({name: 'submit', values: {active: 'Submit'}})
       $('#actions_section > div').append(multibutton.render().el)
     
-      new Ts.FormViews.AllocationForm({el: $('#reservation_form'), roles: roles})
+      new Ts.FormViews.AllocationForm({el: $('#reservation_form')[0], roles: roles})
     })
   </script>
-<%
-end
-
-include_script_views('role_wizard', 'form')
-%>
-<form id="reservation_form" class="rowed wide" action="<%= url :reservation_new %>">
-  <section>
-    <h2 class="underline">Reserved For</h2>
-    <div id="reservee_section" class="section padded" name="reservee"></div>
-  </section>
-  <section>
-    <h2 class="underline">Applicant</h2>
-    <div id="applicant_section" class="section padded" name="applicant"></div>
-  </section>
-  <section>
-    <h2 class="underline">Next of Kin</h2>
-    <div id="next_of_kin_section" class="section padded" name="next_of_kin"></div>
-  </section>
-  <section>
-    <h2 class="underline">Location</h2>
-    <div id="places_section" class="section padded" name="place"></div>
-  </section>
-  <section>
-    <h2 class="underline">Other Details</h2>
-    <div class="section padded">
-    	<label>
-        <span class="align_top">Location Description</span>
-        <textarea name="location_description" style="width: 100%; height: 56px;"></textarea>
-      </label>
-      <label>
-        <span class="align_top">Comments</span>
-        <textarea name="comments" style="width: 100%; height: 82px;"></textarea>
-      </label>
-    </div>
-  </section>
-  <section>
-    <h2 class="underline">Actions</h2>
-    <div id="actions_section" class="section padded">
-      <div class="inline_layout"></div>
-    </div>
-  </section>
-</form>
+<% end %>
+<%= partial 'partials/reservation_form'%>

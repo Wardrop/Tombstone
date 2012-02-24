@@ -90,7 +90,7 @@ module Tombstone
     def validate
       super
       validates_includes self.class.valid_states, :status
-      validates_type FuneralDirector, :funeral_director
+      validates_presence :funeral_director
       validates_min_length 5, :funeral_director_name
       validates_min_length 5, :funeral_service_location
       validates_presence [:advice_received_date, :interment_date]

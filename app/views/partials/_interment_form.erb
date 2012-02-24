@@ -1,0 +1,94 @@
+<%
+include_script_views('role_wizard', 'form')
+%>
+<form id="interment_form" class="rowed wide" action="<%= (Tombstone::Interment === @allocation) ? "/interment/#{@allocation.id}" : "/interment" %>">
+  <section>
+    <h2 class="underline">Deceased</h2>
+    <div id="deceased_section" class="section padded" name="deceased"></div>
+  </section>
+  <section>
+    <h2 class="underline">Applicant</h2>
+    <div id="applicant_section" class="section padded" name="applicant"></div>
+  </section>
+  <section>
+    <h2 class="underline">Next of Kin</h2>
+    <div id="next_of_kin_section" class="section padded" name="next_of_kin"></div>
+  </section>
+  <section>
+    <h2 class="underline">Location</h2>
+    <div id="places_section" class="section padded" name="place">
+    <% @places.each do |place|
+      siblings = place.siblings %>
+      <label>
+        <span><%= place.type.demodulize.titleize %></span>
+        <%= select_tag('place[]',
+          :collection => siblings,
+          :fields => [:name, :id],
+          :selected => place.id,
+          :include_blank => '',
+          :'data-place-type' => place.type
+        ) %>
+      </label>
+    <% end if @places %>
+    </div>
+  </section>
+  <section>
+    <h2 class="underline">Funeral Service</h2>
+    <div class="section padded">
+      <label>
+        <span>Director</span>
+        <%= select_tag(:funeral_director,
+          :collection => @funeral_directors,
+          :fields => [:name, :id],
+          :selected => (@allocation) ? @allocation.funeral_director_id : '',
+          :include_blank => ''
+        ) %>
+      </label>
+      <label>
+        <span>Director Name</span>
+        <input type="text" name="funeral_director_name" style="width: 40%" />
+      </label>
+      <label>
+        <span>Location</span>
+        <input type="text" name="funeral_service_location" style="width: 60%" />
+      </label>
+    </div>
+  </section>
+  <section>
+    <h2 class="underline">Other Details</h2>
+    <div class="section padded">
+      <label>
+        <span>Interment Type</span>
+        <%= select_tag(:interment_type,
+          :options => Tombstone::Interment.valid_interment_types.map{|v| [v.demodulize.titleize, v]},
+          :selected => (@allocation) ? @allocation.interment_type : '',
+          :include_blank => ''
+        ) %>
+      </label>
+      <label>
+        <span>Advice Received Date</span>
+        <input type="date" name="advice_received_date" />
+      </label>
+    	<label>
+        <span>Interment Date</span>
+        <input type="datetime" name="interment_date" />
+      </label>
+      <label>
+        <span class="align_top">Burial Requirements</span>
+        <textarea name="burial_requirements" style="width: 100%; height: 56px;"></textarea>
+      </label>
+      <label>
+        <span class="align_top">Comments</span>
+        <textarea name="comments" style="width: 100%; height: 82px;"></textarea>
+      </label>
+    </div>
+  </section>
+  <section>
+    <h2 class="underline">Actions</h2>
+    <div id="actions_section" class="section padded">
+      <div class="inline_layout"></div>
+    </div>
+  </section>
+  <input type="hidden" name="id" value="<%= (@allocation) ? @allocation.id : '' %>" />
+  <input type="hidden" name="_method" value="<%= (Tombstone::Interment === @allocation) ? 'put' : 'post'  %>" />
+</form>

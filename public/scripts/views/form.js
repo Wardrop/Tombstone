@@ -291,7 +291,7 @@ $( function () {
 			return data
 		},
 		showFormErrors: function (errors) {
-			var container = $('<ul class="form_errors" />')
+			var container = $('<ul class="error_block" />')
 			errors = (errors.constructor == String) ? [errors] : errors
 			var iterateErrors = function (ul, errors) {
 				_.each(errors, function (error, field) {
@@ -320,7 +320,7 @@ $( function () {
 			this.$(':first').scrollTo(300, -10);
 		},
 		hideFormErrors: function () {
-			this.$('.form_errors').remove()
+			this.$('.error_block').remove()
       this.$('[name]').removeClass('field_error')
 		}
 	})

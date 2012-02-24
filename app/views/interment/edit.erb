@@ -1,10 +1,9 @@
 <%
-@document[:title] = "Edit Reservation ##{@allocation.id}"
+@document[:title] = "Edit Interment ##{@allocation.id}"
 content_for :head do
 %>
   <script type="text/javascript">
     $( function () {
-            
       var roles = {}
       var role_data = <%=
         @allocation.roles.reduce({}) do |memo, role|
@@ -18,7 +17,7 @@ content_for :head do
         end.to_json
       %>
       
-      _.each({reservee: 'Reservee', applicant: 'Applicant', next_of_kin: 'Next of Kin'}, function (name, type) {
+      _.each({deceased: 'Deceased', applicant: 'Applicant', next_of_kin: 'Next of Kin'}, function (name, type) {
         var model = null
         if(role_data[type]) {
           model = new Ts.Role({
@@ -36,11 +35,14 @@ content_for :head do
         new Ts.FormViews.PlacesView({el: element})
       })
       
-      var multibutton = new Ts.FormViews.Multibutton({name: 'submit', values: {active: 'Submit', completed: 'Complete'}})
+      var multibutton = new Ts.FormViews.Multibutton({
+        name: 'submit',
+        values: {pending: 'Submit', approved: 'Approve', interred: 'Inter', completed: 'Complete'}
+      })
       $('#actions_section > div').append(multibutton.render().el)
       
-      new Ts.FormViews.AllocationForm({el: $('#reservation_form')[0], roles: roles})
+      new Ts.FormViews.AllocationForm({el: $('#interment_form')[0], roles: roles})
     })
   </script>
 <% end %>
-<%= partial 'partials/reservation_form'%>
+<%= partial 'partials/interment_form' %>

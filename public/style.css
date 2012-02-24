@@ -67,7 +67,7 @@ small {
 	position: relative;
 	display: block;
   margin: 0 auto 18px;
-	padding: 1px 24px 48px 24px;
+	padding: 1px 24px 24px 24px;
 	background: white;
   width: 880px;
 	border: 1px solid #c0c0c0;
@@ -666,7 +666,7 @@ a.row_button:hover {
 .field_error {
   outline: 1px solid #c00;
 }
-.form_errors {
+.error_block {
   padding: 10px 20px;
   background: #a73232;
   font-family: Verdana, Arial;
@@ -674,12 +674,12 @@ a.row_button:hover {
   color: white;
   box-sizing: content-box;
 }
-.form_errors li {
+.error_block li {
   list-style: outside disc;
   margin-left: 14px;
   padding: 3px 0;
 }
-.form_errors ul {
+.error_block ul {
 	margin-left: 20px;
 }
 

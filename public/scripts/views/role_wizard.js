@@ -297,7 +297,7 @@ $( function () {
       }
     },
     showErrors: function (errors) {
-			var errorContainer = this.$('.form_errors').empty()
+			var errorContainer = this.$('.error_block').empty()
 			if(errors.constructor == Object) {
 				if(Object.keys(errors).length > 0) {
 	        _.each(errors, function (errors, field) {
@@ -321,7 +321,7 @@ $( function () {
       
     },
     hideErrors: function () {
-      this.$('.form_errors').empty().css({display: 'none'})
+      this.$('.error_block').empty().css({display: 'none'})
     },
 		close: function () {
 			this.remove()

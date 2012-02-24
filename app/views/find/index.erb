@@ -41,7 +41,10 @@ content_for :head do %>
   <section id="search_results">
     <h3 class="underline">Results</h3>
     <div class="list_rows padded">
-    <% @records.each do |record|
+    <% if @records.length == 0 %>
+      No records found.
+    <% end
+    @records.each do |record|
       main_role = record.roles_by_type('reservee')[0] || record.roles_by_type('deceased')[0]
       applicant = record.roles_by_type('applicant')[0]
       next_of_kin = record.roles_by_type('next_of_kin')[0]

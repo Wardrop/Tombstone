@@ -2,10 +2,10 @@ module Tombstone
   
   allocation = proc do
     controller = @_controller[0].to_s
-    Allocation = Tombstone.const_get(controller.capitalize)
+    model_klass = Tombstone.const_get(controller.capitalize)
     
     get :view, :with => :id, :map => controller do
-      @allocation = Allocation.with_pk(params[:id])
+      @allocation = model_klass.with_pk(params[:id])
       if @allocation
         render "#{controller}/view"
       else
@@ -19,11 +19,30 @@ module Tombstone
       render "#{controller}/new"
     end
     
+    get :new_from_reservation, :map => "#{controller}/:id/new" do
+      @allocation = Reservation.with_pk(params[:id])
+      if not Allocation.filter(:id => params[:id], :type => 'interment').empty?
+        halt 404, render("error", :locals => {
+          :title => 'Interment Already Exists',
+          :message => "An interment for reservation ##{params[:id]} already exists."
+        })
+      elsif @allocation
+        @places = @allocation.place.ancestors(0, true).reverse
+        @funeral_directors = FuneralDirector.all
+        prepare_form(render("#{controller}/new_from_reservation"), {selector: 'form', values: @allocation.values})
+      else
+        halt 404, render("error", :locals => {
+          :title => 'Reservation Not Found',
+          :message => "The reservation with ID ##{params[:id]} does not exist."
+        })
+      end
+    end
+    
     get :edit, :map => "#{controller}/:id/edit" do
-      @allocation = Allocation.with_pk(params[:id])
-      @places = @allocation.place.ancestors(0, true).reverse
-      @funeral_directors = FuneralDirector.all
+      @allocation = model_klass.with_pk(params[:id])
       if @allocation
+        @places = @allocation.place.ancestors(0, true).reverse
+        @funeral_directors = FuneralDirector.all
         prepare_form(render("#{controller}/edit"), {selector: 'form', values: @allocation.values})
       else
         halt 404, render("#{controller}/not_found")
@@ -31,7 +50,7 @@ module Tombstone
     end
 
     post :index, :provides => :json do
-      allocation = Allocation.new
+      allocation = model_klass.new
       response = {success: false, form_errors: allocation.errors, redirectTo: nil}
       save_allocation(allocation, params) do
         allocation.set_only_valid params.merge(
@@ -48,15 +67,15 @@ module Tombstone
     end
     
     put :index, :with => :id, :provides => :json do
-      allocation = Allocation.with_pk(params[:id])
+      allocation = model_klass.with_pk(params[:id])
       response = {success: false, form_errors: allocation.errors, redirectTo: nil}
       if allocation.nil?
         response[:form_errors] = "Could not amend #{controller} ##{params[:id]} as it does not exist."
       else
-        Allocation.db.transaction do
-          allocation.roles.each { |r| r.destroy }
+        model_klass.db.transaction do
+          allocation.roles_dataset.delete
           allocation.remove_all_roles
-          allocation.values.select { |k,v| Allocation.restricted_columns.push(:id, :type) }
+          allocation.values.select { |k,v| model_klass.restricted_columns.push(:id, :type) }
           save_allocation(allocation, params) do
             allocation.set_only_valid params.merge(
               place_id: params['place'][-1],
@@ -68,29 +87,36 @@ module Tombstone
       
       if allocation.errors.empty?
         response.merge!(success: true, redirectTo: url(:"#{controller}_view", :id => allocation.id))
-        flash[:banner] = ['success', "#{controller.captialize} was amended successfully."]
+        flash[:banner] = ['success', "#{controller.capitalize} was amended successfully."]
       end
       response.to_json
     end
     
     delete :index, :with => :id do
-      allocation = Allocation.with_pk(params[:id])
+      allocation = model_klass.with_pk(params[:id])
       if allocation.nil?
         flash[:banner] = ["error", "Could not delete #{controller} ##{params[:id]} as it does not exist."]
       else
         begin
-          delete_allocation(allocation)
-          flash[:banner] = ["success", "#{controller.captialize} was deleted successfully."]
+          model_klass.db.transaction do
+            allocation.roles_dataset.delete
+            allocation.remove_all_roles
+            allocation.destroy
+          end
+          flash[:banner] = ["success", "#{controller.capitalize} was deleted successfully."]
         rescue => e
           flash[:banner] = ["error", "Error occured while deleting #{controller} ##{params[:id]}. The error was: \n#{e.message}"]
-          redirect url(:"#{controller}_view", :with => params[:id])
+          redirect url(:"#{controller}_view", :id => params[:id])
         end
       end
       redirect url(:index)
     end
-    
   end
   
   App.controller :reservation, &allocation
   App.controller :interment, &allocation
+  # App.controller :interment do
+  #   controller = @_controller[0].to_s
+  #   
+  # end
 end

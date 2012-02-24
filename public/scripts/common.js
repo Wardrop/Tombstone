@@ -2,10 +2,10 @@ Ts = {};
 
 $( function () {
   $('input[type=date]').livequery( function () {
-    $(this).datepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', showButtonPanel: false })
+    $(this).datepicker({ dateFormat: 'dd/mm/yy', showOn: 'button' })
   })
   $('input[type=datetime]').livequery( function () {
-    $(this).datetimepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', ampm: true, timeFormat: 'h:mmtt', showButtonPanel: false })
+    $(this).datetimepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', ampm: true, timeFormat: 'h:mmtt' })
   })
 })
 

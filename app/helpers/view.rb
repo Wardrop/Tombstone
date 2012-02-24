@@ -30,8 +30,11 @@ module Tombstone
       if value.blank?
         '<small>none</small>'
       else
-        if String === value
-          string_methods.reduce(value){ |memo, method| value.send(method) }
+        case value
+          when String
+            string_methods.reduce(value){ |memo, method| value.send(method) }
+          when Time
+            ((value.hour + value.min + value.sec) > 0) ? value.strftime('%d/%m/%Y %l:%M%P') : value.strftime('%d/%m/%Y')
         end
       end
     end
@@ -63,14 +66,14 @@ module Tombstone
               if v['type'] == 'date'
                 val.strftime('%d/%m/%Y')
               elsif v['type'] == 'datetime'
-                val.strftime('%d/%m/%Y %l:%M:%S%P')
+                val.strftime('%d/%m/%Y %l:%M%P')
               else
-                ((val.hour + val.min + val.sec) > 0) ? val.strftime('%d/%m/%Y %l:%M:%S%P') : val.strftime('%d/%m/%Y')
+                ((val.hour + val.min + val.sec) > 0) ? val.strftime('%d/%m/%Y %l:%M%P') : val.strftime('%d/%m/%Y')
               end
             when nil
               ''
             else
-              val
+              val.to_s
           end
           
           case v.name

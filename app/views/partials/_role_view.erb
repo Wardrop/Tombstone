@@ -4,11 +4,11 @@
 </div>
 <div class="row">
   <span>Gender</span>
-  <div><%= role.person.gender %></div>
+  <div><%= print_field role.person.gender, :demodulize, :titleize %></div>
 </div>
 <div class="row">
   <span>Date of Birth</span>
-  <div><%= role.person.date_of_birth.strftime('%d/%m/%Y') %></div>
+  <div><%= print_field role.person.date_of_birth %></div>
 </div>
 <div class="row">
   <span class="align_top">Residential Contact</span>
