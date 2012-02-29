@@ -1,6 +1,6 @@
 
 module Tombstone
-  VERSION = 0.2
+  VERSION = 0.3
   
   class App < Padrino::Application
     register Padrino::Rendering
