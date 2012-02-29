@@ -10,6 +10,10 @@ module Tombstone
     
     def validate
       super
+      self.class.valid_roles.each do |role_type|
+        errors.add(role_type.to_sym, "must be added") if roles.select { |r| r.type == role_type}.empty?
+      end
+
       if not Place === place
         errors.add(:place, 'cannot be empty and must exist')
       elsif not place.allocations.select{ |v| v.type == self.type && v.id != self.id }.empty?
@@ -23,7 +27,7 @@ module Tombstone
     end
     
     def roles_by_type(type)
-      self.roles { |ds| ds.filter(type: type) }
+      self.roles { |ds| ds.filter(type: type.to_s) }
     end
     
     # Makes the identify column "id" optional, which is something MSSQL doesn't automatically support.

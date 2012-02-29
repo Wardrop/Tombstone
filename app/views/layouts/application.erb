@@ -24,7 +24,7 @@
 <body>
 	<div id="container">
   	<div class="info">Hello, <a href="#">Tom Wardrop</a></div>
-    <div id="banner">Tombstone</div>
+    <div id="banner">Tombstone <sup>v<%= Tombstone::VERSION %></sup></div>
     <%=
     if(@document[:breadcrumb].is_a? Array)
       '<div id="navigation_bar">'+build_breadcrumb(@document[:breadcrumb])+'</div>'

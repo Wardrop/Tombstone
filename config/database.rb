@@ -1,6 +1,7 @@
 Sequel::Model.plugin :validation_helpers
 Sequel::Model.plugin :json_serializer
 Sequel::Model.raise_on_typecast_failure = false
+Sequel::Model.raise_on_save_failure = false
 
 Sequel::Model.db = case Padrino.env
   when :production then

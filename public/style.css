@@ -93,6 +93,10 @@ small {
   font-size: 30px;
   margin: 12px 0 16px;
 }
+#banner sup {
+  color: grey;
+  font-size: 60%;
+}
 #navigation_bar {
 	display: table;
 	width: 100%;

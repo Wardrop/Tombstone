@@ -1,5 +1,7 @@
 
 module Tombstone
+  VERSION = 0.2
+  
   class App < Padrino::Application
     register Padrino::Rendering
     register Padrino::Mailer

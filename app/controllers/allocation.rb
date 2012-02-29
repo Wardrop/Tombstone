@@ -53,8 +53,9 @@ module Tombstone
       allocation = model_klass.new
       response = {success: false, form_errors: allocation.errors, redirectTo: nil}
       save_allocation(allocation, params) do
+        place_id = (!params['place'].is_a?(Array) || params['place'].reject { |v| v.empty? }.empty?) ? nil : params['place'][-1]
         allocation.set_only_valid params.merge(
-          place_id: params['place'][-1],
+          place_id: place_id,
           funeral_director_id: params['funeral_director']
         )
       end
@@ -115,8 +116,4 @@ module Tombstone
   
   App.controller :reservation, &allocation
   App.controller :interment, &allocation
-  # App.controller :interment do
-  #   controller = @_controller[0].to_s
-  #   
-  # end
 end

@@ -56,43 +56,7 @@
   </div>
 </script>
 
-<script type="text/template" id="role_wizard:create_person_form_template">
-  <div class="section padded">
-    <label>
-  		<span>Title</span>
-  		<select type="text" name="title">
-        <option value=""></option>
-        <option>Mr</option>
-        <option>Ms</option>
-        <option>Mrs</option>
-        <option>Miss</option>
-      </select>
-  	</label>
-  	<label>
-  		<span>Given Name</span>
-  		<input type="text" name="given_name" style="width: 60%;" />
-  	</label>
-  	<label>
-  		<span>Surname</span>
-  		<input type="text" name="surname" style="width: 60%;" />
-  	</label>
-  	<div class="row">
-  		<span>Gender</span>
-  		<label><input type="radio" name="gender" value="male" />Male</label>
-  		&nbsp;
-  		<label><input type="radio" name="gender" value="female" />Female</label>
-  	</div>
-    <label>
-  		<span>Date of Birth</span>
-  		<input type="date" name="date_of_birth" />
-  	</label>
-  	<div class="row">
-  		<input type="submit" value="Save" action="savePerson" />
-  	</div>
-  </div>
-</script>
-
-<script type="text/template" id="role_wizard:find_person_form_template">
+<script type="text/template" id="role_wizard:person_form_template">
   <div class="section padded">
     <label>
   		<span>Title</span>
@@ -123,7 +87,7 @@
   		<input type="date" name="date_of_birth" />
   	</label>
   	<div class="row">
-  		<input type="submit" value="Next" action="findPeople" />
+  		<input type="submit" value="Next" action="<%= action %>" />
   	</div>
   </div>
 </script>

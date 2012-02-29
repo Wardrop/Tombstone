@@ -64,5 +64,13 @@ module Tombstone
       na3.name.should == 'Plot 3'
     end
     
+    it "gets siblings including self" do
+      plot = Place.with_pk(7)
+      siblings = plot.siblings.all
+      siblings.count.should > 1
+      siblings.each { |s| s.parent_id.should == plot.parent_id}
+      siblings.select { |s| s.id == plot.id }.length == 1
+    end
+    
   end
 end

@@ -2,28 +2,28 @@ require_relative '../spec_helper'
 require_relative 'models_spec_helper'
 
 module Tombstone
+  
   describe Allocation do
-    
     it "is configured correctly" do
       alloc = Allocation.with_pk([1, 'reservation'])
       alloc.type.should == 'reservation'
     end
     
     it "has a place" do
-      reservation = Allocation.with_pk([2, 'reservation'])
-      reservation.place.should be_a(Place)
+      alloc = Allocation.with_pk([2, 'reservation'])
+      alloc.place.should be_a(Place)
     end
     
     it "has many roles" do
-      reservation = Allocation.with_pk([2, 'reservation'])
-      reservation.roles.should be_a(Array)
-      reservation.roles.length.should >= 2
-      reservation.roles[0].should be_a(Role)
+      alloc = Allocation.with_pk([2, 'reservation'])
+      alloc.roles.should be_a(Array)
+      alloc.roles.length.should >= 2
+      alloc.roles[0].should be_a(Role)
     end
     
     it "has a funeral director" do
-      interment = Allocation.with_pk([2, 'interment'])
-      interment.funeral_director.should be_a(FuneralDirector)
+      alloc = Allocation.with_pk([2, 'interment'])
+      alloc.funeral_director.should be_a(FuneralDirector)
     end
     
     it "auto-increments ID if none given" do
@@ -37,13 +37,48 @@ module Tombstone
       new_alloc.id.should == 65
     end
     
-    it "can retrieve rows by type" do
-      reservation = Allocation.with_pk([2, 'reservation'])
-      reservee = reservation.roles_by_type('reservee')
-      reservee.should be_a(Array)
-      reservee[0].should be_a(Role)
-      reservee[0].type.should == 'reservee'
+    it "can filter roles by types" do
+      alloc = Allocation.with_pk([2, 'reservation'])
+      alloc.roles_by_type('reservee').should be_a(Array)
+      alloc.roles_by_type('reservee')[0].should be_a(Role)
+      alloc.roles_by_type(:reservee)[0].type.should == 'reservee'
+    end
+  end
+  
+  describe Reservation do
+    it "only returns reservations" do
+      Reservation.all.each { |r| r.type.should == 'reservation' }
     end
     
+    it "accepts a single primary key" do
+      reservation = Reservation.with_pk(2)
+      reservation.id.should == 2
+      reservation.type.should == 'reservation'
+    end
+    
+    it "defaults type on creation" do
+      reservation = Reservation.new({}).save(validate: false)
+      reservation.type.should == 'reservation'
+      reservation.delete
+    end
   end
+  
+  describe Interment do
+    it "only returns interments" do
+      Interment.all.each { |r| r.type.should == 'interment' }
+    end
+    
+    it "accepts a single primary key" do
+      interment = Interment.with_pk(2)
+      interment.id.should == 2
+      interment.type.should == 'interment'
+    end
+    
+    it "defaults type on creation" do
+      interment = Interment.new({}).save(validate: false)
+      interment.type.should == 'interment'
+      interment.delete
+    end
+  end
+
 end

@@ -22,13 +22,13 @@ $( function () {
     events: _.extend({}, Ts.RoleWizardViews.BasePage.prototype.events, {
       'change' : 'formChanged'
     }),
-		initialize: function (opts) {
+		initialize: function () {
       Ts.RoleWizardViews.BasePage.prototype.initialize.apply(this, arguments);
       this.model.bind('change', this.modelChanged, this)
 			_.bindAll(this, 'formChanged');
 		},
 		render: function () {
-			$(this.el).html(this.template({data: this.model.toJSON()}));
+			$(this.el).html(this.template({data: this.model.toJSON(), wizard: this.wizard, action: this.options.action}));
       this.populateForm(this.model.toJSON())
 			return this
 		},
@@ -58,22 +58,22 @@ $( function () {
   })
   
 	Ts.RoleWizardViews.FindPersonForm = Ts.RoleWizardViews.GenericForm.extend({
-		template: _.template($('#role_wizard\\:find_person_form_template').html()),
-		initialize: function (opts) {
+		template: _.template($('#role_wizard\\:person_form_template').html()),
+		initialize: function () {
       Ts.RoleWizardViews.GenericForm.prototype.initialize.apply(this, arguments);
 		}
 	})
   
   Ts.RoleWizardViews.CreatePersonForm = Ts.RoleWizardViews.GenericForm.extend({
-		template: _.template($('#role_wizard\\:create_person_form_template').html()),
-		initialize: function (opts) {
+		template: _.template($('#role_wizard\\:person_form_template').html()),
+		initialize: function () {
       Ts.RoleWizardViews.GenericForm.prototype.initialize.apply(this, arguments);
 		}
 	})
 	
 	Ts.RoleWizardViews.ContactForm = Ts.RoleWizardViews.GenericForm.extend({
 		template: _.template($('#role_wizard\\:create_contact_form_template').html()),
-		initialize: function (opts) {
+		initialize: function () {
       Ts.RoleWizardViews.GenericForm.prototype.initialize.apply(this, arguments);
 		}
 	})
@@ -209,11 +209,11 @@ $( function () {
     },
     showFindPersonForm: function () {
       this.findPersonModel = new Ts.Person
-      var findPersonForm = new Ts.RoleWizardViews.FindPersonForm({model: this.findPersonModel, wizard: this})
+      var findPersonForm = new Ts.RoleWizardViews.FindPersonForm({model: this.findPersonModel, wizard: this, action: 'findPeople'})
       this.model.set({currentPage: findPersonForm})
     },
     showCreatePersonForm: function () {
-      var createPersonForm = new Ts.RoleWizardViews.CreatePersonForm({model: this.findPersonModel, wizard: this}, 'savePerson')
+      var createPersonForm = new Ts.RoleWizardViews.CreatePersonForm({model: this.findPersonModel, wizard: this, action: 'savePerson'}, 'savePerson')
       this.model.set({currentPage: createPersonForm})
     },
     showCreateContactForm: function () {
@@ -276,11 +276,6 @@ $( function () {
 					error: this.ajaxErrorHandler(this, 'jQuery'),
           complete: _.bind(function () { this.model.set({isLoading: false}) }, this)
 				})
-        // if(contact.serverValidate()) {
-				// 	this.showRoleReview()
-				// } else {
-				// 	this.showCreateContactForm()
-				// }
       }
     },
     saveRole: function () {
