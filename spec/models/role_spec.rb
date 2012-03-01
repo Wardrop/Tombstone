@@ -1,5 +1,4 @@
 require_relative '../spec_helper'
-require_relative './models_spec_helper'
 
 module Tombstone
   describe Role do

@@ -1,10 +1,4 @@
 {
-  db: {
-    host: 'trcsql02.trc.local',
-    user: 'trc\tombstone_user',
-    password: '10Pippl$ah',
-    database: 'Tombstone_Spec'
-  },
   roles: {
     :operator => {
       :can_approve => false,

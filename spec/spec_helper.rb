@@ -1,5 +1,6 @@
 PADRINO_ENV = 'spec' unless defined?(PADRINO_ENV)
 require File.expand_path(File.dirname(__FILE__) + "/../config/boot")
+require_relative 'models_spec_helper'
 
 # RSpec.configure do |conf|
 #   conf.include Rack::Test::Methods

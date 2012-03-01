@@ -127,16 +127,16 @@ small {
 	border-radius: 5px;
 }
 #navigation_bar a.action.find {
-	background: url('images/icons/Find White.png') no-repeat center 10px;
+	background: url('images/icons/find_white.png') no-repeat center 10px;
 }
 #navigation_bar a.action.burial {
-	background: url('images/icons/Burial White.png') no-repeat center 10px;
+	background: url('images/icons/burial_white.png') no-repeat center 10px;
 }
 #navigation_bar a.action.reservation {
-	background: url('images/icons/Reservation White.png') no-repeat center 10px;
+	background: url('images/icons/reservation_white.png') no-repeat center 10px;
 }
 #navigation_bar a.action.calendar {
-	background: url('images/icons/Calendar White.png') no-repeat center 10px;
+	background: url('images/icons/calendar_white.png') no-repeat center 10px;
 }
 #navigation_bar a.action:hover {
 	background-color: rgba(255,255,255,0.1);
@@ -148,7 +148,7 @@ small {
 	padding: 5px 5px;
 }
 #navigation_bar a.breadcrumb.home {
-	background: url('images/icons/Home Small White.png') no-repeat center center;
+	background: url('images/icons/home_small_white.png') no-repeat center center;
 	height: 26px;
 	width: 30px;
 }

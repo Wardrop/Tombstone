@@ -8,7 +8,7 @@ db = Sequel::Model.db
 
 # Recreate the database tables
 db.drop_table(*db.tables)
-Sequel::Migrator.apply(db, File.join(current_dir, '/../../db/migrations'))
+Sequel::Migrator.apply(db, File.join(current_dir, '/../db/migrations'))
 
 # Pre-populate the database with test data
 db[:person] << {title: 'Mr', surname: 'Fickle', given_name: 'Roger', middle_initials: 'D', gender: 'Male', date_of_birth: Date.parse('09/03/1934'), date_of_death: nil}
