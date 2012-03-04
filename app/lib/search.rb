@@ -2,12 +2,28 @@
 module Tombstone
   class Search
     @@searchable = {
-      dob: {field: "[PERSON].[DATE_OF_BIRTH]", matcher: proc { |v| "09/03/1934" rescue nil }},
-      name: {field: "(' '+[PERSON].[TITLE]+' '+[PERSON].[GIVEN_NAME]+' '+[PERSON].[SURNAME])", matcher: proc { |v| "% #{v}" }},
-      email: {field: "[CONTACT].[EMAIL]", matcher: proc { |v| "#{v}"}},
-      address: {
-        field: "(' '+[CONTACT].[STREET_ADDRESS]+', '+[CONTACT].[TOWN]+' '+[CONTACT].[STATE]+' '+CAST([CONTACT].[POSTAL_CODE] as nvarchar))",
-        matcher: proc { |v| "% #{v}" }
+      all: proc { |v|
+        @@searchable.reject{|k,v| k == :all}.map { |field, matcher|
+          part = instance_exec(v, &matcher)
+          "(#{part})" if part
+        }.select{|v| v}.join(' OR ')
+      },
+      dob: proc { |v|
+        begin
+          date = Date.parse(v)
+          "[PERSON].[DATE_OF_BIRTH] >= #{@db.literal(date)} AND [PERSON].[DATE_OF_BIRTH] < #{@db.literal(date + 1)}"
+        end rescue nil
+      },
+      name: proc { |v|
+        value = @db.literal("% #{v}")
+        "(' '+[PERSON].[TITLE]+' '+[PERSON].[GIVEN_NAME]+' '+[PERSON].[SURNAME]) LIKE #{value}" 
+      },
+      email: proc { |v| "[CONTACT].[EMAIL] LIKE #{@db.literal(v)}" },
+      address: proc { |v|
+        value = @db.literal("% #{v}")
+        "(' '+[CONTACT].[STREET_ADDRESS]+', '+[CONTACT].[TOWN]+' '" +
+        "+[CONTACT].[STATE]+' '+CAST([CONTACT].[POSTAL_CODE] as nvarchar)) " +
+        "LIKE #{value}"
       }
     }
     @@sortable = {
@@ -46,10 +62,11 @@ module Tombstone
     
     def conditions_sql
       unless @conditions.empty?
-        @conditions.map { |field, value|
-          matcher = @@searchable[field][:matcher].call(value)
-          "(#{@@searchable[field][:field]} LIKE #{@db.literal(matcher)})"
-        }.select{|v| v}.join(' AND ').insert(0, 'WHERE ')
+        conditions_str = @conditions.map { |field, value|
+          condition = instance_exec(value, &@@searchable[field])
+          "(#{condition})" if condition
+        }.select{|v| v}.join(' AND ')
+        "WHERE #{conditions_str}" if conditions_str.length > 0
       end
     end
   end
