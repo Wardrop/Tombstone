@@ -2,24 +2,13 @@ module Tombstone
   App.controller :find do
     
     get :index do
-      @searchable = {
-        dob: "[DATE_OF_BIRTH]",
-        name: ["(' '+[TITLE]+' '+[FIRST_NAME]+' '+[SURNAME])", proc { |f| "% #{f}" }],
-        email: "[EMAIL]",
-        address: ["(' '+[STREET_ADDRESS]+', '+[TOWN]+' '+[STATE]+' '+CAST([POSTAL_CODE] as nvarchar))", proc { |f| "% #{f}" }]
-      }
-      @sortable = {
-        created_at: 'Date created',
-        modified_at: 'Date modified',
-        first_name: 'First Name',
-        last_name: 'Last Name'
-      }
-      if params.empty?
-        @records = Allocation.filter.all
-      else
-        return Allocation.db["SELECT * FROM role"].naked.all.to_s
+      @records = []
+      unless params['search'].blank? && params['type'].blank?
+        search_class = (params['type'] == 'allocations') ? AllocationSearch : PersonSearch
+        conditions = parse_search_string(params['search'], search_class.searchable.keys)
+        @records = search_class.new.query(conditions).all
       end
-      render 'find/index'
+      prepare_form(render('find/index'), {selector: '#search_defintion', values: params})
     end
     
   end

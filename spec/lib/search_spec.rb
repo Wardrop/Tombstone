@@ -8,17 +8,10 @@ module Tombstone
       Search.searchable.each { |k,v| v.should be_a(Hash) }
       Search.sortable.should be_a(Hash)
     end
-    
-    it "requires a database object on instantiation" do
-      Search.new(Sequel::Model.db)
-      expect {
-        Search.new('blah')
-      }.to raise_error(ArgumentError)
-    end
   end
   
   shared_examples "a search class" do
-    let(:search) { described_class.new(Sequel::Model.db) }
+    let(:search) { described_class.new }
     let(:model_class) { search.class::MODEL }
     
     it "should return all records if no conditions given" do
@@ -55,6 +48,13 @@ module Tombstone
     
     it "can sort multiple fields" do
       search.query({}, :surname, :desc, :given_name, :asc).to_a.count.should == model_class.all.count
+    end
+    
+    it "can sort and search at the same time" do
+      search.query(
+        {:email => 'littlesamurai@myfantasy.com', :given_name => 'Phillip'},
+        :surname, :desc, :given_name, :asc
+      ).to_a.count.should >= 1
     end
   end
     

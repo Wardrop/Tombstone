@@ -1,0 +1,32 @@
+<% records.each do |record| %>
+  <div class="clickable">
+    <div class="summary">
+      <%= record.title %> <%= record.given_name %> <%= record.surname %>
+      <a class="goto" href="javascript:alert('Action not yet implemented.')" title="View record"></a>
+    </div>
+    <div class="details">
+      <div class="left rowed">
+        <div class="row">
+          <span>Date of Birth:</span>
+          <div><%= print_field record.date_of_birth %></div>
+        </div>
+        <div class="row">
+          <span>Date of Death:</span>
+          <div><%= print_field record.date_of_death %></div>
+        </div>
+        <div class="row">
+          <span>Gender:</span>
+          <div><%= record.gender.titleize %></div>
+        </div>
+      </div>
+      <div class="right rowed">
+        <div class="row">
+          <span>Created:</span><div>19/01/2012 by Mara Rooks</div>
+        </div>
+        <div class="row">
+          <span>Last Modified:</span><div>03/03/2012 by Anna Parisotto</div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

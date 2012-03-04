@@ -1,0 +1,36 @@
+<% records.each do |record|
+  main_role = record.roles_by_type('reservee')[0] || record.roles_by_type('deceased')[0]
+  applicant = record.roles_by_type('applicant')[0]
+  next_of_kin = record.roles_by_type('next_of_kin')[0]
+  %>
+  <div class="clickable">
+    <div class="summary">
+      <%= record.type.demodulize.titleize %> - <%= record.place.name %> - <%= main_role.person.title %> <%= main_role.person.given_name %> <%= main_role.person.surname %>
+      <a class="goto" href="<%= url :"#{record.type.downcase}_view", :id => record.id %>" title="View record"></a>
+    </div>
+    <div class="details">
+      <div class="left rowed">
+        <div class="row">
+          <span>Applicant:</span>
+          <div><%= (applicant) ? "#{applicant.person.title} #{applicant.person.given_name} #{applicant.person.surname}" : '<small>none</small>'%></div>
+        </div>
+        <div class="row">
+          <span>Next of Kin:</span>
+          <div><%= (next_of_kin) ? "#{next_of_kin.person.title} #{next_of_kin.person.given_name} #{next_of_kin.person.surname}" : '<small>none</small>'%></div>
+        </div>
+        <div class="row">
+          <span>Status:</span>
+          <div><%= record.status.demodulize.titleize %></div>
+        </div>
+      </div>
+      <div class="right rowed">
+        <div class="row">
+          <span>Created:</span><div>15/01/2012 by Mara Rooks</div>
+        </div>
+        <div class="row">
+          <span>Last Modified:</span><div>25/01/2012 by Ron Clarke</div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

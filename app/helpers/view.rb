@@ -80,7 +80,11 @@ module Tombstone
             when 'input'
               v['value'] = val
             when 'select'
-              v.css('option').each { |option| option['selected'] = 'selected' if val == option['value'] }
+              v.css('option').each do |option|
+                if val == option['value'] || (option['value'].nil? && option.content == val)
+                  option['selected'] = 'selected'
+                end
+              end
             when 'textarea'
               v.content = val
           end
