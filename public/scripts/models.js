@@ -92,7 +92,7 @@ Ts.Role = Backbone.Model.extend({
 		type: null,
 		person: null,
 		residential_contact: null,
-		mailing_contact: null,
+		mailing_contact: null
 	},
   initialize: function () {
     if(!this.get('person')) this.set({person: new Ts.Person})

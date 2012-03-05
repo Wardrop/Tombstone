@@ -6,7 +6,7 @@ module Tombstone
   
     class << self
       def valid_titles
-        ['Mr', 'Ms', 'Mrs', 'Miss']
+        ['Mr', 'Ms', 'Mrs', 'Miss', 'Sir', 'Lady', 'Doctor', 'Director', 'Executor', 'Manager']
       end
     end
     

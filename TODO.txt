@@ -18,6 +18,6 @@
 * Limit the number of records returned over JSON.
   - Add pagination?
 * Should the reservee/deceased be able to also act as the next of kin and/or applicant?
-* Make the following columns sortable: Created, Modified, Last Name, First Name
-* Add sub-section test data.
-* Add sorting interface on find page (when we do paging).
+* Search
+  - Add sorting interface on find page (when we do paging).
+  - Add helper to interface for showing search options.

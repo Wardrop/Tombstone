@@ -20,9 +20,9 @@ module Tombstone
       },
       email: proc { |v| "[CONTACT].[EMAIL] LIKE #{@db.literal(v)}" },
       address: proc { |v|
-        value = @db.literal("% #{v}")
+        value = @db.literal("% #{v} %")
         "(' '+[CONTACT].[STREET_ADDRESS]+', '+[CONTACT].[TOWN]+' '" +
-        "+[CONTACT].[STATE]+' '+CAST([CONTACT].[POSTAL_CODE] as nvarchar)) " +
+        "+[CONTACT].[STATE]+' '+CAST([CONTACT].[POSTAL_CODE] as nvarchar))+' ' " +
         "LIKE #{value}"
       }
     }

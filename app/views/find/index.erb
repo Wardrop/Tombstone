@@ -22,7 +22,8 @@ content_for :head do %>
     <h2 class="underline">Find</h2>
     <form class="inline_layout h_padded" method="GET" action".">
       <label style="width: 68%">
-        <input type="text" name="search" placeholder="Search terms..." style="width: 100%" />
+        <input type="text" name="search" placeholder="Search terms..." style="width: 100%"
+          title="Valid search fields: <%= Tombstone::Search.searchable.keys.join(', ') %>" />
       </label>
       <label style="width: 20%">
         <select type="text" name="type" style="width: 100%">

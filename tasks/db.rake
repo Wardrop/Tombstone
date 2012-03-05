@@ -106,6 +106,16 @@ namespace :db do
     db[:place] << {parent_id: 12, name: 'Plot 23', type: 'plot', state: 'available'}
     db[:place] << {parent_id: 12, name: 'Plot 24', type: 'plot', state: 'available'}
     db[:place] << {parent_id: 12, name: 'Plot 25', type: 'plot', state: 'available'}
+    
+    garden_id = db[:place].insert(parent_id: 2, name: 'Garden', type: 'section', state: 'available')
+    db[:place] << {parent_id: garden_id, name: 'By The Roses', type: 'sub-section', state: 'available'}
+    db[:place] << {parent_id: garden_id + 1, name: 'Row A', type: 'row', state: 'available'}
+    db[:place] << {parent_id: garden_id + 1, name: 'Row B', type: 'row', state: 'available'}
+    db[:place] << {parent_id: garden_id + 2, name: 'Plot 22', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: garden_id + 2, name: 'Plot 23', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: garden_id + 2, name: 'Plot 24', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: garden_id + 3, name: 'Plot 6', type: 'plot', state: 'available'}
+    db[:place] << {parent_id: garden_id + 3, name: 'Plot 7', type: 'plot', state: 'available'}
   end
   
 end

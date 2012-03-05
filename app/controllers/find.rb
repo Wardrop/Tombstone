@@ -3,10 +3,11 @@ module Tombstone
     
     get :index do
       @records = []
+      conditions = {}
       unless params['search'].blank? && params['type'].blank?
         search_class = (params['type'] == 'allocations') ? AllocationSearch : PersonSearch
         general, specific = parse_search_string(params['search'], search_class.searchable.keys)
-        conditions = (general.blank?) ? {'all' => general}.merge(specific) : specific 
+        conditions = (general.blank?) ? specific : {'all' => general}.merge(specific)
         @records = search_class.new.query(conditions).all
       end
       prepare_form(render('find/index'), {

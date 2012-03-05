@@ -5,7 +5,7 @@ module Tombstone
   describe Search do
     it "has defined searchable and sortable fields" do
       Search.searchable.should be_a(Hash)
-      Search.searchable.each { |k,v| v.should be_a(Hash) }
+      Search.searchable.each { |k,v| v.should be_a(Proc) }
       Search.sortable.should be_a(Hash)
     end
   end
