@@ -5,6 +5,7 @@ module Tombstone
     # Block is given the allocation object and data hash as arguments.
     def save_allocation(allocation, data)
       allocation.db.transaction do
+        # Remap form values.
         values = Hash[ params.map { |k,v|
           case k
           when 'place'

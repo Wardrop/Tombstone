@@ -18,17 +18,14 @@ $( function () {
     }
   })
   Ts.FormViews.RoleBlock = Backbone.View.extend({
-    className: 'row_block clickable',
-    title: 'Click to change',
     template: _.template($('#form\\:role_block_template').html()),
     events: {
       'click div.row_block' : 'changeRole',
       'click a.add' : 'addRole',
       'click a.delete' : 'removeRole'
     },
-    roleBlocks: [],
     initialize: function () {
-      this.roleBlocks.push(this)
+      this.group = this.options.group || {}
       this.role_type = this.options.role_type
 			this.role_name = this.options.role_name || this.role_type.split('_').join(' ').titleize()
       _.bindAll(this, 'render', 'addRole', 'changeRole', 'onCompleteCallback')
@@ -40,10 +37,10 @@ $( function () {
       } else {
         values = {add: 'Add'}
         actions = {add: this.addRole}
-        _.each(this.roleBlocks, function (roleBlock) {
+        _.each(this.group, function (roleBlock) {
           if(roleBlock != this) {
-            values[roleBlock.role_type] = 'Use '+roleBlock.role_name
-            actions[roleBlock.role_type] = _.bind( function () {
+            values['use_'+roleBlock.role_type] = 'Use '+roleBlock.role_name.demodulize().titleize()
+            actions['use_'+roleBlock.role_type] = _.bind( function () {
               this.useRole(roleBlock)
             }, this)
           }
@@ -57,12 +54,11 @@ $( function () {
       }
   		return this
     },
-    getModel: function () {
-      try {
-        return this.model || this.using.getModel()
-      } catch(e) { return null }
+    getJSON: function () {
+      return (this.model && this.model.recursiveToJSON()) || this.using
     },
     addRole: function () {
+      this.using = null
       wizard = new Ts.RoleWizard({title: "Add "+this.role_name, role: new Ts.Role({type: this.role_type})})
 			wizardView = new Ts.RoleWizardViews.WizardView({
         model: wizard,
@@ -71,7 +67,7 @@ $( function () {
       $('body').prepend(wizardView.render().el)
     },
     useRole: function (roleBlock) {
-      this.using = roleBlock
+      this.using = roleBlock.role_type
     },
     changeRole: function () {
       // clonedModel = new Ts.Role({
@@ -158,9 +154,9 @@ $( function () {
 			var selected = e.currentTarget
       this.selectButton(selected)
 			if (this.options.actions && this.options.actions[selected.name]) {
-				this.options.actions[selected.name]()
+				this.options.actions[selected.name](e)
 			} else if (this.options.actions && this.options.actions['default']) {
-				this.options.actions['default']()
+				this.options.actions['default'](e)
 			}
     },
     keydownHideEvent: function (e) {

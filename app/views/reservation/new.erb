@@ -6,15 +6,19 @@ content_for :head do
     $( function () {
       new Ts.FormViews.NewAllocationForm({
         el: $('#reservation_form')[0],
-        roles: ['reservee', 'applicant', 'next_of_kin'],
-        roleData: $('json\\:roles').parseJSON() || {},
-        placeData: $('json\\:places').parseJSON() || [],
-        mutlibutton: new Ts.FormViews.Multibutton({name: 'submit', values: {active: 'Submit'}})
+        valid_roles: ['reservee', 'applicant', 'next_of_kin'],
+        states: {active: 'Submit'}
       })
     })
+    // new Ts.FormViews.Multibutton({name: 'submit', values: {active: 'Submit'}})
   </script>
-  <script type="application/json" id="json:places">
-    <%= @root_places.to_json %>
+  <script type="application/json" id="json:place_data">
+    <%= {0 => @root_places}.to_json %>
+  </script>
+  <script type="application/json" id="json:allocation_data">
+    <%=
+    Tombstone::Reservation.new.to_json(include: {roles: {include: [:person, :residential_contact, :mailing_contact]}, place: {}, transactions: {}})
+    %>
   </script>
 <% end %>
 <%= partial 'reservation/form'%>

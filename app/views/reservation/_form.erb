@@ -52,12 +52,6 @@ include_script_views('role_wizard', 'form')
       </label>
     </div>
   </section>
-  <section>
-    <h2 class="underline">Actions</h2>
-    <div id="actions_section" class="section padded">
-      <div class="inline_layout"></div>
-    </div>
-  </section>
   <% if @allocation %>
     <input type="hidden" name="id" value="<%= @allocation.id %>" />
   <% end %>

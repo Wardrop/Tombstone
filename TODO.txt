@@ -8,6 +8,7 @@
 * Simplify breadcrumb into a list (<ul>) and use the CSS pseudo element :before to render the slashes in-between.
 * Multibutton
   - Fix display when option in drop down is significantly longer than the default option.
+    Maybe change to apple-style drop-downs, and using overlay hidden to hide options above and below the current selection.
   - Fall back to normal input button when only one option is available.
 * Indicate which form fields are required.
 * Add hooks to models for cleaning and formatting data, e.g. capitalising names, lower casing gender, etc.
@@ -19,4 +20,7 @@
   - Ensure plots assigned to deleted allocations are available.
 * On the find page, make deleted and provisional records distinct.
 * Add more searchable fields, e.g. plot, status
-* Plot's should be searchable objects on the find page. They should have their own view page. On such a view page, it would show associated records and photos.
+* Plot's should be searchable objects on the find page. They should have their own view page. =
+  On such a view page, it would show associated records and photos.
+* Add polyfills for IE8 compatibility: https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-browser-Polyfills
+  - ECMAScript5 shim
