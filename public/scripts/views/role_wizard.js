@@ -298,7 +298,7 @@ $( function () {
 	        _.each(errors, function (errors, field) {
 						var errors = (errors instanceof Array) ? errors : [errors]
 						_.each(errors, function (error) {
-							errorContainer.append('<li>'+field.split('_').join(' ').toTitleCase()+' '+error+'</li>')
+							errorContainer.append('<li>'+field.split('_').join(' ').titleize()+' '+error+'</li>')
 						})
 	        }, this)
 	        errorContainer.css({display: ''})

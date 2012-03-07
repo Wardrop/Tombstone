@@ -408,7 +408,7 @@ a.row_button:hover {
 }
 .rowed label > span.align_top:first-child, .rowed div.row > span.align_top:first-child {
 	vertical-align: top;
-	padding-top: 0.2em;
+	padding-top: 0.3em;
 }
 .rowed div.row label {
 	display: inline;
@@ -504,8 +504,16 @@ a.row_button:hover {
 	height: auto;
 }
 
+.multiinput_control input {
+  margin-top: 4px;
+}
+.multiinput_control div:first-child input {
+  margin-top: 0;
+}
+
 .multibutton {
 	position: relative;
+  display: inline-block;
 	padding: 1px 28px 1px 0;
 }
 .multibutton.top {
@@ -513,7 +521,7 @@ a.row_button:hover {
 	padding-top: 0;
 }
 .multibutton.bottom {
-	border-bottom: 2px solid #7fb3e0;
+	border-bottom: 1px solid #7fb3e0;
 	padding-bottom: 0;
 }
 .multibutton > input[type=button], .multibutton > a.button {
@@ -565,6 +573,7 @@ a.row_button:hover {
 	left: 0;
 	background: #2980cc;
 	margin: 1px 0;
+  z-index: 10;
 }
 .multibutton.top > ul {
 	top: inherit;

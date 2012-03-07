@@ -37,7 +37,7 @@ content_for :head do
       
       var multibutton = new Ts.FormViews.Multibutton({
         name: 'submit',
-        values: {pending: 'Submit', approved: 'Approve', interred: 'Inter', completed: 'Complete'}
+        values: {pending: 'Submit', provisional: 'Save', approved: 'Approve', interred: 'Inter', completed: 'Complete'}
       })
       $('#actions_section > div').append(multibutton.render().el)
       
@@ -45,4 +45,4 @@ content_for :head do
     })
   </script>
 <% end %>
-<%= partial 'partials/interment_form' %>
+<%= partial 'interment/form' %>

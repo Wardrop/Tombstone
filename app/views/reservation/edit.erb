@@ -4,7 +4,6 @@ content_for :head do
 %>
   <script type="text/javascript">
     $( function () {
-            
       var roles = {}
       var role_data = <%=
         @allocation.roles.reduce({}) do |memo, role|
@@ -29,8 +28,8 @@ content_for :head do
           })
         }
         roles[type] = new Ts.FormViews.RoleBlock({role_type: type, role_name: name, model: model, el: $('#'+type+'_section')})
-        roles[type].render()
       })
+      _.each(roles, function (role) { role.render() })
       
       $('#places_section label').each( function (idx, element) {
         new Ts.FormViews.PlacesView({el: element})
@@ -40,7 +39,31 @@ content_for :head do
       $('#actions_section > div').append(multibutton.render().el)
       
       new Ts.FormViews.AllocationForm({el: $('#reservation_form')[0], roles: roles})
+      
+      
+      
+      var roles = []
+      for (var type in ['reservee', 'applicant', 'next_of_kin']) {
+        if(roleData[type]) {
+          roles.push(new Ts.Role({
+            type: type,
+            person: new Ts.Person(roleData[type].person),
+            residential_contact: new Ts.Contact(roleData[type].residential_contact),
+            mailing_contact: new Ts.Contact(roleData[type].mailing_contact)
+          }))
+        } else {
+          roles.push(new Ts.Role({type: roleType}))
+        }
+      }
+
+      new Ts.FormViews.AllocationForm({
+        el: $('#reservation_form')[0],
+        roles: ['reservee', 'applicant', 'next_of_kin'],
+        roleData: $('json\\:roles').parseJSON() || {},
+        placeData: $('json\\:places').parseJSON() || [],
+        mutlibutton: new Ts.FormViews.Multibutton({name: 'submit', values: {active: 'Submit', completed: 'Complete'}})
+      })
     })
   </script>
 <% end %>
-<%= partial 'partials/reservation_form'%>
+<%= partial 'reservation/form'%>

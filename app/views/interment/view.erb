@@ -6,10 +6,13 @@ content_for :head do
     $( function () {
       var multibutton = new Ts.FormViews.Multibutton({
         name: 'action',
-        values: {edit: 'Edit', delete: 'Delete'},
+        values: {edit: 'Edit', multiple_interment: 'Multiple Interment', delete: 'Delete'},
         actions: {
           edit: function () {
             window.location = <%= url(:interment_edit, :id => @allocation.id).to_json %>
+          },
+          multiple_interment: function () {
+            window.location = <%= url(:interment_new, :place => @allocation.place_id).to_json %>
           },
           delete: function () {
             if (confirm('Are you sure you want to delete this reservation?')) {
@@ -34,7 +37,7 @@ include_script_views('form')
     <section>
       <h2 class="underline"><%= role.type.demodulize.titleize %></h2>
       <div id="<%= role.type %>_section" class="section padded" name="deceased">
-        <%= partial 'partials/role_view', :locals => {role: role} %>
+        <%= partial 'shared/role_view', :locals => {role: role} %>
       </div>
     </section>
   <% end %>
@@ -54,15 +57,15 @@ include_script_views('form')
     <div class="section padded">
       <label>
         <span>Director</span>
-        <div><%= print_field @allocation.funeral_director.name %></div>
+        <div><%= print_field { @allocation.funeral_director.name } %></div>
       </label>
       <label>
         <span>Director Name</span>
-        <div><%= print_field @allocation.funeral_director_name %></div>
+        <div><%= print_field { @allocation.funeral_director_name } %></div>
       </label>
       <label>
         <span>Location</span>
-        <div><%= print_field @allocation.funeral_service_location %></div>
+        <div><%= print_field { @allocation.funeral_service_location } %></div>
       </label>
     </div>
   </section>
@@ -80,6 +83,10 @@ include_script_views('form')
     	<label>
         <span>Interment Date</span>
         <div><%= print_field @allocation.interment_date %></div>
+      </label>
+      <label>
+        <span>Receipt No's</span>
+        <div><%= print_field { @allocation.transactions.map{ |t| t.receipt_no }.join(', ') } %></div>
       </label>
       <label>
         <span class="align_top">Burial Requirements</span>

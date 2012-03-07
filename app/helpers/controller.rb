@@ -4,9 +4,21 @@ module Tombstone
     # Takes an optional block which is yielded directly before the allocation is validated and saved.
     # Block is given the allocation object and data hash as arguments.
     def save_allocation(allocation, data)
-      errors = allocation.errors
       allocation.db.transaction do
+        values = Hash[ params.map { |k,v|
+          case k
+          when 'place'
+            v = (!params['place'].is_a?(Array) || params['place'].reject { |v| v.empty? }.empty?) ? nil : params['place'][-1]
+            k = :place_id
+          when 'funeral_director'
+            k = :funeral_director_id
+          end
+          [k, v]
+        } ]
+        
+        allocation.set_only_valid(values)
         allocation.save(validate: false)
+        
         allocation.class.valid_roles.each do |role_name|
           role_data = data[role_name]
           unless role_data.nil? || !role_data.is_a?(Hash)
@@ -14,17 +26,33 @@ module Tombstone
             begin
               allocation.add_role(Role.create_from(role_data, role_errors))
             rescue Sequel::Rollback => e
-              errors.add(role_name.to_sym, role_errors)
+              allocation.errors.add(role_name.to_sym, role_errors)
             end
           end
         end
         
-        yield(allocation, data) if block_given?
-
-        if errors.empty? && allocation.valid?
+        if params['transactions'].is_a? Array
+          params['transactions'].reject{ |v| v.blank? }.each do |trans|
+            trans = Transaction.new(allocation_id: allocation.id, allocation_type: allocation.type, receipt_no: trans)
+            if trans.valid?
+              trans.save
+            else
+              raise Sequel::Rollback
+            end
+          end
+        end
+        
+        if data['status'] == 'provisional'
+          allocation.valid?
+          allocation.errors.select!{ |k,v| k == :place && !v.empty? }
+          if allocation.errors.empty?
+            allocation.save(validate: false)
+          else
+            raise Sequel::Rollback
+          end
+        elsif allocation.errors.empty? && allocation.valid?
           allocation.save
         else
-          errors.merge!(allocation.errors)
           raise Sequel::Rollback
         end
       end

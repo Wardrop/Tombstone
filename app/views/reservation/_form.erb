@@ -2,6 +2,7 @@
 include_script_views('role_wizard', 'form')
 %>
 <form id="reservation_form" class="rowed wide" action="<%= (@allocation) ? "/reservation/#{@allocation.id}" : "/reservation" %>">
+  <!--
   <section>
     <h2 class="underline">Reserved For</h2>
     <div id="reservee_section" class="section padded" name="reservee"></div>
@@ -26,9 +27,21 @@ include_script_views('role_wizard', 'form')
     <% end if @places %>
     </div>
   </section>
+  -->
   <section>
     <h2 class="underline">Other Details</h2>
     <div class="section padded">
+      <div class="row">
+        <span class="align_top">Receipt No's</span>
+        <div class="multiinput_control">
+          <% if @allocation
+            @allocation.transactions.each do |trans| %>
+              <div><input type="text" name="transactions[]" value="<%= trans.receipt_no %>" placeholder="Add..."></div>
+            <% end
+          end %>
+          <div><input type="text" name="transactions[]" placeholder="Add..."></div>
+        </div>
+      </div>
     	<label>
         <span class="align_top">Location Description</span>
         <textarea name="location_description" style="width: 100%; height: 56px;"></textarea>

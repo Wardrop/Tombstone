@@ -18,15 +18,14 @@
 </script>
 
 <script type="text/template" id="form:role_block_template">
-  <% if (model) { %>
-    <div class="row_block clickable" title="Click to change">
-      <span><strong><%= model.person.given_name %> <%= model.person.surname %></strong></span>
-      <div><%= model.residential_contact.street_address %>, <%= model.residential_contact.town %>, <%= model.residential_contact.state %> <%= model.residential_contact.postal_code %></div>
-      <div class="actions">
-        <a href="javascript:void(0);" class="delete" confirm="Are you sure you want to delete this object?" action="/delete/stuff" data="id=56&amp;delete=now" title="Delete"></a>
-      </div>
-    </div>
-  <% } else { %>
-    <a class="add" href="#">Click to add&hellip;</a>
-  <% } %>
+  <span><strong><%= model.person.given_name %> <%= model.person.surname %></strong></span>
+  <div><%= model.residential_contact.street_address %>, <%= model.residential_contact.town %>, <%= model.residential_contact.state %> <%= model.residential_contact.postal_code %></div>
+  <div class="actions">
+    <a href="javascript:void(0);" class="delete" confirm="Are you sure you want to delete this object?" action="/delete/stuff" data="id=56&amp;delete=now" title="Delete"></a>
+  </div>
+</script>
+
+<script type="text/template" id="form:section_template">
+  <h2 class="underline"><%= title %></h2>
+  <div class="section padded" name="<%= name %>"></div>
 </script>

@@ -1,11 +1,34 @@
 Ts = {};
 
+/**** Common Page Behaviours ****/
+
 $( function () {
+  // Enable jQuery datepicker on all date and datetime fields.
   $('input[type=date]').livequery( function () {
     $(this).datepicker({ dateFormat: 'dd/mm/yy', showOn: 'button' })
   })
   $('input[type=datetime]').livequery( function () {
     $(this).datetimepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', ampm: true, timeFormat: 'h:mmtt' })
+  })
+  
+  // Control for adding an arbitary number of values for a field.
+  $(document).on('blur keyup', '.multiinput_control input', function (e) {
+    isLast = $(this).parents('.multiinput_control').find('input:last')[0] == this
+    if (isLast) {
+      if ((e.keyCode == 13 || e.keyCode == undefined) && !$(this).val().match(/^ *$/)) {
+        clone = $(this).clone()
+        clone.val('')
+        $(this).parent().after($('<div />').append(clone))
+        clone.focus()
+      }
+    } else {
+      if ((e.keyCode == 13 || e.keyCode == undefined) && $(this).val().match(/^ *$/)) {
+        try {
+          $(this).parent().remove()
+        } catch(e) {}
+      }
+    }
+    if (e.type == "keyup") return false
   })
 })
 
@@ -29,6 +52,10 @@ _.extend(Backbone.Model.prototype, {
 /**** jQuery helpers ****/
 
 (function ($) {
+  $.fn.parseJSON = function () {
+    return $.parseJSON(this.html())
+  }
+  
   $.fn.serializeJSON = function() {
     var json = {};
     jQuery.map($(this).serializeArray(), function(n, i){
@@ -87,7 +114,7 @@ String.prototype.capitalize = function () {
  * To Title Case 2.0.1 – http://individed.com/code/to-title-case/
  * Copyright © 2008–2012 David Gouch. Licensed under the MIT License. 
  */
-String.prototype.toTitleCase = function () {
+String.prototype.titleize = function () {
   var smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|vs?\.?|via)$/i;
 
   return this.replace(/([^\W_]+[^\s-]*) */g, function (match, p1, index, title) {
@@ -103,6 +130,10 @@ String.prototype.toTitleCase = function () {
 
     return match.charAt(0).toUpperCase() + match.substr(1);
   });
+};
+
+String.prototype.demodulize = function () {
+  return this.replace(/_/g, ' ');
 };
 
 // Modify the built-in encodeURIComponent function to return an empty string for null and undefined values.

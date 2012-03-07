@@ -18,15 +18,25 @@ module Tombstone
     
     def validate
       super
-      errors.add(:state, "must be one of: #{self.class.valid_states.join(', ')}") if !self.class.valid_states.include? state
+      errors.add(:status, "must be one of: #{self.class.valid_states.join(', ')}") if !self.class.valid_states.include? status
       validates_min_length 2, :type
+    end
+    
+    def allows_interment?
+      status == 'available' \
+      && children_dataset.count == 0 \
+      && calculated_max_interments > allocations_dataset.filter(type: 'interment').exclude(:status => 'deleted').count
+    end
+    
+    def calculated_max_interments
+      ancestors(true).reverse.reduce(1){|max, place| (place.max_interments.to_i > 0) ? place.max_interments : max}
     end
     
     def siblings
       self.class.filter(:parent_id => parent_id)
     end
     
-    def ancestors(upto = 0, include_self = false)
+    def ancestors(include_self = false, upto = 0)
       column_string = self.class.dataset.columns.map { |v| "[#{v}]"}.join(', ')
       aliased_column_string = self.class.dataset.columns.map { |v| "p.[#{v}]"}.join(', ')
       array = self.db["
@@ -63,7 +73,7 @@ module Tombstone
         -- Anchor member definition   
         	SELECT #{column_string}, 0 as LEVEL, CAST(RIGHT('0000000' + CAST(id as nvarchar),7) as nvarchar) as [ORDER]
         	FROM [PLACE]
-        	WHERE state = 'available'
+        	WHERE status = 'available'
         		AND parent_id = :parent_id
         	UNION ALL
               
@@ -72,7 +82,7 @@ module Tombstone
         	FROM [PLACE] as p
         	INNER JOIN PlaceChildren AS a
         		ON p.parent_id = a.ID
-        	WHERE p.state = 'available'
+        	WHERE p.status = 'available'
         		AND p.parent_id = a.id
         )
         

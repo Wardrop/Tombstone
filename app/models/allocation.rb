@@ -1,27 +1,30 @@
 
 module Tombstone
-  class Allocation < BaseModel
+  class Allocation < BaseModel    
     set_primary_key [:id, :type]
     unrestrict_primary_key
     
-    many_to_one :place, :class => :'Tombstone::Place', :key => :place_id
+    many_to_one :place, :key => :place_id, :class => :'Tombstone::Place'
     many_to_many :roles, :join_table => :role_association, :left_key => [:allocation_id, :allocation_type], :right_key => :role_id, :class => :'Tombstone::Role'
     many_to_one :funeral_director, {:key => :funeral_director_id, :class => :'Tombstone::FuneralDirector'}
+    one_to_many :transactions, {:key => [:allocation_id, :allocation_type], }
     
     def validate
       super
+      
       self.class.valid_roles.each do |role_type|
         errors.add(role_type.to_sym, "must be added") if roles.select { |r| r.type == role_type}.empty?
       end
 
       if not Place === place
         errors.add(:place, 'cannot be empty and must exist')
-      elsif not place.allocations.select{ |v| v.type == self.type && v.id != self.id }.empty?
-        errors.add(:place, "is already associated with another allocation of the same type (#{type})")
-      elsif place.allocations.count >= 1 && place.allocations.first.id != id
-        errors.add(:place, "is already associated with an allocation with a different ID")
       elsif place.children.length >= 1
         errors.add(:place, 'must not have any children')
+      elsif !new? && changed_columns.include?(:place_id)
+        max_interments = place.ancestors.reverse.reduce(1){|max, place| (place.max_interments.to_i > 0) ? place.max_interments : max}
+        if place.allocations_dataset.filter(type: 'interment').count >= max_interments
+          errors.add(:place, "has exceeded its maximum number of interments (#{max_interments})")
+        end
       end
       validates_min_length 2, :status
     end
@@ -52,7 +55,7 @@ module Tombstone
       end
       
       def valid_roles
-        ['reservee', 'next_of_kin', 'applicant']
+        ['reservee', 'applicant', 'next_of_kin']
       end
       
       def valid_states
@@ -62,6 +65,11 @@ module Tombstone
     
     def validate
       super
+      unless errors[:place]
+        if place.allocations_dataset.filter(type: 'reservation').length > 0
+          errors.add(:place, "has already been reserved")
+        end
+      end
       validates_includes self.class.valid_states, :status
     end
     
@@ -79,7 +87,7 @@ module Tombstone
       end
       
       def valid_roles
-        ['deceased', 'next_of_kin', 'applicant']
+        ['deceased', 'applicant', 'next_of_kin']
       end
       
       def valid_states

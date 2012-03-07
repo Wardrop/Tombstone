@@ -1,21 +1,66 @@
 $( function () {
   Ts.FormViews = {}
+  Ts.FormViews.Section = Backbone.View.extend({
+    tagName: 'section',
+    template: _.template($('#form\\:section_template').html()),
+    initialize: function () {
+      this.body = []
+      if (body = this.options.body) {
+        this.body = (body.constructor == Array) ? body : [body]
+      }
+    },
+    render: function () {
+      $(this.el).html(this.template(this.options))
+      _.each(this.body, function (element) {
+        this.$('div').append(element)
+      }, this)
+      return this
+    }
+  })
   Ts.FormViews.RoleBlock = Backbone.View.extend({
     className: 'row_block clickable',
+    title: 'Click to change',
     template: _.template($('#form\\:role_block_template').html()),
     events: {
       'click div.row_block' : 'changeRole',
       'click a.add' : 'addRole',
-      'click .actions a.delete' : 'removeRole'
+      'click a.delete' : 'removeRole'
     },
+    roleBlocks: [],
     initialize: function () {
+      this.roleBlocks.push(this)
       this.role_type = this.options.role_type
-			this.role_name = this.options.role_name || this.role_type.split('_').join(' ').toTitleCase()
+			this.role_name = this.options.role_name || this.role_type.split('_').join(' ').titleize()
       _.bindAll(this, 'render', 'addRole', 'changeRole', 'onCompleteCallback')
     },
     render: function () {
-      $(this.el).html(this.template({model: (this.model) ? this.model.recursiveToJSON() : null}))
+      $(this.el).empty()
+      if (this.model) {
+        $(this.el).html(this.template({model: (this.model) ? this.model.recursiveToJSON() : null}))
+      } else {
+        values = {add: 'Add'}
+        actions = {add: this.addRole}
+        _.each(this.roleBlocks, function (roleBlock) {
+          if(roleBlock != this) {
+            values[roleBlock.role_type] = 'Use '+roleBlock.role_name
+            actions[roleBlock.role_type] = _.bind( function () {
+              this.useRole(roleBlock)
+            }, this)
+          }
+        }, this)
+        var multibutton = new Ts.FormViews.Multibutton({
+          name: this.role_type + '_action',
+          values: values,
+          actions: actions
+        })
+        $(this.el).append(multibutton.render().el)
+      }
   		return this
+    },
+    getModel: function () {
+      try {
+        return this.model || this.using.getModel()
+      } catch(e) { return null }
     },
     addRole: function () {
       wizard = new Ts.RoleWizard({title: "Add "+this.role_name, role: new Ts.Role({type: this.role_type})})
@@ -24,6 +69,9 @@ $( function () {
         onComplete: this.onCompleteCallback
       })
       $('body').prepend(wizardView.render().el)
+    },
+    useRole: function (roleBlock) {
+      this.using = roleBlock
     },
     changeRole: function () {
       // clonedModel = new Ts.Role({
@@ -235,6 +283,7 @@ $( function () {
 
 	Ts.FormViews.AllocationForm = Backbone.View.extend({
   	events: {
+      'submit' : 'onSubmit',
 			'click #actions_section input[type=button]' : 'submit'
 		},
 		initialize: function () {
@@ -242,6 +291,9 @@ $( function () {
 			this.loader = $('<div class="indicator loading" />')
 			_.bindAll(this, 'submit')
 		},
+    onSubmit: function () {
+      return false
+    },
 		submit: function (e) {
 			var data = this.formData()
 			data.status = $(e.currentTarget).attr('name')
@@ -284,7 +336,7 @@ $( function () {
 			var data = $(this.el).serializeObject()
 			data.what = null
       _.each(this.roles, function (role, name) {
-        if (role.model) {
+        if (role.getModel()) {
           data[name] = role.model.recursiveToJSON()
         }
       })
@@ -298,7 +350,7 @@ $( function () {
 				  if (error.constructor == Array) {
 						_.each(error, function (message) {
 							errorObj = {}; errorObj[field] = message
-							ul.append($('<li />').text(field.split('_').join(' ').toTitleCase()))
+							ul.append($('<li />').text(field.split('_').join(' ').titleize()))
 							ul.append(iterateErrors($('<ul />'), errorObj))
 						})
 					} else if (error.constructor == Object) {
@@ -313,7 +365,7 @@ $( function () {
 			iterateErrors(container, errors)
 			
       _.each(errors, function (value, field) {
-        this.$('[name='+field+']').addClass('field_error')
+        if (value.length > 0) this.$('[name='+field+']').addClass('field_error')
       })
 
       container.css({display: 'none'}).prependTo(this.el).slideDown(300)
