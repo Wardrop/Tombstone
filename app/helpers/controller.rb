@@ -19,16 +19,21 @@ module Tombstone
         
         allocation.set_only_valid(values)
         allocation.save(validate: false)
-        
-        allocation.class.valid_roles.each do |role_name|
-          role_data = data[role_name]
-          unless role_data.nil? || !role_data.is_a?(Hash)
-            role_errors = Sequel::Model::Errors.new
-            begin
-              allocation.add_role(Role.create_from(role_data, role_errors))
-            rescue Sequel::Rollback => e
-              allocation.errors.add(role_name.to_sym, role_errors)
-            end
+
+        roles = data.select { |k,v| allocation.class.valid_roles.include?(k) && !v.nil? && Hash === v }
+        roles.reject{|k,v| v['use'] }.each do |key, role_data|
+          role_errors = Sequel::Model::Errors.new
+          begin
+            allocation.add_role(Role.create_from(role_data, role_errors))
+          rescue Sequel::Rollback => e
+            allocation.errors.add(role_name.to_sym, role_errors)
+          end
+        end
+        roles.select{|k,v| v['use']}.each do |key, role_data|
+          use = allocation.roles.select{|r| r.type == role_data['use']}.first
+          if use
+            role = Role.new.set_only_valid(use.values.merge(type: role_data['type'])).save
+            allocation.add_role(role) if role
           end
         end
         

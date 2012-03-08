@@ -19,7 +19,12 @@ module Tombstone
     end
     
     def set_only_valid(hash)
-      set hash.select { |k,v| k = k.to_sym; db_schema[k] && !self.class.restricted_columns.include?(k) }
+      restricted = self.class.restricted_columns +
+                   (self.class.restrict_primary_key? ? [*self.class.primary_key] : [])
+      set(hash.select { |k,v|
+        k = k.to_sym
+        db_schema[k] && !restricted.include?(k)
+      })
     end
     
     remove_instance_variable(:@dataset)

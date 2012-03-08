@@ -55,10 +55,10 @@ $( function () {
   		return this
     },
     getJSON: function () {
-      return (this.model && this.model.recursiveToJSON()) || this.using
+      return (this.model && this.model.recursiveToJSON()) || (this.use && {type: this.role_type, use: this.use}) || null
     },
     addRole: function () {
-      this.using = null
+      this.use = null
       wizard = new Ts.RoleWizard({title: "Add "+this.role_name, role: new Ts.Role({type: this.role_type})})
 			wizardView = new Ts.RoleWizardViews.WizardView({
         model: wizard,
@@ -67,7 +67,7 @@ $( function () {
       $('body').prepend(wizardView.render().el)
     },
     useRole: function (roleBlock) {
-      this.using = roleBlock.role_type
+      this.use = roleBlock.role_type
     },
     changeRole: function () {
       // clonedModel = new Ts.Role({
@@ -112,7 +112,7 @@ $( function () {
       $(this.el).html(this.template({name: this.options.name, options: this.options.values}))
       var list = this.$('ul')
       list.css('display', 'none')
-      this.selectButton(list.find('input:first'))
+      this.selectButton(this.options.selected || list.find('input:first')[0].name)
       this.hideList()
   		return this
     },
@@ -143,18 +143,19 @@ $( function () {
 			$(window).unbind('blur', this.hideList)
 			$(document).unbind('keydown', this.keydownHideEvent)
     },
-    selectButton: function(selected) {
-			if ($(selected).parent()[0] != this.el) {
+    selectButton: function(selectedName) {
+      selected = this.$('[name='+selectedName+']')
+			if (selected.parent()[0] != this.el) {
 				$(this.el).children('input').remove()
-				$(this.el).prepend($(selected).clone(true))
+				$(this.el).prepend(selected.clone(true))
 			  this.$('ul > li').removeClass('selected').find(selected).parent().addClass('selected')
 			}
 		},
     onSelectButton: function (e) {
-			var selected = e.currentTarget
-      this.selectButton(selected)
-			if (this.options.actions && this.options.actions[selected.name]) {
-				this.options.actions[selected.name](e)
+			var target = e.currentTarget
+      this.selectButton(target.name)
+			if (this.options.actions && this.options.actions[target.name]) {
+				this.options.actions[target.name](e)
 			} else if (this.options.actions && this.options.actions['default']) {
 				this.options.actions['default'](e)
 			}
@@ -171,14 +172,14 @@ $( function () {
       'change': 'selectPlace'
     },
     initialize: function () {
-      this.selected = this.options.selected
       _.bindAll(this, 'selectPlace')
     },
     render: function () {
       $(this.el).html(this.template({
 					type: this.collection.first().get('type'),
 					places: this.collection.toJSON(),
-					selected: this.selected
+					selected: this.options.selected,
+          disabled: this.options.disabled
 			}))
 			setTimeout("this.$('select').focus()")
       return this
@@ -278,42 +279,119 @@ $( function () {
   })
 
 	Ts.FormViews.AllocationForm = Backbone.View.extend({
-  	events: {
-      'submit' : 'onSubmit',
-			'click #actions_section input[type=button]' : 'submit'
+		events: {
+			'submit' : 'onSubmit'
+		},
+		onSubmit: function () {
+			return false
 		},
 		initialize: function () {
-			this.roles = this.options.roles
-			this.loader = $('<div class="indicator loading" />')
-			_.bindAll(this, 'submit')
+			this.firstSection = $(this.el).children('section').first()
+			this.placeData = $('#json\\:place_data').parseJSON() || {}
+			this.allocationData = $('#json\\:allocation_data').parseJSON() || {}
+			this.indicator = $('<div class="indicator" />')
+			this.render()
 		},
-    onSubmit: function () {
-      return false
-    },
-		submit: function (e) {
+		render: function () {
+			this.renderRoles()
+			this.renderPlaces()
+			this.renderActions()
+			return this
+		},
+		renderRoles: function () {
+			this.roleBlocks = {}
+			var roleData = {}
+			_.each(this.allocationData.roles, function (role) {
+				roleData[role.type] = role
+			})
+			_.each(this.options.valid_roles, function (type) {
+				var role;
+				if (roleData[type]) {
+					role = new Ts.Role({
+						type: type,
+						person: new Ts.Person(roleData[type].person),
+						residential_contact: new Ts.Contact(roleData[type].residential_contact),
+						mailing_contact: new Ts.Contact(roleData[type].mailing_contact)
+					})
+				}
+				var roleBlock = new Ts.FormViews.RoleBlock({role_name: type, role_type: type, group: this.roleBlocks, model: role})
+				this.roleBlocks[type] = roleBlock
+				var section = new Ts.FormViews.Section({
+					title: type.demodulize().titleize(),
+					name: type,
+					body: roleBlock.el
+				})
+				this.firstSection.before(section.render().el)
+			}, this)
+			_.each(this.roleBlocks, function (block) { block.render() })
+			return this
+		},
+		renderPlaces: function () {
+			var section = new Ts.FormViews.Section({title: 'Location', name: 'place'})
+			if(place_id = this.allocationData.place_id) {
+				var currentPlace = place_id
+				while (currentPlace > 0) {
+					var siblings = this.placeData[currentPlace]
+					var collection = new Ts.Places(siblings)
+					var placeView = new Ts.FormViews.PlacesView({
+            selected: currentPlace,
+            collection: collection,
+            disabled: !this.allocationData.id
+          })
+					section.body.unshift(placeView.render().el)
+          currentPlace = siblings[0].parent_id
+				}
+			} else {
+				var collection = new Ts.Places(this.placeData[""])
+				var placeView = new Ts.FormViews.PlacesView({collection: collection})
+				section.body.push(placeView.render().el)
+			}
+			this.firstSection.before(section.render().el)
+			return this
+		},
+		renderActions: function () {
+			this.multibutton = new Ts.FormViews.Multibutton({
+				name: 'submit',
+				values: this.options.states,
+				actions: {
+					default: _.bind(function (e) {
+						this.submit(e.currentTarget.name)
+					}, this)
+				}
+			})
+			var section = new Ts.FormViews.Section({
+				title: 'Actions',
+				body: this.multibutton.render().el
+			})
+			$(this.el).append(section.render().el)
+		},
+		submit: function (status) {
 			var data = this.formData()
-			data.status = $(e.currentTarget).attr('name')
-			this.loader.attr('class', 'indicator loading').insertAfter('#actions_section .multibutton')
+			data.status = status
+			this.indicator.attr('class', 'indicator loading').insertAfter('#actions_section .multibutton')
 			this.hideFormErrors()
 			if(this.lastRequest && this.lastRequest.state() == 'pending') {
-				alert('The last submit operation has not completed. Please wait...')
-				return false
+				if (confirm('The last submit operation has not yet completed. Would you like to abort the last submit operations?')) {
+					this.lastRequest.abort()
+				} else {
+					return false
+				}
 			}
-      this.lastRequest = $.ajax(this.el.action, {
-        type: 'POST',
-        data: data,
-        success: _.bind( function (data, textStatus, jqXHR) {
-          if(data.success == false) {
-            this.showFormErrors(data.form_errors)
-            this.loader.detach()
-          } else {
-            this.loader.attr('class', 'indicator success')
+			this.lastRequest = $.ajax(this.el.action, {
+				type: 'POST',
+				data: data,
+				success: _.bind( function (data, textStatus, jqXHR) {
+					if(data.success == false) {
+						this.showFormErrors(data.form_errors)
+						this.indicator.detach()
+					} else {
+						this.indicator.attr('class', 'indicator success')
 						window.location = data.redirectTo
-          }
-        }, this),
-        error: _.bind( function (jqXHR, textStatus, errorThrown) {
+					}
+				}, this),
+				error: _.bind( function (jqXHR, textStatus, errorThrown) {
 					// TODO
-          this.loader.detach()
+					this.indicator.detach()
 					switch(textStatus) {
 						case 'error':
 							try {
@@ -326,16 +404,14 @@ $( function () {
 							this.showFormErrors("Error encountered: "+errorThrown)
 					}
 				}, this)
-      })
+			})
 		},
 		formData: function () {
 			var data = $(this.el).serializeObject()
-			data.what = null
-      _.each(this.roles, function (role, name) {
-        if (role.getModel()) {
-          data[name] = role.model.recursiveToJSON()
-        }
-      })
+			_.each(this.roleBlocks, function (roleBlock, role_type) {
+        console.log(roleBlock.getJSON())
+				data[role_type] = roleBlock.getJSON()
+		  })
 			return data
 		},
 		showFormErrors: function (errors) {
@@ -343,7 +419,7 @@ $( function () {
 			errors = (errors.constructor == String) ? [errors] : errors
 			var iterateErrors = function (ul, errors) {
 				_.each(errors, function (error, field) {
-				  if (error.constructor == Array) {
+					if (error.constructor == Array) {
 						_.each(error, function (message) {
 							errorObj = {}; errorObj[field] = message
 							ul.append($('<li />').text(field.split('_').join(' ').titleize()))
@@ -357,20 +433,18 @@ $( function () {
 				})
 				return ul
 			}
-			
 			iterateErrors(container, errors)
 			
-      _.each(errors, function (value, field) {
-        if (value.length > 0) this.$('[name='+field+']').addClass('field_error')
-      })
-
-      container.css({display: 'none'}).prependTo(this.el).slideDown(300)
+			_.each(errors, function (value, field) {
+				if (value.length > 0) this.$('[name='+field+']').addClass('field_error')
+			})
+	
+			container.css({display: 'none'}).prependTo(this.el).slideDown(300)
 			this.$(':first').scrollTo(300, -10);
 		},
 		hideFormErrors: function () {
 			this.$('.error_block').remove()
-      this.$('[name]').removeClass('field_error')
+			this.$('[name]').removeClass('field_error')
 		}
 	})
-
 })

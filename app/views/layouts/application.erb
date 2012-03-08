@@ -19,7 +19,6 @@
   <% @document[:scripts].each do |file| %>
     <script type="text/javascript" src="<%= url "/scripts/#{file}" %>"></script>
   <% end %>
-  <script type="text/javascript" src="<%= url '/scripts/views/allocation_form.js' %>"></script>
   <%= yield_content :head %>
 </head>
 <body>

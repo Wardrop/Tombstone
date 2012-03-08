@@ -9,7 +9,7 @@
 
 <script type="text/template" id="form:place_list_template">
   <span><%= type.capitalize() %></span>
-  <select data-place-type="<%= type %>" name="place[]">
+  <select data-place-type="<%= type %>" name="place[]" <%= (disabled) ? 'disabled="disabled"' : '' %>>
     <option value=""></option>
     <% _.each(places, function (place) { %>
       <option value="<%= place.id %>" <%= (place.id == selected) ? 'selected="selected"' : '' %>><%= place.name %></option>

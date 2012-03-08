@@ -232,6 +232,15 @@ section:last-child, .section:last-child {
  background: #a63232; 
 }
 
+.list_rows > div.deleted {
+  color: #777;
+}
+.list_rows > div.deleted > .summary {
+  text-decoration: line-through;
+}
+.list_rows > div.provisional {
+  background: #f0ebfa;
+}
 .list_rows > div {
   background: #ebf3fa;
   margin-bottom: 1px;

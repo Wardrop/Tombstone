@@ -69,7 +69,7 @@ include_script_views('form')
       </label>
       <label>
         <span>Status</span>
-        <div><%= print_field @allocation.status %></div>
+        <div><%= print_field { @allocation.status.demodulize.titleize } %></div>
       </label>
     </div>
   </section>

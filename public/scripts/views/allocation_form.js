@@ -50,17 +50,16 @@ $( function () {
 		renderPlaces: function () {
 			var section = new Ts.FormViews.Section({title: 'Location', name: 'place'})
 			if(place = this.allocationData.place) {
-				var selected = currentParent || place.id
-				var currentParent = place.parent_id
-				while (currentParent != null) {
-					var placeList = this.placeData[currentParent]
-					var collection = new Ts.Places(placeList)
-					var placeView = new Ts.FormViews.PlacesView({selected: selected, collection: collection})
-					section.body.push(placeView.render().el)
-					currentParent = placeList[0].parent_id
+				var currentPlace = place.id
+				while (currentPlace > 0) {
+					var siblings = this.placeData[currentPlace]
+					var collection = new Ts.Places(siblings)
+					var placeView = new Ts.FormViews.PlacesView({selected: currentPlace, collection: collection})
+					section.body.unshift(placeView.render().el)
+          currentPlace = siblings[0].parent_id
 				}
 			} else {
-				var collection = new Ts.Places(this.placeData[0])
+				var collection = new Ts.Places(this.placeData[""])
 				var placeView = new Ts.FormViews.PlacesView({collection: collection})
 				section.body.push(placeView.render().el)
 			}
@@ -127,6 +126,7 @@ $( function () {
 		formData: function () {
 			var data = $(this.el).serializeObject()
 			_.each(this.roleBlocks, function (roleBlock, role_type) {
+        console.log(roleBlock.getJSON())
 				data[role_type] = roleBlock.getJSON()
 		  })
 			return data

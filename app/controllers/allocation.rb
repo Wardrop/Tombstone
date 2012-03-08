@@ -16,7 +16,6 @@ module Tombstone
     get :edit, :map => "#{controller}/:id/edit" do
       @allocation = model_class.with_pk(params[:id].to_i)
       if @allocation
-        @places = @allocation.place.ancestors(true).reverse
         @funeral_directors = FuneralDirector.all
         prepare_form(render("#{controller}/edit"), {selector: 'form', values: @allocation.values})
       else
@@ -87,6 +86,7 @@ module Tombstone
   App.controller :reservation, &allocation
   App.controller :reservation do
     get :new, :map => 'reservation' do
+      @allocation = Reservation.new
       @root_places = Place.filter(:parent_id => nil).order(:name).naked.all
       render "reservation/new"
     end
@@ -95,6 +95,7 @@ module Tombstone
   App.controller :interment, &allocation
   App.controller :interment do
     get :new, :map => 'interment' do
+      @allocation = Interment.new
       @funeral_directors = FuneralDirector.all
       if params['place'].to_i > 0
         place = Place.with_pk(params['place'].to_i)
@@ -110,13 +111,12 @@ module Tombstone
                          The place may be unavailable, invalid, or it exceeds the maximum number of allowed interments."
           })
         else
-          @places = place.ancestors(true).reverse
-          render "interment/new_multiple_interment"
+          @allocation.place_id = params['place']
         end
       else
         @root_places = Place.filter(:parent_id => nil).order(:name).naked.all
-        render "interment/new"
       end
+      render "interment/new"
     end
     
     get :new_from_reservation, :map => "interment/:id/new" do
@@ -126,15 +126,15 @@ module Tombstone
           :title => 'Interment Already Exists',
           :message => "An interment for reservation ##{params[:id]} already exists."
         })
-      elsif @allocation
-        @places = @allocation.place.ancestors(true).reverse
-        @funeral_directors = FuneralDirector.all
-        prepare_form(render("interment/new_from_reservation"), {selector: 'form', values: @allocation.values})
-      else
+      elsif !@allocation
         halt 404, render("error", :locals => {
           :title => 'Reservation Not Found',
           :message => "The reservation with ID ##{params[:id]} does not exist."
         })
+      else
+        @allocation.roles.each { |r| r.type = 'deceased' if r.type == 'reservee' }
+        @funeral_directors = FuneralDirector.all
+        prepare_form(render("interment/new"), {selector: 'form', values: @allocation.values})
       end
     end
   end
