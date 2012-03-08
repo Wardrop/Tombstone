@@ -25,7 +25,11 @@ module Tombstone
     def siblings
       self.class.filter(:parent_id => parent_id)
     end
-    
+
+    def description
+      self.ancestors(0, true).reverse.map{|p| p.name}.join(' - ')
+    end
+
     def ancestors(upto = 0, include_self = false)
       column_string = self.class.dataset.columns.map { |v| "[#{v}]"}.join(', ')
       aliased_column_string = self.class.dataset.columns.map { |v| "p.[#{v}]"}.join(', ')

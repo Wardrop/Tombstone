@@ -27,21 +27,26 @@ db[:role] << {person_id: 1, type: 'reservee', residential_contact_id: 1, mailing
 db[:role] << {person_id: 2, type: 'next_of_kin', residential_contact_id: 5, mailing_contact_id: 4}
 db[:role] << {person_id: 3, type: 'applicant', residential_contact_id: 3}
 db[:role] << {person_id: 1, type: 'deceased', residential_contact_id: 2}
+db[:role] << {person_id: 2, type: 'deceased', residential_contact_id: 3}
+db[:role] << {person_id: 3, type: 'deceased', residential_contact_id: 3}
 
 # db[:allocation] << {role1_id: 1, role2_id: 2, type: 'Next of Kin'}
 # db[:allocation] << {role1_id: 3, role2_id: 2, type: 'Colleague'}
 # db[:allocation] << {role1_id: 1, role2_id: 3, type: 'Colleague'}
 
-db[:allocation].insert type: 'reservation', place_id: 7,  status: 'approved'
-id = db[:allocation].insert type: 'reservation', place_id: 8,  status: 'approved'
+id1 = db[:allocation].insert type: 'reservation', place_id: 7,  status: 'approved'
+id2 = db[:allocation].insert type: 'reservation', place_id: 8,  status: 'approved'
 db.run('SET IDENTITY_INSERT [allocation] ON')
-  db[:allocation].insert id: id, type: 'interment', place_id: 8,  status: 'approved', funeral_director_id: 1
+  db[:allocation].insert id: id1, type: 'interment', place_id: 9,  status: 'pending', interment_date: (DateTime.now + 7), interment_type: 'coffin', comments: 'Call office prior burial.'
+  db[:allocation].insert id: id2, type: 'interment', place_id: 8,  status: 'approved', funeral_director_id: 1, interment_date: (DateTime.now + 3), interment_type: 'ashes', burial_requirements: 'On back please'
 db.run('SET IDENTITY_INSERT [allocation] OFF')
+db[:allocation].insert type: 'interment', place_id: 7,  status: 'provisional', funeral_director_id: 2, interment_date: (DateTime.now + 10), interment_type: 'ashes', burial_requirements: 'To be provided'
 
 db[:role_association] << {role_id: 1, allocation_id: 2, allocation_type: 'reservation'}
 db[:role_association] << {role_id: 2, allocation_id: 2, allocation_type: 'reservation'}
 db[:role_association] << {role_id: 3, allocation_id: 2, allocation_type: 'reservation'}
-db[:role_association] << {role_id: 4, allocation_id: 3, allocation_type: 'interment'}
+db[:role_association] << {role_id: 4, allocation_id: 1, allocation_type: 'interment'}
+db[:role_association] << {role_id: 5, allocation_id: 2, allocation_type: 'interment'}
 
 db[:place] << {name: 'Atherton Cemetery', type: 'cemetery', state: 'available'}
 db[:place] << {name: 'Mareeba Cemetery', type: 'cemetery', state: 'available'}
