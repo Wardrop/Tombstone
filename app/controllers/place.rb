@@ -2,7 +2,7 @@ module Tombstone
   App.controller :place do
     
     get :children, :with => :parent_id, :provides => :json do
-      Place.filter(:parent_id => params[:parent_id]).order(:name).naked.all.to_json
+      Place.filter(:parent_id => params[:parent_id]).order(:name).with_child_count.available_only.naked.all.to_json
     end
     
     get :next_available, :with => :parent_id, :provides => :json do
@@ -11,11 +11,10 @@ module Tombstone
       next_available = place.next_available
       ancestors = next_available.ancestors(false, params[:parent_id])
       chain = ancestors.reverse.push(next_available)
-
-      chain.reduce([]) { |memo, place|
-        place = place.values
-        place[:siblings] = Place.filter(:parent_id => place[:parent_id]).order(:id).naked.all
-        memo << place
+      
+      chain.reduce({}) { |memo, place|
+        memo[place.id] = place.siblings.with_child_count.available_only.naked.all
+        memo
       }.to_json
     end
     

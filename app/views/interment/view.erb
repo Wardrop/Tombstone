@@ -74,7 +74,7 @@ include_script_views('form')
     <div class="section padded">
       <label>
         <span>Interment Type</span>
-        <div><%= print_field @allocation.interment_type, :demodulize, :titleize %></div>
+        <div><%= print_field { @allocation.interment_type.demodulize.titleize } %></div>
       </label>
       <label>
         <span>Advice Received Date</span>
@@ -95,6 +95,10 @@ include_script_views('form')
       <label>
         <span class="align_top">Comments</span>
         <div><%= print_field @allocation.comments %></div>
+      </label>
+      <label>
+        <span>Status</span>
+        <div><%= print_field { @allocation.status.demodulize.titleize } %></div>
       </label>
     </div>
   </section>

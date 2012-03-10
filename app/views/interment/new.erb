@@ -4,22 +4,11 @@ content_for :head do
 %>
   <script type="text/javascript">
     $( function () {
-      var roles = {}
-      _.each({deceased: 'Deceased', applicant: 'Applicant', next_of_kin: 'Next of Kin'}, function (name, role) {
-        roles[role] = new Ts.FormViews.RoleBlock({role_type: role, role_name: name, el: $('#'+role+'_section')})
-        roles[role].render()
+      new Ts.FormViews.AllocationForm({
+        el: $('#interment_form')[0],
+        valid_roles: ['deceased', 'applicant', 'next_of_kin'],
+        states: {pending: 'Submit', provisional: 'Save',  approved: 'Approve', interred: 'Inter', completed: 'Complete'}
       })
-
-      var rootPlaces = new Ts.Places(<%= @root_places.to_json %>)
-      $('#places_section').append(new Ts.FormViews.PlacesView({collection: rootPlaces}).render().el)
-      
-      var multibutton = new Ts.FormViews.Multibutton({
-        name: 'submit',
-        values: {pending: 'Submit', provisional: 'Save',  approved: 'Approve', interred: 'Inter', completed: 'Complete'}
-      })
-      $('#actions_section > div').append(multibutton.render().el)
-    
-      new Ts.FormViews.AllocationForm({el: $('#interment_form')[0], roles: roles})
     })
   </script>
 <% end %>

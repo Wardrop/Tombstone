@@ -4,45 +4,15 @@ content_for :head do
 %>
   <script type="text/javascript">
     $( function () {
-      var roles = {}
-      var role_data = <%=
-        @allocation.roles.reduce({}) do |memo, role|
-          memo[role.type] = {
-            type: role.type,
-            person: role.person.values,
-            residential_contact: role.residential_contact.values,
-            mailing_contact: (role.mailing_contact) ? role.mailing_contact.values : {}
-          }
-          memo
-        end.to_json
-      %>
-      
-      _.each({deceased: 'Deceased', applicant: 'Applicant', next_of_kin: 'Next of Kin'}, function (name, type) {
-        var model = null
-        if(role_data[type]) {
-          model = new Ts.Role({
-            type: type,
-            person: new Ts.Person(role_data[type].person),
-            residential_contact: new Ts.Contact(role_data[type].residential_contact),
-            mailing_contact: new Ts.Contact(role_data[type].mailing_contact)
-          })
-        }
-        roles[type] = new Ts.FormViews.RoleBlock({role_type: type, role_name: name, model: model, el: $('#'+type+'_section')})
-        roles[type].render()
+      new Ts.FormViews.AllocationForm({
+        el: $('#interment_form')[0],
+        valid_roles: ['deceased', 'applicant', 'next_of_kin'],
+        states: {pending: 'Submit', approved: 'Approve', interred: 'Inter', completed: 'Complete'}
       })
-      
-      $('#places_section label').each( function (idx, element) {
-        new Ts.FormViews.PlacesView({el: element})
-      })
-      
-      var multibutton = new Ts.FormViews.Multibutton({
-        name: 'submit',
-        values: {pending: 'Submit', provisional: 'Save', approved: 'Approve', interred: 'Inter', completed: 'Complete'}
-      })
-      $('#actions_section > div').append(multibutton.render().el)
-      
-      new Ts.FormViews.AllocationForm({el: $('#interment_form')[0], roles: roles})
     })
+  </script>
+  <script type="application/json" id="json:allocation_data">
+    <%= @allocation.to_json(include: {roles: {include: [:person, :residential_contact, :mailing_contact]}, place: {}, transactions: {}}) %>
   </script>
 <% end %>
 <%= partial 'interment/form' %>

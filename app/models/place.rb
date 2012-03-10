@@ -7,7 +7,15 @@ module Tombstone
     one_to_many :allocations, :class => :'Tombstone::Allocation', :key => :place_id
     
     def_dataset_method(:with_child_count) do
-      left_join(Place.group(:parent_id).select{[count(parent_id).as(child_count), :parent_id___child_parent_id]}, :child_parent_id => :id)
+      left_join(Place.group(:parent_id).select{[count(parent_id).as(child_count), :parent_id___child_parent_id]}, :child_parent_id => :place__id)
+    end
+    
+    def_dataset_method(:available_only) do
+      allocation_filter = Allocation.select(:place_id).exclude(status: 'deleted').group(:place_id)
+        filter(:place__status => 'available').
+        left_join(allocation_filter.as(:allocation), :allocation__place_id => :place__id).
+        filter(allocation__place_id: nil).
+        distinct
     end
     
     class << self
@@ -22,6 +30,12 @@ module Tombstone
       validates_min_length 2, :type
     end
     
+    def allows_reservation?
+      status == 'available' \
+      && children_dataset.count == 0 \
+      && allocations_dataset.filter(type: 'reservation').exclude(:status => 'deleted').count > 0
+    end
+    
     def allows_interment?
       status == 'available' \
       && children_dataset.count == 0 \
@@ -33,7 +47,7 @@ module Tombstone
     end
     
     def siblings
-      self.class.filter(:parent_id => parent_id)
+      self.class.filter(:parent_id => parent_id).order(:id)
     end
     
     def ancestors(include_self = false, upto = 0)
@@ -89,7 +103,7 @@ module Tombstone
         -- Statement that executes the CTE
         SELECT TOP 1 #{column_string}
         FROM PlaceChildren
-        WHERE (id NOT IN (SELECT place_id FROM [allocation]))
+        WHERE (id NOT IN (SELECT place_id FROM [allocation] WHERE status != 'deleted'))
           AND (id NOT IN (SELECT parent_id FROM [place] WHERE parent_id IS NOT NULL))
         ORDER BY LEVEL DESC, [order] ASC
       ", {:parent_id => self.id}].first

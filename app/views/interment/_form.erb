@@ -1,41 +1,27 @@
+<% content_for :head do %>
+  <script type="application/json" id="json:allocation_data">
+    <%=
+    @allocation.to_json(include: {roles: {include: [:person, :residential_contact, :mailing_contact]}, place: {}, transactions: {}})
+    %>
+  </script>
+  
+  <script type="application/json" id="json:place_data">
+    <%=
+    if @root_places
+      {nil => @root_places}.to_json
+    else
+      places = @allocation.place && @allocation.place.ancestors(true).reverse
+      if places
+        Hash[*places.map { |place| [place.id, place.siblings.naked.all] }.flatten(1)].to_json
+      end
+    end
+    %>
+  </script>
+<% end %>
 <%
 include_script_views('role_wizard', 'form')
 %>
 <form id="interment_form" class="rowed wide" action="<%= (Tombstone::Interment === @allocation) ? "/interment/#{@allocation.id}" : "/interment" %>">
-  <section>
-    <h2 class="underline">Deceased</h2>
-    <div id="deceased_section" class="section padded" name="deceased"></div>
-  </section>
-  <section>
-    <h2 class="underline">Applicant</h2>
-    <div id="applicant_section" class="section padded" name="applicant"></div>
-  </section>
-  <section>
-    <h2 class="underline">Next of Kin</h2>
-    <div id="next_of_kin_section" class="section padded" name="next_of_kin"></div>
-  </section>
-  <section>
-    <h2 class="underline">Location</h2>
-    <div id="places_section" class="section padded" name="place">
-    <% if @places
-      @places.each do |place|
-        siblings = place.siblings %>
-        <label>
-          <span><%= place.type.demodulize.titleize %></span>
-          <%= select_tag('place[]',
-            :collection => siblings,
-            :fields => [:name, :id],
-            :selected => place.id,
-            :include_blank => '',
-            :'data-place-type' => place.type,
-            :disabled => @allocation ? '' : 'disabled'
-          ) %>
-        </label>
-      <% end %>
-      <%= hidden_field_tag('place[]', value: @places.last.id) %>
-    <% end %>
-    </div>
-  </section>
   <section>
     <h2 class="underline">Funeral Service</h2>
     <div class="section padded">
@@ -44,7 +30,7 @@ include_script_views('role_wizard', 'form')
         <%= select_tag(:funeral_director,
           :collection => @funeral_directors,
           :fields => [:name, :id],
-          :selected => (@allocation) ? @allocation.funeral_director_id : '',
+          :selected => @allocation.funeral_director_id,
           :include_blank => ''
         ) %>
       </label>
@@ -65,7 +51,7 @@ include_script_views('role_wizard', 'form')
         <span>Interment Type</span>
         <%= select_tag(:interment_type,
           :options => Tombstone::Interment.valid_interment_types.map{|v| [v.demodulize.titleize, v]},
-          :selected => (@allocation) ? @allocation.interment_type : '',
+          :selected => @allocation.interment_type,
           :include_blank => ''
         ) %>
       </label>
@@ -80,7 +66,7 @@ include_script_views('role_wizard', 'form')
       <div class="row">
         <span class="align_top">Receipt No's</span>
         <div class="multiinput_control">
-          <% if @allocation
+          <% if @allocation.id
             @allocation.transactions.each do |trans| %>
               <div><input type="text" name="transactions[]" value="<%= trans.receipt_no %>" placeholder="Add..."></div>
             <% end
@@ -98,15 +84,9 @@ include_script_views('role_wizard', 'form')
       </label>
     </div>
   </section>
-  <section>
-    <h2 class="underline">Actions</h2>
-    <div id="actions_section" class="section padded">
-      <div class="inline_layout"></div>
-    </div>
-  </section>
-  <% if @allocation %>
+  <% if @allocation.id  %>
     <input type="hidden" name="id" value="<%= @allocation.id %>" />
   <% end %>
-  
-  <input type="hidden" name="_method" value="<%= (Tombstone::Interment === @allocation) ? 'put' : 'post'  %>" />
+  <%= hidden_field_tag('place[]', value: @places.last.id) if @places %>
+  <input type="hidden" name="_method" value="<%= (Tombstone::Interment == @allocation && @allocation.id) ? 'put' : 'post'  %>" />
 </form>
