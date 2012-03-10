@@ -353,7 +353,7 @@ a.button:hover, input[type=submit]:hover, input[type=button]:hover {
 }
 
 .row_block .actions > .delete {
-	background: url('images/delete_20_hover.png') no-repeat  center center;
+	background: url('images/delete_24_hover.png') no-repeat  center center;
 	opacity: 0.75;
 	
 }
@@ -624,6 +624,9 @@ a.row_button:hover {
 }
 .indicator.success {
 	background: url('images/check-24.png') no-repeat center right;
+}
+.indicator.warning {
+  background: url('images/warning-24.png') no-repeat center right;
 }
 
 /* OVERLAY */

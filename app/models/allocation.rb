@@ -11,20 +11,13 @@ module Tombstone
     
     def validate
       super
-      
       self.class.valid_roles.each do |role_type|
         errors.add(role_type.to_sym, "must be added") if roles.select { |r| r.type == role_type}.empty?
       end
-
       if not Place === place
         errors.add(:place, 'cannot be empty and must exist')
       elsif place.children.length >= 1
         errors.add(:place, 'must not have any children')
-      elsif !new? && changed_columns.include?(:place_id)
-        max_interments = place.ancestors.reverse.reduce(1){|max, place| (place.max_interments.to_i > 0) ? place.max_interments : max}
-        if place.allocations_dataset.filter(type: 'interment').count >= max_interments
-          errors.add(:place, "has exceeded its maximum number of interments (#{max_interments})")
-        end
       end
       validates_min_length 2, :status
     end
@@ -65,9 +58,9 @@ module Tombstone
     
     def validate
       super
-      unless errors[:place]
-        if place.allocations_dataset.filter(type: 'reservation').length > 0
-          errors.add(:place, "has already been reserved")
+      if errors[:place].empty?
+        if changed_columns.include?(:place) && !place.allows_reservation?
+          errors.add(:place, "is unavailable")
         end
       end
       validates_includes self.class.valid_states, :status
@@ -101,6 +94,11 @@ module Tombstone
     
     def validate
       super
+      if errors[:place].empty?
+        if changed_columns.include?(:place) && !place.allows_interment?
+          errors.add(:place, "is unavailable")
+        end
+      end
       validates_includes self.class.valid_states, :status
       validates_presence :funeral_director
       validates_min_length 5, :funeral_director_name
