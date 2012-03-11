@@ -1,0 +1,105 @@
+<% @document[:breadcrumb] = true %>
+
+<% @document[:title] = "Calendar"
+   content_for :head do
+%>
+    <script type='text/javascript' src='/scripts/vendor/weekcalendar/jquery-ui-1.8.11.custom.min.js'></script>
+    <link rel="stylesheet" href="<%= url '/scripts/vendor/weekcalendar/jquery.weekcalendar.css' %>"/>
+    <script type="text/javascript" src="<%= url '/scripts/vendor/weekcalendar/jquery.weekcalendar.js' %>"></script>
+
+ <style type='text/css'>
+
+    .wc-container{border-left:1px solid #BBCCFF;}
+    .wc-toolbar{background:#2980CC;border:none;}
+    .wc-toolbar{font-size:14px;}
+    .wc-toolbar .ui-buttonset{font-size:0.8em;}
+    .wc-toolbar .wc-title{text-align:center;}
+
+    .wc-header{background:#FFFFFF;border:none;}
+    .wc-header{border-bottom:2px solid #BBCCFF;}
+    .wc-header{font-size:11px;}
+    .wc-header .wc-time-column-header{width:45px;}
+    .wc-header .wc-today  {font-weight: bold;}
+
+    .wc-hour-end, .wc-hour-header{color:#666666;border-color:#ccc}
+    .wc-title {color:#ffffff;}
+    .wc-business-hours{background:#F6F9FC;}
+    .wc-business-hours .wc-time-header-cell{font-weight:bold;}
+    .wc-business-hours .wc-am-pm {font-size:1em;}
+    .wc-column-odd{background:transparent;}
+    .wc-column-even{background:#ddddbe;}
+    .wc-time-slots .wc-today {background-color: #ffffcc;}
+
+    .wc-today.wc-day-column-last{border-right:3px double #FAD163;}
+    .wc-today.wc-day-column-first{border-left:3px double #FAD163;}
+    .wc-time-header-cell{font-size:11px; height: 57px !important;}
+
+    .wc-cal-event .wc-title{font-size:10px;}
+    .wc-cal-event .wc-time{font-size:10px;}
+
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        var $calendar = $('#calendar');
+        var id = 10;
+
+        $calendar.weekCalendar({
+            displayOddEven:true,
+            timeslotsPerHour : 2,
+            allowCalEventOverlap : true,
+            overlapEventsSeparate: true,
+            firstDayOfWeek : 1,
+            businessHours :{start: 8, end: 18, limitDisplay: true },
+            daysToShow : 7,
+            newEventText: 'New Interment',
+            defaultEventLength: 2,
+            timeslotHeight: 30,
+            //switchDisplay: {'work week': 5, 'full week': 7},
+            title: function(daysToShow) {
+                return daysToShow == 1 ? '%date%' : '%start% - %end%';
+            },
+            height : function($calendar) {
+                return $(window).height() - $("h1").outerHeight() - 1;
+            },
+            eventRender : function(calEvent, $event) {
+                if (calEvent.end.getTime() < new Date().getTime()) {
+                    $event.css("backgroundColor", "#aaa");
+                    $event.find(".wc-time").css({
+                        "backgroundColor" : "#999",
+                        "border" : "1px solid #888"
+                    });
+                }
+            },
+            draggable : function(calEvent, $event) {
+                return calEvent.readOnly != true;
+            },
+            resizable : function(calEvent, $event) {
+                return calEvent.readOnly != true;
+            },
+            eventNew : function(calEvent, $event) {
+                window.open('./interment?startDateTime='+calEvent.start.getTime(), '_self');
+            },
+            eventDrop : function(calEvent, $event) {
+
+            },
+            eventResize : function(calEvent, $event) {
+            },
+            eventClick : function(calEvent, $event) {
+                window.open('./interment/'+calEvent.id+'/edit', '_self');
+            },
+            eventMouseover : function(calEvent, $event) {
+            },
+            eventMouseout : function(calEvent, $event) {
+            },
+            noEvents : function() {
+
+            },
+            data : "./calendar/events"
+        });
+    })
+</script>
+<% end %>
+<h1></h1>
+<div id='calendar'></div>
