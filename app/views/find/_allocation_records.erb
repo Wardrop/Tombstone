@@ -3,20 +3,20 @@
   applicant = record.roles_by_type('applicant')[0]
   next_of_kin = record.roles_by_type('next_of_kin')[0]
   %>
-  <div class="clickable">
+  <div class="clickable <%= record.status %>">
     <div class="summary">
-      <%= record.type.demodulize.titleize %> - <%= record.place.name %> - <%= main_role.person.title %> <%= main_role.person.given_name %> <%= main_role.person.surname %>
+    <%= record.type.demodulize.titleize %> - <%= record.place.name %> - <%= print_field { "#{main_role.person.title} #{main_role.person.given_name} #{main_role.person.surname}" } %>
       <a class="goto" href="<%= url :"#{record.type.downcase}_view", :id => record.id %>" title="View record"></a>
     </div>
     <div class="details">
       <div class="left rowed">
         <div class="row">
           <span>Applicant:</span>
-          <div><%= (applicant) ? "#{applicant.person.title} #{applicant.person.given_name} #{applicant.person.surname}" : '<small>none</small>'%></div>
+          <div><%= print_field { "#{applicant.person.title} #{applicant.person.given_name} #{applicant.person.surname}" } %></div>
         </div>
         <div class="row">
           <span>Next of Kin:</span>
-          <div><%= (next_of_kin) ? "#{next_of_kin.person.title} #{next_of_kin.person.given_name} #{next_of_kin.person.surname}" : '<small>none</small>'%></div>
+          <div><%= print_field { "#{next_of_kin.person.title} #{next_of_kin.person.given_name} #{next_of_kin.person.surname}" } %></div>
         </div>
         <div class="row">
           <span>Status:</span>

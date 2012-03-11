@@ -1,6 +1,6 @@
 
 module Tombstone
-  VERSION = 0.4
+  VERSION = 0.5
   
   class App < Padrino::Application
     register Padrino::Rendering
@@ -37,7 +37,7 @@ module Tombstone
       if response.content_type.index(mime_type :json) == 0
         halt 500, {success: false, exception: env['sinatra.error'].message}.to_json
       else
-        raise env['sinatra.error']
+        raise env['sinatra.error'] if env['sinatra.error']
       end
     end
     

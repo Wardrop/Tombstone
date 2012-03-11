@@ -1,0 +1,53 @@
+<% content_for :head do %>
+    <script type="application/json" id="json:allocation_data">
+    <%=
+    @allocation.to_json(include: {roles: {include: [:person, :residential_contact, :mailing_contact]}, place: {}, transactions: {}})
+    %>
+  </script>
+  
+  <script type="application/json" id="json:place_data">
+    <%=
+    if @root_places
+      {nil => @root_places}.to_json
+    else
+      places = @allocation.place && @allocation.place.ancestors(true).reverse
+      if places
+        Hash[*places.map { |place| [place.id, place.siblings.naked.all] }.flatten(1)].to_json
+      end
+    end
+    %>
+  </script>
+<% end %>
+<%
+include_script_views('role_wizard', 'form')
+%>
+<form id="reservation_form" class="rowed wide" action="<%= (@allocation.id) ? "/reservation/#{@allocation.id}" : "/reservation" %>">
+  <section>
+    <h2 class="underline">Other Details</h2>
+    <div class="section padded">
+      <div class="row">
+        <span class="align_top">Receipt No's</span>
+        <div class="multiinput_control">
+          <% if @allocation.id
+            @allocation.transactions.each do |trans| %>
+              <div><input type="text" name="transactions[]" value="<%= trans.receipt_no %>" placeholder="Add..."></div>
+            <% end
+          end %>
+          <div><input type="text" name="transactions[]" placeholder="Add..."></div>
+        </div>
+      </div>
+    	<label>
+        <span class="align_top">Location Description</span>
+        <textarea name="location_description" style="width: 100%; height: 56px;"></textarea>
+      </label>
+      <label>
+        <span class="align_top">Comments</span>
+        <textarea name="comments" style="width: 100%; height: 82px;"></textarea>
+      </label>
+    </div>
+  </section>
+  <% if @allocation.id %>
+    <input type="hidden" name="id" value="<%= @allocation.id %>" />
+  <% end %>
+  <input type="hidden" name="_method" value="<%= (@allocation.id) ? 'put' : 'post'  %>" />
+</form>

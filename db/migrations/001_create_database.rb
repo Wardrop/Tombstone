@@ -76,7 +76,7 @@ Sequel.migration do
       String :name, :size => 64
       String :code_name, :size => 12
       String :type, :size => 32
-      String :state, :size => 32
+      String :status, :size => 32
       tinyint :max_interments
       String :modified_by, :size => 32
       DateTime :modified_at

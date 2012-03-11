@@ -13,7 +13,7 @@ body {
 html {
   overflow-y: scroll;
 }
-input, select, button {    
+input, select, button {
   padding: 4px 3px;
   height: 28px;
   font-size: 13px;
@@ -40,7 +40,7 @@ input[type=checkbox], input[type=radio] {
 form {
 	width: 100%;
 }
-h1, h2, h3 {
+h2, h3 {
   position: relative;
 }
 h2 {
@@ -160,7 +160,7 @@ small {
 }
 
 #footer {
-	margin-top: 48px;	
+	margin-top: 48px;
 	font-size: 11px;
 	border-top: 1px solid #e5e5e5;
 	text-align: center;
@@ -209,7 +209,7 @@ section, .section {
 	margin-bottom: 34px;
 }
 section:last-child, .section:last-child {
-	margin-bottom: 0;	
+	margin-bottom: 0;
 }
 
 .clickable {
@@ -229,9 +229,18 @@ section:last-child, .section:last-child {
   background: #69ad34;
 }
 .flash_banner.error {
- background: #a63232; 
+ background: #a63232;
 }
 
+.list_rows > div.deleted {
+  color: #777;
+}
+.list_rows > div.deleted > .summary {
+  text-decoration: line-through;
+}
+.list_rows > div.provisional {
+  background: #f0ebfa;
+}
 .list_rows > div {
   background: #ebf3fa;
   margin-bottom: 1px;
@@ -346,7 +355,7 @@ a.button:hover, input[type=submit]:hover, input[type=button]:hover {
 .row_block .actions > .delete {
 	background: url('images/delete_20_hover.png') no-repeat  center center;
 	opacity: 0.75;
-	
+
 }
 .row_block .actions > a.delete:hover {
 	opacity: 1;
@@ -408,7 +417,7 @@ a.row_button:hover {
 }
 .rowed label > span.align_top:first-child, .rowed div.row > span.align_top:first-child {
 	vertical-align: top;
-	padding-top: 0.2em;
+	padding-top: 0.3em;
 }
 .rowed div.row label {
 	display: inline;
@@ -504,8 +513,16 @@ a.row_button:hover {
 	height: auto;
 }
 
+.multiinput_control input {
+  margin-top: 4px;
+}
+.multiinput_control div:first-child input {
+  margin-top: 0;
+}
+
 .multibutton {
 	position: relative;
+  display: inline-block;
 	padding: 1px 28px 1px 0;
 }
 .multibutton.top {
@@ -513,7 +530,7 @@ a.row_button:hover {
 	padding-top: 0;
 }
 .multibutton.bottom {
-	border-bottom: 2px solid #7fb3e0;
+	border-bottom: 1px solid #7fb3e0;
 	padding-bottom: 0;
 }
 .multibutton > input[type=button], .multibutton > a.button {
@@ -565,6 +582,7 @@ a.row_button:hover {
 	left: 0;
 	background: #2980cc;
 	margin: 1px 0;
+  z-index: 10;
 }
 .multibutton.top > ul {
 	top: inherit;

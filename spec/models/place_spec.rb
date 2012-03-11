@@ -34,7 +34,15 @@ module Tombstone
     
     it "can provide child count with result set" do
       places = Place.filter(:parent_id => 2).with_child_count.all
-      places[0][:child_count].should == 2
+      places[0][:child_count].should == Place.filter(:parent_id => places[0].id).count
+    end
+    
+    it "provides helper for determing whether interments are allowed" do
+      Place.with_pk(10).allows_interment?.should == false # has children
+      Place.with_pk(13).allows_interment?.should == false # in use
+      Place.with_pk(14).allows_interment?.should == false # unavailable
+      Place.with_pk(15).allows_interment?.should == true # vacant
+      Place.with_pk(7).allows_interment?.should == true # multiple interments inherited from parent
     end
     
     it "gets all ancestors" do
@@ -44,9 +52,16 @@ module Tombstone
       plot.ancestors[0].type.should == 'row'
     end
     
+    it "get all ancestors including self" do
+      plot = Place.with_pk(13)
+      anc = plot.ancestors(true)
+      plot.ancestors.should be_a(Array)
+      anc.length.should == 4
+    end
+    
     it "get all ancestors up to a specific ancestor" do
-      plot = Place.with_pk(12)
-      anc = plot.ancestors(2)
+      plot = Place.with_pk(13)
+      anc = plot.ancestors(false, 2)
       plot.ancestors.should be_a(Array)
       anc.length.should == 2
     end
@@ -54,13 +69,13 @@ module Tombstone
     it "gets next available plot from any level" do
       na1 = Place.with_pk(3).next_available
       na1.should be_a(Place)
-      na1.name.should == 'Plot 3'
+      na1.name.should == 'Plot 6'
       
       na2 = Place.with_pk(11).next_available
       na2.name.should == 'Plot 38'
       
       na3 = Place.with_pk(2).next_available
-      na3.name.should == 'Plot 3'
+      na3.name.should == 'Plot 22'
     end
     
     it "gets siblings including self" do

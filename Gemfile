@@ -10,6 +10,7 @@ gem "htmlentities"
 gem "nokogiri"
 gem "tiny_tds"
 gem "titleize"
+gem "ri_cal"
 
 group :spec do
   gem "rspec"

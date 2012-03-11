@@ -7,3 +7,5 @@ vendor/gems/*
 .sass-cache/*
 *.tmproj
 config/database.rb
+.idea/
+tombstone-dev.iml

@@ -26,15 +26,18 @@ module Tombstone
       }.join('<span class="breadcrumb div">/</span>')
     end
     
-    def print_field(value, *string_methods)
+    # Renders field data, handling nil values and formatting of objects such as Dates.
+    # Can take an optional block which has the advantage of being error-handled (e.g. calling a method on a nil object).
+    def print_field(value = nil, &block)
+      value = (block.call rescue nil) if block
       if value.blank?
         '<small>none</small>'
       else
         case value
-          when String
-            string_methods.reduce(value){ |memo, method| value.send(method) }
-          when Time
-            ((value.hour + value.min + value.sec) > 0) ? value.strftime('%d/%m/%Y %l:%M%P') : value.strftime('%d/%m/%Y')
+        when Time
+          ((value.hour + value.min + value.sec) > 0) ? value.strftime('%d/%m/%Y %l:%M%P') : value.strftime('%d/%m/%Y')
+        else
+          value
         end
       end
     end

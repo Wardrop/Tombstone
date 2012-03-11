@@ -4,7 +4,7 @@
 </div>
 <div class="row">
   <span>Gender</span>
-  <div><%= print_field role.person.gender, :demodulize, :titleize %></div>
+  <div><%= print_field { role.person.gender.demodulize.titleize } %></div>
 </div>
 <div class="row">
   <span>Date of Birth</span>

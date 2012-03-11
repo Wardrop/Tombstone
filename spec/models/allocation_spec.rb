@@ -25,6 +25,12 @@ module Tombstone
       alloc.funeral_director.should be_a(FuneralDirector)
     end
     
+    it "has many transactions" do
+      alloc = Allocation.with_pk([2, 'reservation'])
+      alloc.transactions.should be_a(Array)
+      alloc.transactions[0].should be_a(Transaction)
+    end
+    
     it "auto-increments ID if none given" do
       max_id = Allocation.order(:id.desc).first.id
       new_alloc = Allocation.new.set(type: 'reservation').save(:validate => false)

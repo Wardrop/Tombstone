@@ -1,23 +1,26 @@
-* Fix issues with the back behaviour of the role wizard.
-  - Going to the review page, pressing back, selecting the same address, and selecting back again, causes nothing to happen.
-    If back is then pressed again, jumps back to people page.
+* Role-Wizard
+  - Fix issues with the back behaviour of the role wizard.
+    + Going to the review page, pressing back, selecting the same address, and selecting back again, causes nothing to happen.
+      If back is then pressed again, jumps back to people page.
+  - Add mailing contact to Role Wizard.
+  - The change reservee function doesn't allow you to edit previously entered details. May need to make a new interface for changing a reservee.
+  - Limit the number of records returned over JSON (no pagination; limit only)
 * Simplify breadcrumb into a list (<ul>) and use the CSS pseudo element :before to render the slashes in-between.
 * Multibutton
   - Fix display when option in drop down is significantly longer than the default option.
+    Maybe change to apple-style drop-downs, and using overlay hidden to hide options above and below the current selection.
   - Fall back to normal input button when only one option is available.
-* In location drop-down's on allocation form, check for plot availability (status = available, unit associated with any places), but still show plots which allow multiple interment.
-  - Also, don't display parents with no available children.
 * Indicate which form fields are required.
 * Add hooks to models for cleaning and formatting data, e.g. capitalising names, lower casing gender, etc.
 * Add validation rules to specs.
 * Make JavaScript templates dynamic so variable data such as drop-down's can be prepopulated correctly.
   - Will need to use alternative delimiters for Backbone.js template parser.
-* Receipt no/transactions (many to one) need to be provided.
-* Add mailing contact to RoleWizard.
-* The change reservee function doesn't allow you to edit previously entered details. May need to make a new interface for changing a reservee.
-* Limit the number of records returned over JSON.
-  - Add pagination?
-* Should the reservee/deceased be able to also act as the next of kin and/or applicant?
-* Search
-  - Add sorting interface on find page (when we do paging).
-  - Add helper to interface for showing search options.
+* Compile validation errors into single lines (e.g. Reservation -> Person must have date of death)
+* Ensure records are only marked as deleted.
+  - Ensure plots assigned to deleted allocations are available.
+* On the find page, make deleted and provisional records distinct.
+* Add more searchable fields, e.g. plot, status
+* Plot's should be searchable objects on the find page. They should have their own view page. =
+  On such a view page, it would show associated records and photos.
+* Add polyfills for IE8 compatibility: https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-browser-Polyfills
+  - ECMAScript5 shim

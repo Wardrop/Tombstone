@@ -4,20 +4,15 @@ content_for :head do
 %>
   <script type="text/javascript">
     $( function () {
-      var roles = {}
-      _.each({reservee: 'Reservee', applicant: 'Applicant', next_of_kin: 'Next of Kin'}, function (name, type) {
-        roles[type] = new Ts.FormViews.RoleBlock({role_type: type, role_name: name, el: $('#'+type+'_section')})
-        roles[type].render()
+      new Ts.FormViews.AllocationForm({
+        el: $('#reservation_form')[0],
+        valid_roles: ['reservee', 'applicant', 'next_of_kin'],
+        states: {active: 'Submit'}
       })
-      
-      var rootPlaces = new Ts.Places(<%= @root_places.to_json %>)
-      $('#places_section').append(new Ts.FormViews.PlacesView({collection: rootPlaces}).render().el)
-      
-      var multibutton = new Ts.FormViews.Multibutton({name: 'submit', values: {active: 'Submit'}})
-      $('#actions_section > div').append(multibutton.render().el)
-    
-      new Ts.FormViews.AllocationForm({el: $('#reservation_form')[0], roles: roles})
     })
   </script>
+  <script type="application/json" id="json:allocation_data">
+    <%= Tombstone::Reservation.new.to_json(include: {roles: {include: [:person, :residential_contact, :mailing_contact]}, place: {}, transactions: {}}) %>
+  </script>
 <% end %>
-<%= partial 'partials/reservation_form'%>
+<%= partial 'reservation/form'%>
