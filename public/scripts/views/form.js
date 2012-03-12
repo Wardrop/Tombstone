@@ -205,7 +205,6 @@ $( function () {
       } else {
         $(this.el).nextAll().remove()
       }
-      
       return this
     },
     load: function (parent_id) {
@@ -215,19 +214,23 @@ $( function () {
 				type: 'GET',
 				dataType: 'json',
         success: _.bind(function (data, textStatus, jqXHR) {
-          var places = new Ts.Places(data)
+          var places = new Ts.Places(data) 
           if(places.length > 0) {
             var childPlacesView = new Ts.FormViews.PlacesView({collection: places})
             $(this.el).parent().append(childPlacesView.render().el)
+            this.$('.indicator').remove()
+          } else if (this.collection.get(parent_id).get('child_count') > 0) {
+            this.$('.indicator').addClass('warning').
+              attr('title', this.collection.get(parent_id).get('type').demodulize().titleize() + ' is not available.')
+          } else {
+            this.$('.indicator').remove()
           }
         }, this),
         error: function (jqXHR, textStatus, errorThrown) {
           // TODO
-          if(textStatus != 'abort') alert('Some went wrong!')
-        },
-        complete: _.bind(function () {
           this.$('.indicator').remove()
-        }, this)
+          if(textStatus != 'abort') alert('Some went wrong!')
+        }
       })
       return this
     },
@@ -238,8 +241,8 @@ $( function () {
         type: 'GET',
 				dataType: 'json',
         success: _.bind(function (data, textStatus, jqXHR) {
-          _.each(data, function (place) {
-            this.renderPlaces(new Ts.Places(place.siblings), {selected: place.id})
+          _.each(data, function (places, selected_id) {
+            this.renderPlaces(new Ts.Places(places), {selected: selected_id})
           }, this)
         }, this),
         error: function (jqXHR, textStatus, errorThrown) {
@@ -368,7 +371,7 @@ $( function () {
 		submit: function (status) {
 			var data = this.formData()
 			data.status = status
-			this.indicator.attr('class', 'indicator loading').insertAfter('#actions_section .multibutton')
+			this.indicator.attr('class', 'indicator loading').insertAfter(this.multibutton.el)
 			this.hideFormErrors()
 			if(this.lastRequest && this.lastRequest.state() == 'pending') {
 				if (confirm('The last submit operation has not yet completed. Would you like to abort the last submit operations?')) {
@@ -385,6 +388,7 @@ $( function () {
 						this.showFormErrors(data.form_errors)
 						this.indicator.detach()
 					} else {
+            console.log('dog')
 						this.indicator.attr('class', 'indicator success')
 						window.location = data.redirectTo
 					}
@@ -409,7 +413,6 @@ $( function () {
 		formData: function () {
 			var data = $(this.el).serializeObject()
 			_.each(this.roleBlocks, function (roleBlock, role_type) {
-        console.log(roleBlock.getJSON())
 				data[role_type] = roleBlock.getJSON()
 		  })
 			return data

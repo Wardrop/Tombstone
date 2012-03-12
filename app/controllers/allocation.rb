@@ -87,7 +87,8 @@ module Tombstone
   App.controller :reservation do
     get :new, :map => 'reservation' do
       @allocation = Reservation.new
-      @root_places = Place.filter(:parent_id => nil).order(:name).naked.all
+      p Place.filter(:parent_id => nil).available_only
+      @root_places = Place.filter(:parent_id => nil).available_only.order(:name).naked.all
       render "reservation/new"
     end
   end
@@ -97,7 +98,6 @@ module Tombstone
     get :new, :map => 'interment' do
       @allocation = Interment.new
       @allocation.interment_date = Time.at(params['startDateTime'].to_i/1000).to_datetime unless params['startDateTime'].nil?
-      puts Time.at(params['startDateTime'].to_i/1000).to_datetime
       @funeral_directors = FuneralDirector.all
       if params['place'].to_i > 0
         place = Place.with_pk(params['place'].to_i)
@@ -116,7 +116,7 @@ module Tombstone
           @allocation.place_id = params['place']
         end
       else
-        @root_places = Place.filter(:parent_id => nil).order(:name).naked.all
+        @root_places = Place.filter(:parent_id => nil).available_only.order(:name).naked.all
       end
       render "interment/new"
     end

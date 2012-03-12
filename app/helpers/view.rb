@@ -69,7 +69,7 @@ module Tombstone
               if v['type'] == 'date'
                 val.strftime('%d/%m/%Y')
               elsif v['type'] == 'datetime'
-                val.strftime('%d/%m/%Y %l:%M%P')
+                val.strftime('%d/%m/%Y %-I:%M%P')
               else
                 ((val.hour + val.min + val.sec) > 0) ? val.strftime('%d/%m/%Y %l:%M%P') : val.strftime('%d/%m/%Y')
               end
