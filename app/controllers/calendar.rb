@@ -12,6 +12,7 @@ module Tombstone
     end
 
     get :ics do
+      p request
       attachment 'interments.ics'
       content_type 'text/calendar'
       expires 20

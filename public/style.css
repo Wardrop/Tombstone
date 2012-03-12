@@ -231,16 +231,6 @@ section:last-child, .section:last-child {
 .flash_banner.error {
  background: #a63232;
 }
-
-.list_rows > div.deleted {
-  color: #777;
-}
-.list_rows > div.deleted > .summary {
-  text-decoration: line-through;
-}
-.list_rows > div.provisional {
-  background: #f0ebfa;
-}
 .list_rows > div {
   background: #ebf3fa;
   margin-bottom: 1px;
@@ -252,6 +242,15 @@ section:last-child, .section:last-child {
 .list_rows > div > .summary {
   position: relative;
   padding: 12px 14px;
+}
+.list_rows > div.provisional {
+  background-color: #f0ebfa;
+}
+.list_rows > div.deleted {
+  color: #777;
+}
+.list_rows > div.deleted > .summary {
+  text-decoration: line-through;
 }
 .list_rows > div > .details {
   display: none;
