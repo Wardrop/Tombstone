@@ -5,10 +5,10 @@ Ts = {};
 $( function () {
   // Enable jQuery datepicker on all date and datetime fields.
   $('input[type=date]').livequery( function () {
-    $(this).datepicker({ dateFormat: 'dd/mm/yy', showOn: 'button' })
+    $(this).datepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', changeYear: true, yearRange: "1900:" })
   })
   $('input[type=datetime]').livequery( function () {
-    $(this).datetimepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', ampm: true, timeFormat: 'h:mmtt' })
+    $(this).datetimepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', changeYear: true, yearRange: "1900:", ampm: true, timeFormat: 'h:mmtt' })
   })
   
   // Control for adding an arbitary number of values for a field.
