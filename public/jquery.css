@@ -1,0 +1,41 @@
+/* This file contains overriden jQuery style */
+
+/*** Calendar ***/
+
+.wc-container{border-left:1px solid #BBCCFF;}
+.wc-container * {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+.wc-toolbar{background:#2980CC;border:none;}
+.wc-toolbar{font-size:14px;}
+.wc-toolbar .ui-buttonset{font-size:0.8em;}
+.wc-toolbar .wc-title{text-align:center;}
+
+.wc-header{background:#FFFFFF;border:none;}
+.wc-header{border-bottom:2px solid #BBCCFF;}
+.wc-header{font-size:11px;}
+.wc-header .wc-time-column-header{width:45px;}
+.wc-header .wc-today  {font-weight: bold;}
+
+.wc-hour-end, .wc-hour-header{color:#666666;border-color:#ccc}
+.wc-title {color:#ffffff;}
+.wc-business-hours{background:#F6F9FC;}
+.wc-business-hours .wc-time-header-cell{font-weight:bold;}
+.wc-business-hours .wc-am-pm {font-size:1em;}
+.wc-column-odd{background:transparent;}
+.wc-column-even{background:#ddddbe;}
+.wc-time-slots .wc-today {background-color: #ffffcc;}
+
+.wc-today.wc-day-column-last{border-right:3px double #FAD163;}
+.wc-today.wc-day-column-first{border-left:3px double #FAD163;}
+.wc-time-header-cell{font-size:11px;}
+
+.wc-cal-event .wc-title{font-size:10px;}
+.wc-cal-event .wc-time{font-size:10px;}
+
+.wc-cal-event.provisional{background-color: #f0ebfa;}
+.wc-cal-event.pending{background-color: #faf3eb;}
+.wc-cal-event.interred{background-color: #f9fae1;}
+.wc-cal-event.approved{background-color: #ebf3fa;}
+.wc-cal-event.completed{background-color: #f3faeb;}
