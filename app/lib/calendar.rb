@@ -21,14 +21,15 @@ module Tombstone
       end
     end
 
-    def events(days = 21)
+    def events(start_date_time, end_date_time)
       events = []
-      Interment.filter(:interment_date => (Date.today - 7)..(Date.today + days)).all.each { |interment|
+      Interment.filter(:interment_date => start_date_time..end_date_time).all.each { |interment|
         events << {
             :id => interment.id,
             :start => interment.interment_date.iso8601,
             :end => interment.interment_date_end.iso8601,
-            :title => format_short_event_description(interment)
+            :title => format_short_event_description(interment),
+            :status => interment.status
         }
       }
       events

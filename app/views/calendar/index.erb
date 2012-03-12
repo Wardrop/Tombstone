@@ -10,6 +10,10 @@
  <style type='text/css'>
 
     .wc-container{border-left:1px solid #BBCCFF;}
+    .wc-container * {
+        -moz-box-sizing: content-box;
+        box-sizing: content-box;
+        }
     .wc-toolbar{background:#2980CC;border:none;}
     .wc-toolbar{font-size:14px;}
     .wc-toolbar .ui-buttonset{font-size:0.8em;}
@@ -32,7 +36,7 @@
 
     .wc-today.wc-day-column-last{border-right:3px double #FAD163;}
     .wc-today.wc-day-column-first{border-left:3px double #FAD163;}
-    .wc-time-header-cell{font-size:11px; height: 57px !important;}
+    .wc-time-header-cell{font-size:11px;}
 
     .wc-cal-event .wc-title{font-size:10px;}
     .wc-cal-event .wc-time{font-size:10px;}
