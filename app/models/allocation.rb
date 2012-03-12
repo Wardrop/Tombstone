@@ -91,7 +91,11 @@ module Tombstone
         ['coffin', 'ashes']
       end
     end
-    
+
+    def interment_date_end
+       self.interment_date + (60*90)
+    end
+
     def validate
       super
       if errors[:place].empty?

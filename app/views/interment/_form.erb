@@ -61,7 +61,11 @@ include_script_views('role_wizard', 'form')
       </label>
     	<label>
         <span>Interment Date &amp; Time</span>
-        <input type="datetime" name="interment_date" placeholder="e.g. <%= Time.now.strftime('%d/%m/%Y %-I:%M%P') %>" />
+        <input type="datetime" name="interment_date" placeholder="e.g. <%= Time.now.strftime('%d/%m/%Y %-I:%M%P') %>"
+        <% if @allocation.interment_date %>
+            value="<%= @allocation.interment_date.strftime('%d/%m/%Y %-I:%M%P')%>"
+        <% end %>
+        />
       </label>
       <div class="row">
         <span class="align_top">Receipt No's</span>

@@ -97,6 +97,8 @@ module Tombstone
   App.controller :interment do
     get :new, :map => 'interment' do
       @allocation = Interment.new
+      @allocation.interment_date = Time.at(params['startDateTime'].to_i/1000).to_datetime unless params['startDateTime'].nil?
+      puts Time.at(params['startDateTime'].to_i/1000).to_datetime
       @funeral_directors = FuneralDirector.all
       if params['place'].to_i > 0
         place = Place.with_pk(params['place'].to_i)
