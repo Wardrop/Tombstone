@@ -66,7 +66,6 @@
             newEventText: 'New Interment',
             defaultEventLength: 2,
             timeslotHeight: 30,
-            //switchDisplay: {'work week': 5, 'full week': 7},
             title: function(daysToShow) {
                 return daysToShow == 1 ? '%date%' : '%start% - %end%';
             },
@@ -77,7 +76,6 @@
                 $event.css("backgroundColor", "#aaa");
                 $event.addClass(calEvent.status);
                 $event.attr('title', 'Click to view');
-                console.log(calEvent);
                 $event.find(".wc-time").css({
                     "backgroundColor" : "#999",
                     "border" : "1px solid #888"
