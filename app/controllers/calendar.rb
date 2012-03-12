@@ -14,9 +14,9 @@ module Tombstone
     get :ics do
       attachment 'interments.ics'
       content_type 'text/calendar'
-      expires 0
+      expires 20
       cache_control :no_cache, :no_store, :must_revalidate
-      Calendar.new.calendar.iCal.export
+      Calendar.new.iCal.export
     end
   end
 end
