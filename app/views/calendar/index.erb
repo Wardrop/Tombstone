@@ -41,6 +41,12 @@
     .wc-cal-event .wc-title{font-size:10px;}
     .wc-cal-event .wc-time{font-size:10px;}
 
+    .wc-cal-event.pending{background-color: purple !important;}
+    .wc-cal-event.provisional{background-color: #9acd32 !important;}
+    .wc-cal-event.interred{background-color: yellow !important;}
+    .wc-cal-event.approved{background-color: blue !important;}
+    .wc-cal-event.completed{background-color: #adff2f !important;}
+
 </style>
 
 <script type="text/javascript">
@@ -68,16 +74,18 @@
                 return $(window).height() - $("h1").outerHeight() - 1;
             },
             eventRender : function(calEvent, $event) {
-                if (calEvent.end.getTime() < new Date().getTime()) {
-                    $event.css("backgroundColor", "#aaa");
-                    $event.find(".wc-time").css({
-                        "backgroundColor" : "#999",
-                        "border" : "1px solid #888"
-                    });
-                }
+                $event.css("backgroundColor", "#aaa");
+                $event.addClass(calEvent.status);
+                $event.attr('title', 'Click to view');
+                console.log(calEvent);
+                $event.find(".wc-time").css({
+                    "backgroundColor" : "#999",
+                    "border" : "1px solid #888"
+                });
             },
             draggable : function(calEvent, $event) {
-                return calEvent.readOnly != true;
+                //return calEvent.readOnly != true;
+                return false;
             },
             resizable : function(calEvent, $event) {
                 return calEvent.readOnly != true;
@@ -86,14 +94,15 @@
                 window.open('./interment?startDateTime='+calEvent.start.getTime(), '_self');
             },
             eventDrop : function(calEvent, $event) {
-
+                return false;
             },
             eventResize : function(calEvent, $event) {
             },
             eventClick : function(calEvent, $event) {
-                window.open('./interment/'+calEvent.id+'/edit', '_self');
+                window.open('./interment/'+calEvent.id, '_self');
             },
             eventMouseover : function(calEvent, $event) {
+
             },
             eventMouseout : function(calEvent, $event) {
             },
