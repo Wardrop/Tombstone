@@ -84,6 +84,115 @@ module Tombstone
       interment.type.should == 'interment'
       interment.delete
     end
+
+    it "calcuate the correct alert status" do
+
+      valid_alert_statuses = ['danger', 'warning', 'ok']
+
+      interment_date = (Time.now + (-1 * 60 * 60)).to_datetime
+      thresholds = [12, 24, 168]
+      interment = Interment.new
+      interment.calculate_alert_status(valid_alert_statuses, thresholds, interment_date ).should == 'danger'
+
+      interment_date = (Time.now + (1 * 60 * 60)).to_datetime
+      interment.calculate_alert_status(valid_alert_statuses, thresholds, interment_date ).should == 'danger'
+
+      interment_date = (Time.now + (13 * 60 * 60)).to_datetime
+      interment.calculate_alert_status(valid_alert_statuses, thresholds, interment_date ).should == 'warning'
+
+      interment_date = (Time.now + (30 * 60 * 60)).to_datetime
+      interment.calculate_alert_status(valid_alert_statuses, thresholds, interment_date ).should == 'ok'
+
+      interment_date = (Time.now + (200 * 60 * 60)).to_datetime
+      interment.calculate_alert_status(valid_alert_statuses, thresholds, interment_date ).should == 'ok'
+
+      interment_date = (Time.now + (1 * 60 * 60)).to_datetime
+      interment.calculate_alert_status(valid_alert_statuses.reverse, thresholds, interment_date ).should == 'ok'
+
+      interment_date = (Time.now + (13 * 60 * 60)).to_datetime
+      interment.calculate_alert_status(valid_alert_statuses.reverse, thresholds, interment_date ).should == 'warning'
+
+      interment_date = (Time.now + (25 * 60 * 60)).to_datetime
+      interment.calculate_alert_status(valid_alert_statuses.reverse, thresholds, interment_date ).should == 'danger'
+
+      interment_date = (Time.now + (200 * 60 * 60)).to_datetime
+      interment.calculate_alert_status(valid_alert_statuses.reverse, thresholds, interment_date ).should == 'danger'
+
+      ## Test alert rules
+
+      interment.interment_date = (Time.now + (-1 * 60 * 60)).to_datetime
+      interment.status = 'completed'
+      interment.alert_status.should == 'ok'
+
+      interment.interment_date = (Time.now + (1 * 60 * 60)).to_datetime
+      interment.status = 'deleted'
+      interment.alert_status.should == 'ok'
+
+      ## pending rules
+
+      interment.interment_date = (Time.now + (0 * 60 * 60)).to_datetime
+      interment.status = 'pending'
+      interment.alert_status.should == 'danger'
+
+      interment.interment_date = (Time.now + (4 * 60 * 60)).to_datetime
+      interment.status = 'pending'
+      interment.alert_status.should == 'danger'
+
+      interment.interment_date = (Time.now + (12 * 60 * 60)).to_datetime
+      interment.status = 'pending'
+      interment.alert_status.should == 'danger'
+
+      interment.interment_date = (Time.now + (24 * 60 * 60)).to_datetime
+      interment.status = 'pending'
+      interment.alert_status.should == 'danger'
+
+      interment.interment_date = (Time.now + (25 * 60 * 60)).to_datetime
+      interment.status = 'pending'
+      interment.alert_status.should == 'warning'
+
+      interment.interment_date = (Time.now + (169 * 60 * 60)).to_datetime
+      interment.status = 'pending'
+      interment.alert_status.should == 'ok'
+
+      interment.interment_date = (Time.now + (1000 * 60 * 60)).to_datetime
+      interment.status = 'pending'
+      interment.alert_status.should == 'ok'
+
+      ## approved rules
+
+      interment.interment_date = (Time.now + (0 * 60 * 60)).to_datetime
+      interment.status = 'approved'
+      interment.alert_status.should == 'ok'
+
+      interment.interment_date = (Time.now + (13 * 60 * 60)).to_datetime
+      interment.status = 'approved'
+      interment.alert_status.should == 'warning'
+
+      interment.interment_date = (Time.now + (25 * 60 * 60)).to_datetime
+      interment.status = 'approved'
+      interment.alert_status.should == 'warning'
+
+      interment.interment_date = (Time.now + (200 * 60 * 60)).to_datetime
+      interment.status = 'approved'
+      interment.alert_status.should == 'danger'
+
+      interment.interment_date = (Time.now + (0 * 60 * 60)).to_datetime
+      interment.status = 'interred'
+      interment.alert_status.should == 'ok'
+
+      interment.interment_date = (Time.now + (13 * 60 * 60)).to_datetime
+      interment.status = 'interred'
+      interment.alert_status.should == 'ok'
+
+      interment.interment_date = (Time.now + (25 * 60 * 60)).to_datetime
+      interment.status = 'interred'
+      interment.alert_status.should == 'warning'
+
+      interment.interment_date = (Time.now + (200 * 60 * 60)).to_datetime
+      interment.status = 'interred'
+      interment.alert_status.should == 'danger'
+
+    end
   end
 
 end

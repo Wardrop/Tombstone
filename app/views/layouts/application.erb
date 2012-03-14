@@ -4,7 +4,6 @@
   <title><%= @document[:title] %></title>
   <link rel="stylesheet" href="<%= url "/reset.css" %>" />
   <link rel="stylesheet" href="<%= url "/style.css" %>" />
-  <link rel="stylesheet" href="<%= url '/jquery.css' %>"/>
   <link rel="stylesheet" href="<%= url "/scripts/vendor/jquery-ui/cupertino/jquery-ui-1.8.18.custom.css" %>" />
   <link rel="stylesheet" href="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.css' %>" />
   <script type="text/javascript" src="<%= url '/scripts/vendor/date-en-AU.js' %>"></script>
@@ -21,6 +20,7 @@
     <script type="text/javascript" src="<%= url "/scripts/#{file}" %>"></script>
   <% end %>
   <%= yield_content :head %>
+  <link rel="stylesheet" href="<%= url '/jquery.css' %>"/>
 </head>
 <body>
 	<div id="container">
