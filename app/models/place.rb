@@ -54,6 +54,11 @@ module Tombstone
       self.ancestors(true, 0).reverse.map{|p| p.name}.join(' - ')
     end
 
+    def cemetery_name
+      self.ancestors(false, 0)[-1].name
+    end
+
+
     def ancestors(include_self = false, upto = 0)
       column_string = self.class.dataset.columns.map { |v| "[#{v}]"}.join(', ')
       aliased_column_string = self.class.dataset.columns.map { |v| "p.[#{v}]"}.join(', ')

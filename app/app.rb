@@ -40,6 +40,7 @@ module Tombstone
     end
     
     get :index do
+      @calendar = Calendar.new
       render :index
     end
     

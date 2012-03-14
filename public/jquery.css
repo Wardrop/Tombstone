@@ -19,7 +19,7 @@
 .wc-header .wc-today  {font-weight: bold;}
 
 .wc-hour-end, .wc-hour-header{color:#666666;border-color:#ccc}
-.wc-title {color:#ffffff;}
+.wc-title {color:#000000;}
 .wc-business-hours{background:#F6F9FC;}
 .wc-business-hours .wc-time-header-cell{font-weight:bold;}
 .wc-business-hours .wc-am-pm {font-size:1em;}

@@ -2,7 +2,6 @@
 @document[:title] = "Calendar"
 content_for :head do
 %>
-  <!--<script type='text/javascript' src='/scripts/vendor/weekcalendar/jquery-ui-1.8.11.custom.min.js'></script>-->
   <link rel="stylesheet" href="<%= url '/scripts/vendor/weekcalendar/jquery.weekcalendar.css' %>"/>
   <script type="text/javascript" src="<%= url '/scripts/vendor/weekcalendar/jquery.weekcalendar.js' %>"></script>
   <script type="text/javascript">
@@ -29,10 +28,8 @@ content_for :head do
           return $(window).height() - $("h1").outerHeight() - 1;
         },
         eventRender : function(calEvent, $event) {
-          $event.css("backgroundColor", "#aaa");
           $event.addClass(calEvent.status);
           $event.attr('title', 'Click to view');
-          console.log(calEvent);
           $event.find(".wc-time").css({
             "backgroundColor" : "#999",
             "border" : "1px solid #888"
