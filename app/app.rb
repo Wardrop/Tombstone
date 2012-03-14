@@ -23,6 +23,7 @@ module Tombstone
       Tombstone::Permissions.map = config[:roles]
       Tombstone::LDAP.servers = config[:ldap][:servers]
       Tombstone::LDAP.domain = config[:ldap][:domain]
+      Tombstone::LDAP.logger = log
     end
     
     before do
@@ -51,25 +52,25 @@ module Tombstone
     
     post :login do
       redirect :index if session[:authenticated]
+      user_id = LDAP.parse_username(params['username'])
+      user = User.with_pk(user_id) || User.new(id: user_id)
       begin
-        user_id = params['username'].split('\\')[1] || params['username'].split('@')[0] || params['username']
-        user = User.with_pk(user_id) || User.new(id: user_id)
         if user.authenticate(params['password'])
           flash[:banner] = 'success', "You have been logged in successfully."
           session[:user] = user
+          session[:ldap] = user.ldap.user_details
           redirect url(:index)
         else
-          @document[:banner] = 'error', "Could not login as: #{params['username']}."
-          prepare_form(render('login'), values: params.reject{|k,v| k == 'password'})
+          @document[:banner] = 'error', 'Invalid username or password.'
         end
       rescue => e
         @document[:banner] = 'error', e.message
-        prepare_form(render('login'), values: params.reject{|k,v| k == 'password'})
       end
+      prepare_form(render('login'), values: params.reject{|k,v| k == 'password'})
     end
     
     get :logout do
-      session[:user] = nil
+      session.clear
       flash[:banner] = 'success', 'You have been logged out successfully.'
       redirect url(:login)
     end

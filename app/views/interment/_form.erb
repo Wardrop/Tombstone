@@ -92,6 +92,5 @@ include_script_views('role_wizard', 'form')
     <input type="hidden" name="id" value="<%= @allocation.id %>" />
   <% end %>
   <%= hidden_field_tag('place[]', value: params['place']) if params['place'] %>
-  <% p @allocation %>
   <input type="hidden" name="_method" value="<%= (Tombstone::Interment === @allocation && @allocation.id) ? 'put' : 'post'  %>" />
 </form>

@@ -27,7 +27,7 @@
     <div class="info">
       <div>
         <%= print ('<small>Not logged in</small>') {
-          "Hello, #{session[:user].ldap.user_details[:displayName].first} [ <a href='#{url :logout}'>logout</a> ]"
+          "Hello, #{session[:ldap][:displayName].first} [ <a href='#{url :logout}'>logout</a> ]"
         } %>
       </div>
       <div><%= print ('') { (session[:user].role ? session[:user].role.demodulize.titleize : nil) || 'Guest' } %></div>

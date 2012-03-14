@@ -87,7 +87,6 @@ module Tombstone
   App.controller :reservation do
     get :new, :map => 'reservation' do
       @allocation = Reservation.new
-      p Place.filter(:parent_id => nil).available_only
       @root_places = Place.filter(:parent_id => nil).available_only.order(:name).naked.all
       render "reservation/new"
     end

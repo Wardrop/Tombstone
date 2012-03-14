@@ -42,7 +42,7 @@ module Tombstone
       end
     end
     
-    context "instance" do
+    context 'instance' do
       it "requires a username and password on instantiation" do
         LDAP.new(@username, @password).should be_a(LDAP)
         expect {
@@ -58,25 +58,30 @@ module Tombstone
         # Note, we do not include a test for wrong password as that has the potential to lock-out the LDAP account.
       end
       
-      it "cycles through servers on failure" do
-        begin
-          orig_servers = LDAP.servers
+      context "server cycling" do
+        before :all do
+          @original_servers = LDAP.servers
+        end
+        after :each do
+          LDAP.servers = @original_servers
+        end
+        
+        it "cycles through servers on failure" do
           LDAP.servers = ['localhost', 'server2:5000', LDAP.servers[0]]
           LDAP.new(@username, @password).authenticate.should == true
-        ensure
-          LDAP.servers = orig_servers
         end
-      end
       
-      it "raises error on server failure" do
-        begin
-          orig_servers = LDAP.servers
+        it "raises error on server failure" do
           LDAP.servers = ['localhost', 'server2:5000']
           expect {
             LDAP.new(@username, @password).authenticate
           }.to raise_error(StandardError)
-        ensure
-          LDAP.servers = orig_servers
+        end
+      
+        # Regression test
+        it "re-authenticates on cycled servers" do
+          LDAP.servers = ['localhost', LDAP.servers[0]]
+          LDAP.new('blah', 'bleh').authenticate.should == false
         end
       end
       
