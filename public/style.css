@@ -13,7 +13,7 @@ body {
 html {
   overflow-y: scroll;
 }
-input, select, button {    
+input, select, button {
   padding: 4px 3px;
   height: 28px;
   font-size: 13px;
@@ -40,7 +40,7 @@ input[type=checkbox], input[type=radio] {
 form {
 	width: 100%;
 }
-h1, h2, h3 {
+h2, h3 {
   position: relative;
 }
 h2 {
@@ -74,8 +74,10 @@ small {
 	background: white;
   width: 880px;
 	border: 1px solid #c0c0c0;
-	border-top: none;
   box-shadow: 0px 0px 20px rgba(0,0,0, 0.10);
+}
+body > #container {
+	border-top: none;
 }
 #container > .info {
 	position: absolute;
@@ -160,7 +162,7 @@ small {
 }
 
 #footer {
-	margin-top: 48px;	
+	margin-top: 48px;
 	font-size: 11px;
 	border-top: 1px solid #e5e5e5;
 	text-align: center;
@@ -209,7 +211,7 @@ section, .section {
 	margin-bottom: 34px;
 }
 section:last-child, .section:last-child {
-	margin-bottom: 0;	
+	margin-bottom: 0;
 }
 
 .clickable {
@@ -229,17 +231,7 @@ section:last-child, .section:last-child {
   background: #69ad34;
 }
 .flash_banner.error {
- background: #a63232; 
-}
-
-.list_rows > div.deleted {
-  color: #777;
-}
-.list_rows > div.deleted > .summary {
-  text-decoration: line-through;
-}
-.list_rows > div.provisional {
-  background: #f0ebfa;
+ background: #a63232;
 }
 .list_rows > div {
   background: #ebf3fa;
@@ -252,6 +244,15 @@ section:last-child, .section:last-child {
 .list_rows > div > .summary {
   position: relative;
   padding: 12px 14px;
+}
+.list_rows > div.provisional {
+  background-color: #f0ebfa;
+}
+.list_rows > div.deleted {
+  color: #777;
+}
+.list_rows > div.deleted > .summary {
+  text-decoration: line-through;
 }
 .list_rows > div > .details {
   display: none;
@@ -271,9 +272,9 @@ section:last-child, .section:last-child {
   display: block;
 }
 
-.list_rows .goto, .list_rows .goto {
+.list_rows .goto {
 	position: absolute;
-	background: url(images/goto.png) no-repeat center center;
+	background: url(images/goto_blue.png) no-repeat center center;
 	width: 32px;
 	top: 0;
 	bottom: 0;
@@ -281,7 +282,17 @@ section:last-child, .section:last-child {
 	cursor: pointer;
 	opacity: 0.75;
 }
-.list_rows .goto:hover, .list_rows .goto:hover {
+.list_rows .goto.ok {
+	background: url(images/goto_ok.png) no-repeat center center;
+}
+.list_rows .goto.warning {
+	background: url(images/goto_warning.png) no-repeat center center;
+}
+.list_rows .goto.danger {
+	background: url(images/goto_danger.png) no-repeat center center;
+}
+
+.list_rows .goto:hover {
 	opacity: 1;
 }
 
@@ -355,7 +366,7 @@ a.button:hover, input[type=submit]:hover, input[type=button]:hover {
 .row_block .actions > .delete {
 	background: url('images/delete_24_hover.png') no-repeat  center center;
 	opacity: 0.75;
-	
+
 }
 .row_block .actions > a.delete:hover {
 	opacity: 1;

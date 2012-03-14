@@ -1,25 +1,51 @@
 <% @document[:breadcrumb] = false %>
 <div id="navigation_bar">
-	<a href="<%= url :find_index %>" class="action find">Find</a>
-	<a href="<%= url :interment_new %>" class="action burial">New Burial</a>
+  <a href="<%= url :find_index %>" class="action find">Find</a>
+  <a href="<%= url :interment_new %>" class="action burial">New Burial</a>
   <a href="<%= url :reservation_new %>" class="action reservation">New Reservation</a>
-  <a href="#" class="action calendar">Calendar</a>
+  <a href="<%= url :calendar_index %>" class="action calendar">Calendar</a>
 </div>
 <div class="inline_layout align_top">
   <div style="width: 48%">
-  	<h2>Tasks</h2>
+    <h2>Tasks</h2>
     <div class="list_rows">
-    	<div class="padded">Approve burial for Ronald Buckler<a class="goto"></a></div>
-      <div class="padded">Complete pending reservation form<a class="goto"></a></div>
+      <%
+      last_day = ''
+      @calendar.retrieve_outstanding_tasks.all.each do |interment|
+        deceased_role = interment.roles_by_type('deceased')[0]
+        %>
+        <div class="padded">
+        [#<%= interment.id.to_s %>]
+        <%= print { "#{deceased_role.person.title} #{deceased_role.person.given_name} #{deceased_role.person.surname}" } %> -
+        <%= print { interment.status.capitalize } %>
+        <a class="goto <%= interment.alert_status %>" href="<%= url :"#{interment.type.downcase}_view", :id => interment.id %>" title="View record"></a>
+        </div>
+      <% end %>
     </div>
   </div>
   <div style="width: 4%"></div>
   <div style="width: 48%">
-  	<h2>Upcoming Burials</h2>
+    <h2>Upcoming Burials</h2>
     <div class="list_rows">
-    	<div class="padded">09/12/2011 @ 9:00 AM &nbsp;&ndash;&nbsp; Rodney Williams<a class="goto"></a></div>
-      <div class="padded">10/12/2011 @ 11:00 AM &nbsp;&ndash;&nbsp; John H Farley<a class="goto"></a></div>
-      <div class="padded">10/12/2011 @ 1:00 PM &nbsp;&ndash;&nbsp; Pickle Shalloway<a class="goto"></a></div>
+      <%
+      grouped = Hash.new { |h,k| h[k] = [] }
+      @calendar.retrieve_upcoming_interments(Date.today, (Date.today + 7)).all.each do |interment|
+        grouped[interment.interment_date] << interment
+      end
+      grouped.each do |date, interments| %>
+        <h3><%= print_simple_day(date) %></h3>
+        <div class="list_rows">
+          <% interments.each do |interment| %>
+            <div class="padded">
+              [#<%= interment.id.to_s %>]
+              <%= print { "#{deceased_role.person.title} #{deceased_role.person.given_name} #{deceased_role.person.surname}" } %>
+              <%= print { interment.interment_date.strftime("@ %I:%M%p") } %> -
+              <%= print { interment.place.cemetery_name } %>
+              <a class="goto <%=interment.alert_status%>" href="<%= url :"#{interment.type.downcase}_view", :id => interment.id %>" title="View record"></a>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

@@ -16,11 +16,7 @@
 * Make JavaScript templates dynamic so variable data such as drop-down's can be prepopulated correctly.
   - Will need to use alternative delimiters for Backbone.js template parser.
 * Compile validation errors into single lines (e.g. Reservation -> Person must have date of death)
-* Ensure records are only marked as deleted.
-  - Ensure plots assigned to deleted allocations are available.
-* On the find page, make deleted and provisional records distinct.
-* Add more searchable fields, e.g. plot, status
-* Plot's should be searchable objects on the find page. They should have their own view page. =
+* Plot's should be searchable objects on the find page. They should have their own view page.
   On such a view page, it would show associated records and photos.
 * Add polyfills for IE8 compatibility: https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-browser-Polyfills
   - ECMAScript5 shim

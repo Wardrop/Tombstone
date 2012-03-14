@@ -57,15 +57,15 @@ include_script_views('form')
     <div class="section padded">
       <label>
         <span>Director</span>
-        <div><%= print_field { @allocation.funeral_director.name } %></div>
+        <div><%= print { @allocation.funeral_director.name } %></div>
       </label>
       <label>
         <span>Director Name</span>
-        <div><%= print_field { @allocation.funeral_director_name } %></div>
+        <div><%= print { @allocation.funeral_director_name } %></div>
       </label>
       <label>
         <span>Location</span>
-        <div><%= print_field { @allocation.funeral_service_location } %></div>
+        <div><%= print { @allocation.funeral_service_location } %></div>
       </label>
     </div>
   </section>
@@ -74,31 +74,31 @@ include_script_views('form')
     <div class="section padded">
       <label>
         <span>Interment Type</span>
-        <div><%= print_field { @allocation.interment_type.demodulize.titleize } %></div>
+        <div><%= print { @allocation.interment_type.demodulize.titleize } %></div>
       </label>
       <label>
         <span>Advice Received Date</span>
-        <div><%= print_field @allocation.advice_received_date %></div>
+        <div><%= print { @allocation.advice_received_date } %></div>
       </label>
     	<label>
         <span>Interment Date</span>
-        <div><%= print_field @allocation.interment_date %></div>
+        <div><%= print { @allocation.interment_date } %></div>
       </label>
       <label>
         <span>Receipt No's</span>
-        <div><%= print_field { @allocation.transactions.map{ |t| t.receipt_no }.join(', ') } %></div>
+        <div><%= print { @allocation.transactions.map{ |t| t.receipt_no }.join(', ') } %></div>
       </label>
       <label>
         <span class="align_top">Burial Requirements</span>
-        <div><%= print_field @allocation.burial_requirements %></div>
+        <div><%= print { @allocation.burial_requirements } %></div>
       </label>
       <label>
         <span class="align_top">Comments</span>
-        <div><%= print_field @allocation.comments %></div>
+        <div><%= print { @allocation.comments } %></div>
       </label>
       <label>
         <span>Status</span>
-        <div><%= print_field { @allocation.status.demodulize.titleize } %></div>
+        <div><%= print { @allocation.status.demodulize.titleize } %></div>
       </label>
     </div>
   </section>

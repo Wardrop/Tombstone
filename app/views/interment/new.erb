@@ -1,15 +1,15 @@
 <%
-@document[:title] = 'Create Interment'
-content_for :head do
+   @document[:title] = 'Create Interment'
+   content_for :head do
 %>
-  <script type="text/javascript">
-    $( function () {
-      new Ts.FormViews.AllocationForm({
-        el: $('#interment_form')[0],
-        valid_roles: ['deceased', 'applicant', 'next_of_kin'],
-        states: {pending: 'Submit', provisional: 'Save',  approved: 'Approve', interred: 'Inter', completed: 'Complete'}
-      })
-    })
-  </script>
+    <script type="text/javascript">
+        $(function () {
+            new Ts.FormViews.AllocationForm({
+                el: $('#interment_form')[0],
+                valid_roles: ['deceased', 'applicant', 'next_of_kin'],
+                states: {pending: 'Submit', provisional: 'Save',  approved: 'Approve', interred: 'Inter', completed: 'Complete'}
+            })
+        })
+    </script>
 <% end %>
 <%= partial 'interment/form' %>

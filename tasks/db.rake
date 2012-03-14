@@ -41,10 +41,10 @@ namespace :db do
     db[:allocation].insert(type: 'reservation', place_id: 7,  status: 'approved')
     id = db[:allocation].insert(type: 'reservation', place_id: 8,  status: 'approved', location_description: 'Next to the big rock.', comments: 'Just some dummy comment text.')
     db.run('SET IDENTITY_INSERT [allocation] ON')
-    db[:allocation].insert(id: id, type: 'interment', place_id: 8,  status: 'approved', funeral_director_id: 1)
+    db[:allocation].insert(id: id, type: 'interment', place_id: 8,  status: 'approved', funeral_director_id: 1, interment_date: (DateTime.now + 7), interment_type: 'coffin', comments: 'Call office prior burial.')
     db.run('SET IDENTITY_INSERT [allocation] OFF')
-    db[:allocation].insert(type: 'interment', place_id: 13, status: 'approved', funeral_director_id: 1)
-    db[:allocation].insert(type: 'interment', place_id: 15, status: 'deleted', funeral_director_id: 1)
+    db[:allocation].insert(type: 'interment', place_id: 13, status: 'approved', funeral_director_id: 1, interment_date: (DateTime.now + 3), interment_type: 'ashes', burial_requirements: 'On back please')
+    db[:allocation].insert(type: 'interment', place_id: 15, status: 'deleted', funeral_director_id: 1, interment_date: (DateTime.now + 10), interment_type: 'ashes', burial_requirements: 'To be provided')
     
     db[:role_association] << {role_id: 1, allocation_id: 2, allocation_type: 'reservation'}
     db[:role_association] << {role_id: 3, allocation_id: 2, allocation_type: 'reservation'}
@@ -73,7 +73,7 @@ namespace :db do
     db[:place] << {parent_id: 5, name: 'Plot 17', type: 'plot', status: 'available'}
     db[:place] << {parent_id: 5, name: 'Plot 18', type: 'plot', status: 'available'}
     db[:place] << {parent_id: 3, name: 'Row A', type: 'row', status: 'available'}
-    db[:place] << {parent_id: 3, name: 'Row B', type: 'row', status: 'available'}
+    db[:place] << {parent_id: 3, name: 'Row B', type: 'row', status: 'available', max_interments: 3}
     db[:place] << {parent_id: 3, name: 'Row C', type: 'row', status: 'available'}
     db[:place] << {parent_id: 10, name: 'Plot 3', type: 'plot', status: 'available'}
     db[:place] << {parent_id: 10, name: 'Plot 4', type: 'plot', status: 'unavailable'}

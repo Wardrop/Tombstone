@@ -1,0 +1,64 @@
+<%
+@document[:title] = "Calendar"
+content_for :head do
+%>
+  <link rel="stylesheet" href="<%= url '/scripts/vendor/weekcalendar/jquery.weekcalendar.css' %>"/>
+  <script type="text/javascript" src="<%= url '/scripts/vendor/weekcalendar/jquery.weekcalendar.js' %>"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      var $calendar = $('#calendar');
+      var id = 10;
+      
+      $calendar.weekCalendar({
+        displayOddEven:true,
+        timeslotsPerHour : 2,
+        allowCalEventOverlap : true,
+        overlapEventsSeparate: true,
+        firstDayOfWeek : 1,
+        businessHours :{start: 8, end: 18, limitDisplay: true },
+        daysToShow : 7,
+        newEventText: 'New Interment',
+        defaultEventLength: 2,
+        timeslotHeight: 30,
+        //switchDisplay: {'work week': 5, 'full week': 7},
+        title: function(daysToShow) {
+          return daysToShow == 1 ? '%date%' : '%start% - %end%';
+        },
+        height : function($calendar) {
+          return $(window).height() - $("h1").outerHeight() - 1;
+        },
+        eventRender : function(calEvent, $event) {
+          $event.addClass(calEvent.status);
+          $event.attr('title', 'Click to view');
+          $event.find(".wc-time").css({
+            "backgroundColor" : "#999",
+            "border" : "1px solid #888"
+          });
+        },
+        draggable : function(calEvent, $event) {
+          //return calEvent.readOnly != true;
+          return false;
+        },
+        resizable : function(calEvent, $event) {
+          return calEvent.readOnly != true;
+        },
+        eventNew : function(calEvent, $event) {
+          window.open('./interment?startDateTime='+calEvent.start.getTime(), '_self');
+        },
+        eventDrop : function(calEvent, $event) {
+          return false;
+        },
+        eventResize : function(calEvent, $event) {},
+        eventClick : function(calEvent, $event) {
+          window.open('./interment/'+calEvent.id, '_self');
+        },
+        eventMouseover : function(calEvent, $event) {},
+        eventMouseout : function(calEvent, $event) {},
+        noEvents : function() {},
+        data : "./calendar/events"
+      });
+    })
+  </script>
+<% end %>
+<h1></h1>
+<div id='calendar'></div>

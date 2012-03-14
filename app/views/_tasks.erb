@@ -1,0 +1,14 @@
+<h2>Tasks</h2>
+<div class="list_rows">
+    <% last_day = ''
+       @calendar.retrieve_outstanding_tasks.all.each do |interment|
+           deceased_role = interment.roles_by_type('deceased')[0]
+    %>
+        <div class="padded">
+            [#<%= interment.id.to_s %>
+            ] <%= print { "#{deceased_role.person.title} #{deceased_role.person.given_name} #{deceased_role.person.surname}" } %>
+            - <%= print { interment.status.capitalize } %>
+            <a class="goto goto_<%=interment.alert_status%>" href="<%= url :"#{interment.type.downcase}_view", :id => interment.id %>" title="View record"></a>
+        </div>
+    <% end %>
+</div>
