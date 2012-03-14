@@ -282,13 +282,13 @@ section:last-child, .section:last-child {
 	cursor: pointer;
 	opacity: 0.75;
 }
-.list_rows .goto_ok {
+.list_rows .goto.ok {
 	background: url(images/goto_ok.png) no-repeat center center;
 }
-.list_rows .goto_warning {
+.list_rows .goto.warning {
 	background: url(images/goto_warning.png) no-repeat center center;
 }
-.list_rows .goto_danger {
+.list_rows .goto.danger {
 	background: url(images/goto_danger.png) no-repeat center center;
 }
 

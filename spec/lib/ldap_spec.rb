@@ -68,11 +68,13 @@ module Tombstone
         end
       end
       
-      it "returns false on server failure" do
+      it "raises error on server failure" do
         begin
           orig_servers = LDAP.servers
           LDAP.servers = ['localhost', 'server2:5000']
-          LDAP.new(@username, @password).authenticate.should == false
+          expect {
+            LDAP.new(@username, @password).authenticate
+          }.to raise_error(StandardError)
         ensure
           LDAP.servers = orig_servers
         end

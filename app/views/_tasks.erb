@@ -6,8 +6,8 @@
     %>
         <div class="padded">
             [#<%= interment.id.to_s %>
-            ] <%= print_field { "#{deceased_role.person.title} #{deceased_role.person.given_name} #{deceased_role.person.surname}" } %>
-            - <%= print_field { interment.status }.capitalize %>
+            ] <%= print { "#{deceased_role.person.title} #{deceased_role.person.given_name} #{deceased_role.person.surname}" } %>
+            - <%= print { interment.status.capitalize } %>
             <a class="goto goto_<%=interment.alert_status%>" href="<%= url :"#{interment.type.downcase}_view", :id => interment.id %>" title="View record"></a>
         </div>
     <% end %>

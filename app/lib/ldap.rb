@@ -49,6 +49,7 @@ module Tombstone
     end
     
     def authenticate(attempts = 0)
+      @authenticated = false
       @connection = nil if attempts > 0
       begin
         if connection.bind
@@ -71,7 +72,7 @@ module Tombstone
         end
       rescue Net::LDAP::LdapError => e
         if attempts >= (servers.length)
-          error = "An error occured while authenticating #{@qualified_username}. The error was: #{op_result.code} #{op_result.message}"
+          error = "An error occured while authenticating #{@qualified_username}. The error was: #{e.message}"
           logger.error(error)
           raise StandardError, error
         else

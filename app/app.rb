@@ -17,7 +17,7 @@ module Tombstone
     end
     configure do
       disable :show_exceptions
-      use Rack::Session::Sequel, :db => Sequel::Model.db, :table_name => :session, :expire => 60 * 60 * 24 * 7
+      use Rack::Session::Sequel, :db => Sequel::Model.db, :table_name => :session, :expire_after => 60 * 60 * 24 * 7
     
       set :config, eval(File.read(File.expand_path('../config.rb', __FILE__)))
       Tombstone::Permissions.map = config[:roles]
@@ -37,6 +37,7 @@ module Tombstone
         breadcrumb: true,
         banner: flash[:banner]
       }
+      # BaseModel.inherited.each { |m| m.include PermissionsProxy; m.user = sessions[:user] }
     end
     
     get :index do
