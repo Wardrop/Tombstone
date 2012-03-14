@@ -12,6 +12,9 @@ module Tombstone
     configure do
       set :config, eval(File.read(File.expand_path('../config.rb', __FILE__)))
       Tombstone::Permissions.map = config[:roles]
+      Tombstone::Notification.config = config[:notification]
+      Tombstone::Notification.general = config[:general]
+
       # use Rack::Session::Pool, :expire => 900
       disable :show_exceptions
     end

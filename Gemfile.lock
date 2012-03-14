@@ -84,6 +84,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   htmlentities
+  mail
   nokogiri
   padrino
   rack (>= 1.4.1)

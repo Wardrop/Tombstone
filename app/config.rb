@@ -1,4 +1,17 @@
 {
+  general: {
+    :hostname => 'localhost',
+    :port => 9292
+  },
+
+  notification: {
+    :email => {
+        :from => 'noreply@tombstone.trc.local',
+        :to => 'tatej@trc.qld.gov.au',
+        :subject => '[##{interment.id}] Notification of Burial Approval'
+    }
+  },
+
   roles: {
     :operator => {
       :can_approve => false,

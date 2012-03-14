@@ -151,5 +151,18 @@ module Tombstone
     def before_create
       self.type = 'interment'
     end
+
+    def after_save
+      super
+      puts "start ***************************** saved"
+      puts caller
+      puts "end ***************************** saved"
+    end
+
+    def after_commit
+      super
+      puts "committed"
+    end
+
   end
 end
