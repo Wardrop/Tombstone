@@ -74,8 +74,10 @@ small {
 	background: white;
   width: 880px;
 	border: 1px solid #c0c0c0;
-	border-top: none;
   box-shadow: 0px 0px 20px rgba(0,0,0, 0.10);
+}
+body > #container {
+	border-top: none;
 }
 #container > .info {
 	position: absolute;
@@ -272,7 +274,7 @@ section:last-child, .section:last-child {
 
 .list_rows .goto, .list_rows .goto {
 	position: absolute;
-	background: url(images/goto.png) no-repeat center center;
+	background: url(images/goto_blue.png) no-repeat center center;
 	width: 32px;
 	top: 0;
 	bottom: 0;

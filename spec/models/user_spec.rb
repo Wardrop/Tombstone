@@ -16,6 +16,24 @@ module Tombstone
       User['tomw'].role_permissions.role.should == :supervisor
     end
     
+    it "authenticates users" do
+      u = User.new.set(id: LDAP_USER[:username])
+      u.authenticate(LDAP_USER[:password]).should == true
+    end
+    
+    it "provides LDAP object" do
+      u = User.new.set(id: LDAP_USER[:username])
+      u.authenticate(LDAP_USER[:password])
+      u.ldap.user_details[:mail][0].index('@trc.qld.gov.au').should > 0
+      
+    end
+    
+    it "errors when LDAP object is retrieved before authenticating" do
+      expect {
+        User.new.set(id: LDAP_USER[:username]).ldap
+      }.to raise_error(StandardError)
+    end
+    
     context do
       it "updates permissions object if role changed" do
         u = User['tatej']

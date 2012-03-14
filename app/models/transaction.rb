@@ -8,6 +8,7 @@ module Tombstone
     def validate
       super
       validates_presence :receipt_no
+      validates_max_length 32, :receipt_no
     end
   end
 end

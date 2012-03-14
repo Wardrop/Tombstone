@@ -1,4 +1,10 @@
 {
+  ldap: {
+    servers: ['trcdc01.trc.local', 'trcdc02.trc.local'],
+    domain: 'trc.local',
+    username: 'tombstone_user',
+    password: '10Pippl$ah'
+  },
   roles: {
     :operator => {
       :can_approve => false,

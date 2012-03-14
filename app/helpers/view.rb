@@ -21,17 +21,17 @@ module Tombstone
         ]
         segments << [route_name.demodulize.titleize, request.path_info] unless route_name == 'index'
       end
-      segments.dup.map { |title, uri|
+      segments.map { |title, uri|
         "<a href='#{url uri}' class='breadcrumb #{(title.empty?) ? 'home' : ''}'>#{title}</a>"
       }.join('<span class="breadcrumb div">/</span>')
     end
     
     # Renders field data, handling nil values and formatting of objects such as Dates.
     # Can take an optional block which has the advantage of being error-handled (e.g. calling a method on a nil object).
-    def print_field(value = nil, &block)
-      value = (block.call rescue nil) if block
+    def print(fallback = '<small>none</small>', &block)
+      value = block.call rescue nil
       if value.blank?
-        '<small>none</small>'
+        fallback
       else
         case value
         when Time
