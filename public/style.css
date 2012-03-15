@@ -534,42 +534,22 @@ a.row_button:hover {
 .multibutton {
 	position: relative;
   display: inline-block;
-	padding: 1px 28px 1px 0;
+	padding-right: 28px;
 }
-.multibutton.top {
-	border-top: 1px solid #7fb3e0;
-	padding-top: 0;
+.multibutton > .viewport {
+  border-radius: 5px 0 0 5px;
+  overflow: hidden;
+  background: #2980cc;
 }
-.multibutton.bottom {
-	border-bottom: 1px solid #7fb3e0;
-	padding-bottom: 0;
+.multibutton > .viewport.show {
+  overflow: visible;
 }
-.multibutton > input[type=button], .multibutton > a.button {
-	display: inline-block;
-	border-radius: 5px 0 0 5px;
-	padding: 10px 16px 10px 20px;
-	text-decoration: none;
-	background: #2980cc;
-	color: white;
-	border: none;
-	vertical-align: middle;
-	height: auto;
-}
-.multibutton.top > input[type=button], .multibutton.top > a.button {
-	border-radius: 0 0 0 5px;
-}
-.multibutton.bottom > input[type=button], .multibutton.bottom > a.button {
-	border-radius: 5px 0 0 0;
-}
-.multibutton > input[type=button]:hover, .multibutton > a.button:hover {
-	background: #5499d6;
-}
-.multibutton > span {
+.multibutton > .dropdown_button {
 	display: block;
 	position: absolute;
-	top: 1px;
+	top: 0;
 	right: 0;
-	bottom: 1px;
+	height: 100%;
 	width: 28px;
 	border-radius: 0 5px 5px 0;
 	background: #2980cc url('images/dropdown_arrow.png') no-repeat center center;
@@ -577,52 +557,130 @@ a.row_button:hover {
 	text-align: center;
 	border-left: 1px solid #7fb3e0;
 }
-.multibutton.top > span {
-	top: 0;
-	border-radius: 0 0 5px 0;
-}
-.multibutton.bottom > span {
-	bottom: 0;
-	border-radius: 0 5px 0 0;
-}
-.multibutton > span:hover {
+.multibutton > .dropdown_button:hover {
 	background-color: #5499d6;
 }
-.multibutton > ul {
-	position: absolute;
-	left: 0;
-	background: #2980cc;
-	margin: 1px 0;
-  z-index: 10;
+.multibutton > .viewport > ul {
+	display: block;
+	position: relative;
+	z-index: 10;
 }
-.multibutton.top > ul {
-	top: inherit;
-	bottom: 100%;
-  padding-top: 5px;
-	border-radius: 5px 5px 0 0;
+.multibutton > .viewport.show > ul > li:first-child {
+  border-radius: 5px 5px 0 0;
 }
-.multibutton.bottom > ul {
-	top: 100%;
-  bottom: inherit;
-  padding-bottom: 5px;
-	border-radius: 0 0 5px 5px;
+.multibutton > .viewport.show > ul > li:last-child {
+  border-radius: 0 0 5px 5px;
 }
-.multibutton > ul > li {
+.multibutton > .viewport > ul > li {
 	display: block;
 	text-align: left;
+	background: #2980cc;
+	border-radius: 5px 0 0 5px;
 }
-.multibutton > ul > li:hover {
+.multibutton > .viewport.show > ul > li {
+	border-radius: 0;
+}
+.multibutton > .viewport > ul > li:hover {
 	background: #5499d6;
 }
-.multibutton > ul > li.selected {
-	display: none;
-}
-.multibutton > ul input[type=button], .multibutton ul > a.button {
+.multibutton > .viewport > ul input[type=button], .multibutton > .viewport > a.button {
 	border-radius: 0;
-	width: 100%;
 	text-align: left;
 	background: none;
 }
+
+/*.multibutton {
+  position: relative;
+  display: inline-block;
+  padding: 1px 28px 1px 0;
+}
+.multibutton.top {
+  border-top: 1px solid #7fb3e0;
+  padding-top: 0;
+}
+.multibutton.bottom {
+  border-bottom: 1px solid #7fb3e0;
+  padding-bottom: 0;
+}
+.multibutton > input[type=button], .multibutton > a.button {
+  display: inline-block;
+  border-radius: 5px 0 0 5px;
+  padding: 10px 16px 10px 20px;
+  text-decoration: none;
+  background: #2980cc;
+  color: white;
+  border: none;
+  vertical-align: middle;
+  height: auto;
+}
+.multibutton.top > input[type=button], .multibutton.top > a.button {
+  border-radius: 0 0 0 5px;
+}
+.multibutton.bottom > input[type=button], .multibutton.bottom > a.button {
+  border-radius: 5px 0 0 0;
+}
+.multibutton > input[type=button]:hover, .multibutton > a.button:hover {
+  background: #5499d6;
+}
+.multibutton > span {
+  display: block;
+  position: absolute;
+  top: 1px;
+  right: 0;
+  bottom: 1px;
+  width: 28px;
+  border-radius: 0 5px 5px 0;
+  background: #2980cc url('images/dropdown_arrow.png') no-repeat center center;
+  color: white;
+  text-align: center;
+  border-left: 1px solid #7fb3e0;
+}
+.multibutton.top > span {
+  top: 0;
+  border-radius: 0 0 5px 0;
+}
+.multibutton.bottom > span {
+  bottom: 0;
+  border-radius: 0 5px 0 0;
+}
+.multibutton > span:hover {
+  background-color: #5499d6;
+}
+.multibutton > ul {
+  position: absolute;
+  left: 0;
+  background: #2980cc;
+  margin: 1px 0;
+  z-index: 10;
+}
+.multibutton.top > ul {
+  top: inherit;
+  bottom: 100%;
+  padding-top: 5px;
+  border-radius: 5px 5px 0 0;
+}
+.multibutton.bottom > ul {
+  top: 100%;
+  bottom: inherit;
+  padding-bottom: 5px;
+  border-radius: 0 0 5px 5px;
+}
+.multibutton > ul > li {
+  display: block;
+  text-align: left;
+}
+.multibutton > ul > li:hover {
+  background: #5499d6;
+}
+.multibutton > ul > li.selected {
+  display: none;
+}
+.multibutton > ul input[type=button], .multibutton ul > a.button {
+  border-radius: 0;
+  width: 100%;
+  text-align: left;
+  background: none;
+}*/
 
 .indicator {
   display: inline-block;

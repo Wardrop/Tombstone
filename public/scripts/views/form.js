@@ -103,33 +103,35 @@ $( function () {
     template: _.template($('#form\\:multibutton_template').html()),
     events: {
       'click span.dropdown_button' : 'toggleList',
-      'click input' : 'onSelectButton'
+      'click li' : 'onSelectButton'
     },
     initialize: function () {
       _.bindAll(this, 'hideList', 'showList', 'keydownHideEvent')
     },
     render: function () {
       $(this.el).html(this.template({name: this.options.name, options: this.options.values}))
-      var list = this.$('ul')
-      list.css('display', 'none')
-      this.selectButton(this.options.selected || list.find('input:first')[0].name)
+      var viewport = this.$('.viewport')
+      var height = viewport.find('li').outerHeight() || 34
+      viewport.css({height: height})
+      this.selectButton(this.options.selected || this.$('input:first')[0].name)
       this.hideList()
+      
   		return this
     },
     toggleList: function () {
-      var hidden = this.$('ul').css('display') == 'none'
-			hidden ? this.showList() : this.hideList()
+      var viewport = this.$('.viewport')
+      viewport.hasClass('show') ? this.hideList() : this.showList()
     },
     showList: function () {
-      var list = this.$('ul')
-      list.css('min-width', $(this.el).outerWidth());
-      list.css('display', '')
-      var viewport_bottom = $(window).scrollTop() + $(window).height();
+      this.autoAdjustHeight()
+      this.$('.viewport').addClass('show')
+      var list = this.$('.viewport ul')
+      var window_bottom = $(window).scrollTop() + $(window).height();
 			var list_bottom = list.offset().top + list.outerHeight();
-			if((list_bottom + 10) > viewport_bottom) {
-			  $(this.el).addClass('top');
+			if((list_bottom + 10) > window_bottom) {
+			  list.css({top: -(list.outerHeight() - list.find('li').outerHeight())})
 			} else {
-			  $(this.el).addClass('bottom');
+			  list.css({top: -list.children('li.selected').position().top})
 			}
 			// If we don't wrap this binding in a delay, it'll fire directly after this event which is not what we want.
 			_.delay(function (self) { $(document).click(self.hideList); }, 1, this);
@@ -137,25 +139,31 @@ $( function () {
 			$(document).keydown(this.keydownHideEvent)
     },
     hideList: function () {
-      this.$('ul').css('display', 'none')
-			$(this.el).removeClass('top bottom')
+      var list = this.$('.viewport ul')
+      list.css({top: -list.children('li.selected').position().top})
+      this.$('.viewport').removeClass('show')
       $(document).unbind('click', this.hideList)
 			$(window).unbind('blur', this.hideList)
 			$(document).unbind('keydown', this.keydownHideEvent)
     },
+    autoAdjustHeight: function () {
+      var viewport = this.$('.viewport')
+      var height = viewport.find('li').outerHeight()
+      if (height > 0) viewport.css({height: height})
+    },
     selectButton: function(selectedName) {
-      selected = this.$('[name='+selectedName+']')
-			if (selected.parent()[0] != this.el) {
-				$(this.el).children('input').remove()
-				$(this.el).prepend(selected.clone(true))
-			  this.$('ul > li').removeClass('selected').find(selected).parent().addClass('selected')
-			}
+      var list = this.$('.viewport > ul')
+      selected = list.find('li > input[name='+selectedName+']').parent()
+      list.css({top: -selected.position().top})
+		  list.children('li').removeClass('selected')
+		  selected.addClass('selected')
 		},
     onSelectButton: function (e) {
 			var target = e.currentTarget
-      this.selectButton(target.name)
-			if (this.options.actions && this.options.actions[target.name]) {
-				this.options.actions[target.name](e)
+			var selectedName = $(target).children('input').attr('name')
+      this.selectButton(selectedName)
+			if (this.options.actions && this.options.actions[selectedName]) {
+				this.options.actions[selectedName](e)
 			} else if (this.options.actions && this.options.actions['default']) {
 				this.options.actions['default'](e)
 			}
@@ -388,7 +396,6 @@ $( function () {
 						this.showFormErrors(data.form_errors)
 						this.indicator.detach()
 					} else {
-            console.log('dog')
 						this.indicator.attr('class', 'indicator success')
 						window.location = data.redirectTo
 					}
