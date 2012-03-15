@@ -4,20 +4,18 @@ module Tombstone
   class Permissions
     @map = {}
     @options = Set.new([
+      :can_create,
+      :can_edit,
+      :can_delete,
       :can_approve,
       :can_inter,
       :can_complete,
-      :can_delete_provisional,
-      :can_delete_pending,
       :can_delete_approved,
+      :can_delete_interred,
       :can_delete_completed,
-      :can_create_burials,
-      :can_edit_provisional_burials,
-      :can_edit_pending_burials,
-      :can_edit_approved_burials,
-      :can_edit_interred_burials,
-      :can_create_reservation,
-      :can_edit_reservation,
+      :can_edit_approved,
+      :can_edit_interred,
+      :can_edit_completed,
       :can_delete_photos,
       :can_manage_cemeteries
     ]).freeze

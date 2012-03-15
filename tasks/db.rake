@@ -34,10 +34,6 @@ namespace :db do
     db[:role] << {person_id: 1, type: 'deceased', residential_contact_id: 2}
     db[:role] << {person_id: 3, type: 'reservee', residential_contact_id: 3, mailing_contact_id: 3}
     
-    # db[:allocation] << {role1_id: 1, role2_id: 2, type: 'Next of Kin'}
-    # db[:allocation] << {role1_id: 3, role2_id: 2, type: 'Colleague'}
-    # db[:allocation] << {role1_id: 1, role2_id: 3, type: 'Colleague'}
-    
     db[:allocation].insert(type: 'reservation', place_id: 7,  status: 'approved')
     id = db[:allocation].insert(type: 'reservation', place_id: 8,  status: 'approved', location_description: 'Next to the big rock.', comments: 'Just some dummy comment text.')
     db.run('SET IDENTITY_INSERT [allocation] ON')
@@ -58,9 +54,9 @@ namespace :db do
     db[:funeral_director] << {:name => "Guilfoyles Mareeba", :residential_contact_id => 6, :mailing_contact_id => 6}
     db[:funeral_director] << {:name => "Guilfoyles Atherton", :residential_contact_id => 7}
     
-    db[:user] << {id: 'tomw', name: 'Tom Wardrop', role: 'supervisor'}
-    db[:user] << {id: 'tatej', name: 'Tate Jones', role: 'operator'}
-    db[:user] << {id: 'rogerj', name: 'Roger Johnson', role: 'operator'}
+    db[:user] << {id: 'tomw', role: 'supervisor'}
+    db[:user] << {id: 'tatej', role: 'supervisor'}
+    db[:user] << {id: 'rogerj', role: 'operator'}
     
         
     db[:place] << {name: 'Atherton Cemetery', type: 'cemetery', status: 'available'}

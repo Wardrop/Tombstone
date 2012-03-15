@@ -20,3 +20,5 @@
   On such a view page, it would show associated records and photos.
 * Add polyfills for IE8 compatibility: https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-browser-Polyfills
   - ECMAScript5 shim
+* Test interface to make sure it works with missing allcation information, such as in the case of a partial save (may as well test missing place)
+  Pages to test include: find, edit, view, delete, home

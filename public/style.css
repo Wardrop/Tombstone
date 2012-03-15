@@ -21,10 +21,10 @@ input, select, button {
 select {
 	min-width: 64px;
 }
-input[type=text], select {
+input[type=text], input[type=password], select {
   border: 1px solid #999;
 }
-input[type=text]:focus, select:focus {
+input[type=text]:focus, input[type=password]:focus, select:focus {
   border: 1px solid #0080ff;
 }
 input[type=submit], input[type=reset], input[type=button], button {

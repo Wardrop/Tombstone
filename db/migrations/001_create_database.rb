@@ -100,7 +100,6 @@ Sequel.migration do
     
     create_table :user do
       String :id, :size => 64, :primary_key => true
-      String :name, :size => 64
       String :role, :size => 32
     end
   end

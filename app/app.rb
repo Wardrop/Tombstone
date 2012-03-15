@@ -12,22 +12,30 @@ module Tombstone
     configure :spec, :production do
       set :log, Logger.new(nil)
     end
-    configure :development do
+    configure :development do 
       set :log, Logger.new(STDOUT)
     end
     configure do
       disable :show_exceptions
       use Rack::Session::Sequel, :db => Sequel::Model.db, :table_name => :session, :expire_after => 60 * 60 * 24 * 7
-    
+      use Rack::Lock
+      
       set :config, eval(File.read(File.expand_path('../config.rb', __FILE__)))
-      Tombstone::Permissions.map = config[:roles]
-      Tombstone::LDAP.servers = config[:ldap][:servers]
-      Tombstone::LDAP.domain = config[:ldap][:domain]
-      Tombstone::LDAP.logger = log
+      Permissions.map = config[:roles]
+      LDAP.servers = config[:ldap][:servers]
+      LDAP.domain = config[:ldap][:domain]
+      LDAP.logger = log
+      
+      Models = ObjectSpace.each_object(::Class).to_a.select { |k| k < BaseModel || k == BaseModel }.each do |m|
+        if m.name
+          model_name = m.name.split('::').last
+          m.send(:include, ModelPermissions.const_get(model_name)) if ModelPermissions.const_defined? model_name
+        end
+      end
     end
     
     before do
-      if request.path_info != url(:login) && session[:user].nil?
+      if request.path_info != url(:login) && request.path_info != url(:logout) && session[:user_id].nil?
         flash[:banner] = 'error', 'You must login to use this application.'
         redirect url(:login)
       end
@@ -38,7 +46,12 @@ module Tombstone
         breadcrumb: true,
         banner: flash[:banner]
       }
-      # BaseModel.inherited.each { |m| m.include PermissionsProxy; m.user = sessions[:user] }
+      @user = User.with_pk(session[:user_id])
+      BaseModel.permissions = Permissions.new((@user.role rescue nil))
+    end
+    
+    get :permissions_test do
+      Tombstone::Reservation.new.save(validate: false).inspect
     end
     
     get :index do
@@ -57,7 +70,7 @@ module Tombstone
       begin
         if user.authenticate(params['password'])
           flash[:banner] = 'success', "You have been logged in successfully."
-          session[:user] = user
+          session[:user_id] = user_id
           session[:ldap] = user.ldap.user_details
           redirect url(:index)
         else
@@ -71,6 +84,7 @@ module Tombstone
     
     get :logout do
       session.clear
+      p 'dog'
       flash[:banner] = 'success', 'You have been logged out successfully.'
       redirect url(:login)
     end
