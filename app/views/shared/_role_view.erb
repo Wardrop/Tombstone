@@ -4,11 +4,11 @@
 </div>
 <div class="row">
   <span>Gender</span>
-  <div><%= print_field { role.person.gender.demodulize.titleize } %></div>
+  <div><%= print { role.person.gender.demodulize.titleize } %></div>
 </div>
 <div class="row">
   <span>Date of Birth</span>
-  <div><%= print_field role.person.date_of_birth %></div>
+  <div><%= print { role.person.date_of_birth } %></div>
 </div>
 <div class="row">
   <span class="align_top">Residential Contact</span>
@@ -27,14 +27,12 @@
   <div>
   <%=
   mc = role.mailing_contact
-  if mc
+  print {
     "#{mc.street_address}<br />
     #{mc.town}, #{mc.state} #{mc.postal_code}<br />
     #{mc.primary_phone} #{(mc.secondary_phone.blank?) ? '' : ', '+mc.secondary_phone}<br />
     #{mc.email}"
-  else
-    "<small>none</small>"
-  end
+  }
   %>
   </div>
 </div>

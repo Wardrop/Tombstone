@@ -73,7 +73,7 @@ namespace :db do
     db[:place] << {parent_id: 5, name: 'Plot 17', type: 'plot', status: 'available'}
     db[:place] << {parent_id: 5, name: 'Plot 18', type: 'plot', status: 'available'}
     db[:place] << {parent_id: 3, name: 'Row A', type: 'row', status: 'available'}
-    db[:place] << {parent_id: 3, name: 'Row B', type: 'row', status: 'available'}
+    db[:place] << {parent_id: 3, name: 'Row B', type: 'row', status: 'available', max_interments: 3}
     db[:place] << {parent_id: 3, name: 'Row C', type: 'row', status: 'available'}
     db[:place] << {parent_id: 10, name: 'Plot 3', type: 'plot', status: 'available'}
     db[:place] << {parent_id: 10, name: 'Plot 4', type: 'plot', status: 'unavailable'}

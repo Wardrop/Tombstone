@@ -10,20 +10,30 @@ module Tombstone
 
     attr_accessor :interment, :deceased, :place
 
-    def initialize(interment = nil)
+    def initialize(interment = nil, trigger_now = false)
       @interment = interment
       @deceased = interment.roles_by_type('deceased')[0].person
       @place = interment.place
+      interment.add_observer(self)
+      update(nil, interment.status) if trigger_now
     end
 
     def subject
-      eval('"'+self.class.config[:email][:subject]+'"')
+      ERB.new(self.class.config[:email][:subject]).result(binding)
     end
 
-    def sendMessage
+    def update(old_status, new_status)
+      self.class.config[:status_rules].each do |k, v|
+        sendMessage(v[:notify]) if (v[:from] == old_status and v[:to] == new_status)
+      end
+
+    end
+
+    def sendMessage(notify)
 
       mail = Mail.new
-      mail.to = self.class.config[:email][:to]
+      mail.to = notify
+      mail.cc = self.class.config[:email][:to]
       mail.from = self.class.config[:email][:from]
       mail.subject = self.subject
 
@@ -38,21 +48,19 @@ module Tombstone
       ##   body '<h1>This is HTML</h1>'
       ## end
 
-      mail.delivery_method :sendmail
-      mail.deliver
+      if (self.class.config[:enabled])
+        mail.delivery_method :sendmail
+        mail.deliver
+      end
 
     end
 
+    def interment_site_url
+      "http://" << self.class.general[:hostname] << ((self.class.general[:port] == 80) ? "" :":" << self.class.general[:port].to_s) << "/interment/" << interment.id.to_s
+    end
+
     def plain_text_body
-      %{A request for a new burial has been 'Approved'.
-
-          Deceased: <%= deceased.title %> <%= deceased.given_name %> <%= deceased.surname %>
-          Cemetery: <%= place.description %>
-          Type: <%= interment.interment_type.capitalize %>
-          At: <%= interment.interment_date.strftime('%A %d %B %Y') %>
-
-          For more details http://<%= self.class.general[:hostname] %>:<%= self.class.general[:port] %>/interment/<%= interment.id.to_s %>
-      }
+      self.class.config[:email][:body]
     end
 
   end

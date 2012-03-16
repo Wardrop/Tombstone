@@ -1,6 +1,9 @@
-
 module Tombstone
+
   class Allocation < BaseModel
+
+    include Observable
+
     set_primary_key [:id, :type]
     unrestrict_primary_key
 
@@ -30,6 +33,13 @@ module Tombstone
 
     def roles_by_type(type)
       self.roles { |ds| ds.filter(type: type.to_s) }
+    end
+
+    def status=(status)
+      old_status = self.status
+      super
+      changed
+      notify_observers(old_status, status)
     end
 
     # Makes the identify column "id" optional, which is something MSSQL doesn't automatically support.
@@ -130,7 +140,8 @@ module Tombstone
     end
 
     def has_alert_been_reached(hours_threshold, interment_date)
-       interment_date < (Time.now + (hours_threshold * 60 * 60)).to_datetime
+      return interment_date < (Time.now + (hours_threshold * 60 * 60)).to_datetime unless interment_date.nil?
+      false
     end
 
     def validate
@@ -150,18 +161,6 @@ module Tombstone
 
     def before_create
       self.type = 'interment'
-    end
-
-    def after_save
-      super
-      puts "start ***************************** saved"
-      puts caller
-      puts "end ***************************** saved"
-    end
-
-    def after_commit
-      super
-      puts "committed"
     end
 
   end

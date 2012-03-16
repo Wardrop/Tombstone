@@ -74,8 +74,10 @@ small {
 	background: white;
   width: 880px;
 	border: 1px solid #c0c0c0;
-	border-top: none;
   box-shadow: 0px 0px 20px rgba(0,0,0, 0.10);
+}
+body > #container {
+	border-top: none;
 }
 #container > .info {
 	position: absolute;
@@ -272,7 +274,7 @@ section:last-child, .section:last-child {
 
 .list_rows .goto {
 	position: absolute;
-	background: url(images/goto.png) no-repeat center center;
+	background: url(images/goto_blue.png) no-repeat center center;
 	width: 32px;
 	top: 0;
 	bottom: 0;
@@ -280,14 +282,14 @@ section:last-child, .section:last-child {
 	cursor: pointer;
 	opacity: 0.75;
 }
-.list_rows .goto_ok {
-	background: url(images/goto_ok.png) no-repeat center center;
+.list_rows .goto.ok {
+	background: url(images/goto_green.png) no-repeat center center;
 }
-.list_rows .goto_warning {
-	background: url(images/goto_warning.png) no-repeat center center;
+.list_rows .goto.warning {
+	background: url(images/goto_orange.png) no-repeat center center;
 }
-.list_rows .goto_danger {
-	background: url(images/goto_danger.png) no-repeat center center;
+.list_rows .goto.danger {
+	background: url(images/goto_red.png) no-repeat center center;
 }
 
 .list_rows .goto:hover {

@@ -26,7 +26,7 @@ content_for :head do
       })
       $('#actions_section > div').append(multibutton.render().el)
     })
-  </screservationript>
+  </script>
 <%
 end
 
@@ -57,19 +57,19 @@ include_script_views('form')
     <div class="section padded">
       <label>
         <span>Receipt No's</span>
-        <div><%= print_field { @allocation.transactions.map{ |t| t.receipt_no }.join(', ') } %></div>
+        <div><%= print { @allocation.transactions.map{ |t| t.receipt_no }.join(', ') } %></div>
       </label>
     	<label>
         <span>Location Description</span>
-        <div><%= print_field @allocation.location_description %></div>
+        <div><%= print { allocation.location_description } %></div>
       </label>
       <label>
         <span>Comments</span>
-        <div><%= print_field @allocation.comments %></div>
+        <div><%= print { @allocation.comments } %></div>
       </label>
       <label>
         <span>Status</span>
-        <div><%= print_field { @allocation.status.demodulize.titleize } %></div>
+        <div><%= print { @allocation.status.demodulize.titleize } %></div>
       </label>
     </div>
   </section>

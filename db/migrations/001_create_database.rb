@@ -88,7 +88,7 @@ Sequel.migration do
       primary_key [:allocation_id, :allocation_type, :receipt_no]
       Integer :allocation_id
       String :allocation_type, :size => 32
-      Integer :receipt_no
+      String :receipt_no, :size => 32
     end
     
     create_table :funeral_director do
