@@ -21,6 +21,7 @@ module Tombstone
     end
     
     def after_save
+      super
       @role_permissions.role = @values[:role] unless @values[:role].to_sym == role_permissions.role
     end
   end

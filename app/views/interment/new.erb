@@ -1,13 +1,17 @@
 <%
-   @document[:title] = 'Create Interment'
-   content_for :head do
+@document[:title] = 'Create Interment'
+content_for :head do
 %>
     <script type="text/javascript">
         $(function () {
+            var state_map = {pending: 'Submit', provisional: 'Save',  approved: 'Approve', interred: 'Inter', completed: 'Complete'}
+            var permitted_states = <%= @allocation.permitted_states.to_json %>
+            var states = {}
+            permitted_states.forEach(function (s) { if (state_map[s]) states[s] = state_map[s] })
             new Ts.FormViews.AllocationForm({
                 el: $('#interment_form')[0],
                 valid_roles: ['deceased', 'applicant', 'next_of_kin'],
-                states: {pending: 'Submit', provisional: 'Save',  approved: 'Approve', interred: 'Inter', completed: 'Complete'}
+                states: states
             })
         })
     </script>

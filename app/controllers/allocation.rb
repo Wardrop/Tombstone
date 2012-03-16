@@ -73,14 +73,19 @@ module Tombstone
               allocation.destroy
             end
           else
-            allocation.set(status: 'deleted').save(:status, validation: false)
+            allocation.set(status: 'deleted').save(:status, validate: false)
           end
           flash[:banner] = ["success", "#{controller.capitalize} was deleted successfully."]
         rescue => e
           flash[:banner] = ["error", "Error occured while deleting #{controller} ##{params[:id]}. The error was: \n#{e.message}"]
         end
       end
-      redirect url(:"#{controller}_view", :id => allocation.id)
+      
+      if allocation.exists?
+        redirect url(:"#{controller}_view", :id => allocation.id)
+      else
+        redirect url(:index)
+      end
     end
   end
   

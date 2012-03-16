@@ -16,6 +16,10 @@ module Tombstone
       def valid_alert_statuses
         ['danger', 'warning', 'ok']
       end
+      
+      def valid_roles
+        []
+      end
     end
 
     def validate
@@ -68,7 +72,7 @@ module Tombstone
       end
 
       def valid_states
-        ['active', 'completed', 'deleted']
+        ['active', 'deleted']
       end
     end
 
@@ -83,6 +87,7 @@ module Tombstone
     end
 
     def before_create
+      super
       self.type = 'reservation'
     end
   end
@@ -160,6 +165,7 @@ module Tombstone
     end
 
     def before_create
+      super
       self.type = 'interment'
     end
 

@@ -5,7 +5,7 @@
   %>
   <div class="clickable <%= record.status %>">
     <div class="summary">
-    <%= record.type.demodulize.titleize %> - <%= record.place.name %> - <%= print { "#{main_role.person.title} #{main_role.person.given_name} #{main_role.person.surname}" } %>
+      <%= record.type.demodulize.titleize %> - <%= print { record.place.name } %> - <%= print { "#{main_role.person.title} #{main_role.person.given_name} #{main_role.person.surname}" } %>
       <a class="goto" href="<%= url :"#{record.type.downcase}_view", :id => record.id %>" title="View record"></a>
     </div>
     <div class="details">
@@ -20,7 +20,7 @@
         </div>
         <div class="row">
           <span>Status:</span>
-          <div><%= record.status.demodulize.titleize %></div>
+          <div><%= print { record.status.demodulize.titleize } %></div>
         </div>
       </div>
       <div class="right rowed">

@@ -30,7 +30,7 @@
           "Hello, #{session[:ldap][:displayName].first} [ <a href='#{url :logout}'>logout</a> ]"
         } %>
       </div>
-      <div><%= print ('') { (session[:user].role ? session[:user].role.demodulize.titleize : nil) || 'Guest' } %></div>
+      <div><%= print ('') { @user.role ? @user.role.demodulize.titleize : 'Guest' } %></div>
     </div>
     <div id="banner">Tombstone <sup>v<%= Tombstone::VERSION %></sup></div>
     <%=

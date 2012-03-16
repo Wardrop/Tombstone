@@ -1,10 +1,12 @@
 <script type="text/template" id="form:multibutton_template">
+  <div class="viewport">
+    <ul>
+      <% _.each(options, function (value, name) { %>
+      	<li><input type="button" name="<%= name %>" value="<%= value %>" /></li>
+      <% }) %>
+    </ul>
+  </div>
   <span class="dropdown_button"></span>
-  <ul>
-    <% _.each(options, function (value, name) { %>
-    	<li><input type="button" name="<%= name %>" value="<%= value %>" /></li>
-    <% }) %>
-  </ul>
 </script>
 
 <script type="text/template" id="form:place_list_template">

@@ -2,9 +2,7 @@ require 'net/ldap'
 
 module Tombstone
   class LDAP
-    extend Delegator
-    
-    delegate self, :server, :servers, :use_ssl, :domain, :logger, :connection, :parse_username
+    delegate :server, :servers, :use_ssl, :domain, :logger, :connection, :parse_username, :to => self
     
     @servers = []
     @logger = Logger.new(nil)
