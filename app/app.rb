@@ -27,8 +27,8 @@ module Tombstone
       LDAP.domain = config[:ldap][:domain]
       LDAP.logger = log
 
-      Tombstone::Notification.config = config[:notification]
-      Tombstone::Notification.general = config[:general]
+      Notification.config = config[:notification]
+      Notification.general = config[:general]
 
       Models = ObjectSpace.each_object(::Class).to_a.select { |k| k < BaseModel || k == BaseModel }.each do |m|
         if m.name

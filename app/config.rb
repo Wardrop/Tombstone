@@ -1,9 +1,8 @@
-{
-    general : {
+{   general: {
         :hostname => 'localhost',
         :port => 9292
     },
-    notification : {
+    notification: {
         :enabled => false,
         :email => {
             :from => 'noreply@tombstone.trc.local',
@@ -17,20 +16,20 @@
         Type: <%= interment.interment_type.capitalize %>
         At: <%= interment.interment_date.strftime('%A %d %B %Y') %>
 
-  For more details <%= interment_site_url %>",
+  For more details <%= interment_site_url %>"
         },
         :status_rules => {
             :rule_1 => {:from => 'pending', :to => 'approved', :notify => 'tatej@trc.qld.gov.au'},
             :rule_2 => {:from => nil, :to => 'pending', :notify => 'tatej@trc.qld.gov.au'}
         }
     },
-    ldap : {
+    ldap: {
         servers: ['trcdc01.trc.local', 'trcdc02.trc.local'],
         domain: 'trc.local',
         username: 'tombstone_user',
         password: '10Pippl$ah'
     },
-    roles : {
+    roles: {
         :operator => {
             :can_create => true,
             :can_edit => true,
