@@ -24,9 +24,8 @@ module Tombstone
 
     def update(old_status, new_status)
       self.class.config[:status_rules].each do |k, v|
-        sendMessage(v[:notify]) if (v[:from] == old_status and v[:to] == new_status)
+        sendMessage(v[:notify]) if (v[:from_status] == old_status and v[:to_status] == new_status)
       end
-
     end
 
     def sendMessage(notify)

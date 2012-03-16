@@ -19,8 +19,8 @@
   For more details <%= interment_site_url %>"
         },
         :status_rules => {
-            :rule_1 => {:from => 'pending', :to => 'approved', :notify => 'tatej@trc.qld.gov.au'},
-            :rule_2 => {:from => nil, :to => 'pending', :notify => 'tatej@trc.qld.gov.au'}
+            :rule_1 => {:from_status => 'pending', :to_status => 'approved', :notify => 'tatej@trc.qld.gov.au'},
+            :rule_2 => {:from_status => nil, :to_status => 'pending', :notify => 'tatej@trc.qld.gov.au'}
         }
     },
     ldap: {

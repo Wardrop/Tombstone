@@ -18,8 +18,8 @@ module Tombstone
           For more details <%= interment_site_url %>",
         },
         :status_rules => {
-            :rule_1 => {:from => 'pending', :to => 'approved', :notify => 'tatej@trc.qld.gov.au'},
-            :rule_2 => {:from => nil, :to => 'pending', :notify => 'tatej@trc.qld.gov.au'}
+            :rule_1 => {:from_status => 'pending', :to_status => 'approved', :notify => 'tatej@trc.qld.gov.au'},
+            :rule_2 => {:from_status => nil, :to_status => 'pending', :notify => 'tatej@trc.qld.gov.au'}
         }
     }
       Notification.config.should_not == nil
@@ -30,7 +30,6 @@ module Tombstone
     it "set subject correctly" do
       interment = Interment.with_pk(3)
       interment.id.should == 3
-      puts interment.status.capitalize
       notification = Notification.new(interment)
       notification.subject.should == '[#3] Notification of Burial is "Approved"'
     end
