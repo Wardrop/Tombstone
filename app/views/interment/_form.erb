@@ -7,14 +7,13 @@
   
   <script type="application/json" id="json:place_data">
     <%=
-    if @root_places
-      {nil => @root_places}.to_json
-    else
-      places = @allocation.place && @allocation.place.ancestors(true).reverse
-      if places
-        Hash[*places.map { |place| [place.id, place.siblings.naked.all] }.flatten(1)].to_json
+    begin
+      if places = @allocation.place && @allocation.place.ancestors(true).reverse
+        Hash[*places.map { |place| [place.id, place.siblings.naked.all] }.flatten(1)]
+      else
+        {nil => Tombstone::Place.filter(:parent_id => nil).available_only.order(:name).naked.all}
       end
-    end
+    end.to_json
     %>
   </script>
 <% end %>
@@ -91,6 +90,5 @@ include_script_views('role_wizard', 'form')
   <% if @allocation.id  %>
     <input type="hidden" name="id" value="<%= @allocation.id %>" />
   <% end %>
-  <%= hidden_field_tag('place[]', value: params['place']) if params['place'] %>
   <input type="hidden" name="_method" value="<%= (Tombstone::Interment === @allocation && @allocation.id) ? 'put' : 'post'  %>" />
 </form>

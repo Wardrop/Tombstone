@@ -112,7 +112,11 @@ $( function () {
       $(this.el).html(this.template({name: this.options.name, options: this.options.values}))
       var viewport = this.$('.viewport')
       var height = viewport.find('li').outerHeight() || 34
-      viewport.css({height: height})
+      viewport.css({height: height});
+      if (Object.keys(this.options.values).length <= 1)
+        $(this.el).addClass('no_dropdown')
+      else
+        $(this.el).removeClass('no_dropdown')
       this.selectButton(this.options.selected || this.$('input:first')[0].name)
       this.hideList()
       
@@ -352,8 +356,11 @@ $( function () {
 					section.body.unshift(placeView.render().el)
           currentPlace = siblings[0].parent_id
 				}
+        if (placeView.options.disabled) {
+          section.body.unshift($('<input type="hidden" name="place[]" value="'+place_id+'" />')[0])
+        }
 			} else {
-				var collection = new Ts.Places(this.placeData[""])
+				var collection = new Ts.Places(this.placeData[''])
 				var placeView = new Ts.FormViews.PlacesView({collection: collection})
 				section.body.push(placeView.render().el)
 			}
@@ -427,23 +434,44 @@ $( function () {
 		showFormErrors: function (errors) {
 			var container = $('<ul class="error_block" />')
 			errors = (errors.constructor == String) ? [errors] : errors
-			var iterateErrors = function (ul, errors) {
+			// var iterateErrors = function (ul, errors) {
+			// 	_.each(errors, function (error, field) {
+			// 		if (error.constructor == Array) {
+			// 			_.each(error, function (message) {
+			// 				errorObj = {}; errorObj[field] = message
+			// 				ul.append($('<li />').text(field.split('_').join(' ').titleize()))
+			// 				ul.append(iterateErrors($('<ul />'), errorObj))
+			// 			})
+			// 		} else if (error.constructor == Object) {
+			// 			ul.append(iterateErrors($('<ul />'), error))
+			// 		} else {
+			// 			ul.append($('<li />').text(error))
+			// 		}
+			// 	})
+			// 	return ul
+			// }
+      var iterateErrors = function (prefix, errors) {
+        var array = []
 				_.each(errors, function (error, field) {
 					if (error.constructor == Array) {
 						_.each(error, function (message) {
-							errorObj = {}; errorObj[field] = message
-							ul.append($('<li />').text(field.split('_').join(' ').titleize()))
-							ul.append(iterateErrors($('<ul />'), errorObj))
+							errorObj = {}
+              errorObj[field] = message
+              console.log(errorObj)
+							array = array.concat( iterateErrors(prefix, errorObj) )
 						})
 					} else if (error.constructor == Object) {
-						ul.append(iterateErrors($('<ul />'), error))
+            console.log('hit2')
+						array = array.concat(iterateErrors(prefix + field + "-> ", error))
 					} else {
-						ul.append($('<li />').text(error))
+            array.push(prefix + error)
 					}
 				})
-				return ul
+				return array
 			}
-			iterateErrors(container, errors)
+			iterateErrors('', errors).forEach( function (error) {
+        container.append($('<li />').text(error))
+      })
 			
 			_.each(errors, function (value, field) {
 				if (value.length > 0) this.$('[name='+field+']').addClass('field_error')

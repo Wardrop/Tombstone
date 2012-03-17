@@ -43,7 +43,7 @@ content_for :head do
           return calEvent.readOnly != true;
         },
         eventNew : function(calEvent, $event) {
-          window.open('./interment?startDateTime='+calEvent.start.getTime(), '_self');
+          window.open('./interment?interment_date='+calEvent.start.toString('s'), '_self')
         },
         eventDrop : function(calEvent, $event) {
           return false;

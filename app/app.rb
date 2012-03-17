@@ -26,10 +26,12 @@ module Tombstone
       LDAP.domain = config[:ldap][:domain]
       LDAP.logger = log
       
-      Models = ObjectSpace.each_object(::Class).to_a.select { |k| k < BaseModel || k == BaseModel }.each do |m|
-        if m.name
-          model_name = m.name.split('::').last
-          m.send(:include, ModelPermissions.const_get(model_name)) if ModelPermissions.const_defined? model_name
+      if environment != :spec
+        Models = ObjectSpace.each_object(::Class).to_a.select { |k| k < BaseModel || k == BaseModel }.each do |m|
+          if m.name
+            model_name = m.name.split('::').last
+            m.send(:include, ModelPermissions.const_get(model_name)) if ModelPermissions.const_defined? model_name
+          end
         end
       end
     end
@@ -46,8 +48,7 @@ module Tombstone
         breadcrumb: true,
         banner: flash[:banner]
       }
-      @user = User.with_pk(session[:user_id])
-      BaseModel.permissions = Permissions.new((@user.role rescue nil))
+      (@user = User.with_pk session[:user_id]) && BaseModel.permissions = @user.role_permissions
     end
     
     get :permissions_test do

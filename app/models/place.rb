@@ -54,8 +54,8 @@ module Tombstone
       self.ancestors(true, 0).reverse.map{|p| p.name}.join(' - ')
     end
 
-    def cemetery_name
-      self.ancestors[-1].name
+    def cemetery
+      self.ancestors[-1]
     end
 
     def ancestors(include_self = false, upto = 0)

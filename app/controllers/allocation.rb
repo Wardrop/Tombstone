@@ -92,7 +92,6 @@ module Tombstone
   App.controller :reservation do
     get :new, :map => 'reservation' do
       @allocation = Reservation.new
-      @root_places = Place.filter(:parent_id => nil).available_only.order(:name).naked.all
       render "reservation/new"
     end
   end
@@ -101,28 +100,24 @@ module Tombstone
   App.controller :interment do
     get :new, :map => 'interment' do
       @allocation = Interment.new
-      @allocation.interment_date = Time.at(params['startDateTime'].to_i/1000).to_datetime unless params['startDateTime'].nil?
+      @allocation.set_only_valid(params)
+      # @allocation.interment_date = Time.at(params['startDateTime'].to_i/1000).to_datetime unless params['startDateTime'].nil?
       @funeral_directors = FuneralDirector.all
-      if params['place'].to_i > 0
-        place = Place.with_pk(params['place'].to_i)
-        if place.nil?
+      if @allocation.place_id
+        if not @allocation.place
           halt 500, render("error", :locals => {
             :title => 'Place Does Not Exist',
             :message => "The specified place does not exist."
           })
-        elsif not place.allows_interment?
+        elsif not @allocation.place.allows_interment?
           halt 500, render("error", :locals => {
             :title => 'Interment Not Allowed',
             :message => "The specified place cannot be used.
                          The place may be unavailable, invalid, or it exceeds the maximum number of allowed interments."
           })
-        else
-          @allocation.place_id = params['place']
         end
-      else
-        @root_places = Place.filter(:parent_id => nil).available_only.order(:name).naked.all
       end
-      render "interment/new"
+      prepare_form(render("interment/new"), {selector: 'form', values: @allocation.values})
     end
     
     get :new_from_reservation, :map => "interment/:id/new" do

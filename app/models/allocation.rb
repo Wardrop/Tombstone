@@ -1,5 +1,6 @@
 
 module Tombstone
+  
   class Allocation < BaseModel
     set_primary_key [:id, :type]
     unrestrict_primary_key

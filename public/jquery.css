@@ -1,5 +1,9 @@
 /* This file contains overriden jQuery style */
 
+.ui-widget {
+  font-size: 100%;
+}
+
 /*** Calendar ***/
 
 .wc-container{border-left:1px solid #BBCCFF;}

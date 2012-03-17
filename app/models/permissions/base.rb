@@ -5,7 +5,10 @@ module Tombstone
       def self.included(klass)
         delegate :permissions, :to => klass
         klass.extend(Module.new {
-          attr_accessor :permissions
+          attr_writer :permissions
+          def permissions
+            @permissions ||= Permissions.new
+          end
         })
       end
       

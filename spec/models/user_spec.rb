@@ -3,11 +3,7 @@ require_relative '../spec_helper'
 module Tombstone
   describe User do
     it "can retrieve user on primary key" do
-      User['tomw'].name.should == 'Tom Wardrop'
-    end
-    
-    it "includes ModelPermissions plugin" do
-      User.plugins.should include(Tombstone::ModelPermissions)
+      User['tomw'].should_not be_nil
     end
     
     it "provides a Permissions object based on user role" do
@@ -34,17 +30,18 @@ module Tombstone
       }.to raise_error(StandardError)
     end
     
-    context do
-      it "updates permissions object if role changed" do
-        u = User['tatej']
+    it "updates permissions object if role changed" do
+      u = User['tatej']
+      original_role = u.role
+      begin
+        u.set(role: 'operator').save
+        rp = u.role_permissions
         u.role_permissions.can_delete_photos?.should == false
-        u.role = 'supervisor'
-        u.save
+        u.set(role: 'supervisor').save
         u.role_permissions.can_delete_photos?.should == true
-      end
-      
-      after(:all) do
-        User['tatej'].set({:role => 'operator'}).save
+        u.role_permissions.should be_equal(rp)
+      ensure
+        User['tatej'].set({:role => original_role}).save
       end
     end
     

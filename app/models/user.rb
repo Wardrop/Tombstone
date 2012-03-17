@@ -1,6 +1,5 @@
 module Tombstone
   class User < BaseModel
-    plugin ModelPermissions
     set_primary_key :id
     unrestrict_primary_key
     

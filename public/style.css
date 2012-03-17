@@ -53,7 +53,7 @@ h2.underline {
 	border-bottom: 1px solid #888;
 }
 h3 {
-	font-size: 16px;
+	font-size: 15px;
 	margin: 20px 0 14px;
 	padding-left: 2%;
 	padding-bottom: 4px;
@@ -544,6 +544,10 @@ a.row_button:hover {
 .multibutton > .viewport.show {
   overflow: visible;
 }
+.multibutton.no_dropdown > .viewport {
+  border-radius: 5px;
+}
+
 .multibutton > .dropdown_button {
 	display: block;
 	position: absolute;
@@ -560,6 +564,10 @@ a.row_button:hover {
 .multibutton > .dropdown_button:hover {
 	background-color: #5499d6;
 }
+.multibutton.no_dropdown > .dropdown_button {
+  display: none;
+}
+
 .multibutton > .viewport > ul {
 	display: block;
 	position: relative;
@@ -576,6 +584,9 @@ a.row_button:hover {
 	text-align: left;
 	background: #2980cc;
 	border-radius: 5px 0 0 5px;
+}
+.multibutton.no_dropdown > .viewport > ul > li {
+  border-radius: 5px; 
 }
 .multibutton > .viewport.show > ul > li {
 	border-radius: 0;

@@ -6,10 +6,6 @@
   - The change reservee function doesn't allow you to edit previously entered details. May need to make a new interface for changing a reservee.
   - Limit the number of records returned over JSON (no pagination; limit only)
 * Simplify breadcrumb into a list (<ul>) and use the CSS pseudo element :before to render the slashes in-between.
-* Multibutton
-  - Fix display when option in drop down is significantly longer than the default option.
-    Maybe change to apple-style drop-downs, and using overlay hidden to hide options above and below the current selection.
-  - Fall back to normal input button when only one option is available.
 * Indicate which form fields are required.
 * Add hooks to models for cleaning and formatting data, e.g. capitalising names, lower casing gender, etc.
 * Add validation rules to specs.

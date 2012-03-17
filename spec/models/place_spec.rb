@@ -69,7 +69,7 @@ module Tombstone
     it "gets next available plot from any level" do
       na1 = Place.with_pk(3).next_available
       na1.should be_a(Place)
-      na1.name.should == 'Plot 6'
+      [na1.id, na1.name].should == [15, 'Plot 5']
       
       na2 = Place.with_pk(11).next_available
       na2.name.should == 'Plot 38'
