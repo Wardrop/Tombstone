@@ -1,0 +1,26 @@
+@media print {
+  body {
+    font-size: 70%;
+    background: none;
+  }
+  .noprint {
+    display: none;
+  }
+  #container {
+    border: none;
+    box-shadow: none;
+    width: 100%;
+  }
+  #main_banner {
+    display: none;
+  }
+  #print_banner {
+    display: block;
+  }
+  #container > .info {
+    display: none;
+  }
+  #navigation_bar {
+    display: none;
+  } 
+}

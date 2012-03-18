@@ -33,8 +33,12 @@ module Tombstone
       validates_min_length 2, :status
     end
 
+    def role_by_type(type)
+      roles_by_type(type).first
+    end
+    
     def roles_by_type(type)
-      self.roles { |ds| ds.filter(type: type.to_s) }
+      self.roles_dataset.filter(type: type.to_s)
     end
 
     # Makes the identify column "id" optional, which is something MSSQL doesn't automatically support.

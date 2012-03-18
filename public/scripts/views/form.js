@@ -167,10 +167,11 @@ $( function () {
 			var selectedName = $(target).children('input').attr('name')
       this.selectButton(selectedName)
 			if (this.options.actions && this.options.actions[selectedName]) {
-				this.options.actions[selectedName](e)
+				var result = this.options.actions[selectedName](e)
 			} else if (this.options.actions && this.options.actions['default']) {
-				this.options.actions['default'](e)
+				var result = this.options.actions['default'](e)
 			}
+			return (result == true) ? true : false
     },
     keydownHideEvent: function (e) {
       if (e.keyCode == 27) this.hideList();

@@ -44,9 +44,22 @@ module Tombstone
     
     it "can filter roles by types" do
       alloc = Allocation.with_pk([2, 'reservation'])
-      alloc.roles_by_type('reservee').should be_a(Array)
-      alloc.roles_by_type('reservee')[0].should be_a(Role)
-      alloc.roles_by_type(:reservee)[0].type.should == 'reservee'
+      alloc.roles_by_type('reservee').should be_a(Sequel::Dataset)
+      alloc.roles_by_type('reservee').first.should be_a(Role)
+      alloc.roles_by_type(:reservee).first.type.should == 'reservee'
+    end
+    
+    it "can get a single role by type" do
+      alloc = Allocation.with_pk([2, 'reservation'])
+      alloc.role_by_type('reservee').should be_a(Role)
+    end
+    
+    describe "regression tests" do
+      example "roles by type does not effect roles dataset" do
+        alloc = Allocation.with_pk([2, 'reservation'])
+        alloc.roles_by_type('reservee')
+        alloc.roles.count.should == 2
+      end
     end
   end
   

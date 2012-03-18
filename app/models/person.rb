@@ -10,6 +10,10 @@ module Tombstone
       end
     end
     
+    def name
+      "#{title} #{given_name} #{middle_initials} #{surname}"
+    end
+    
     def validate
       super
       validates_includes self.class.valid_titles, :title

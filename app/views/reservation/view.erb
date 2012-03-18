@@ -1,12 +1,16 @@
 <%
 @document[:title] = "View Reservation ##{@allocation.id}"
+p @allocation.role_by_type('reservee')
+@document[:page_heading] = print("Reservation ##{@allocation.id}") do
+  "Reservation for #{@allocation.role_by_type('reservee').person.name.titleize}"
+end
 content_for :head do
 %>
   <script type="text/javascript">
   $( function () {
       var multibutton = new Ts.FormViews.Multibutton({
         name: 'action',
-        values: {edit: 'Edit', delete: 'Delete', inter: 'Inter'},
+        values: {edit: 'Edit', delete: 'Delete', inter: 'Inter', print: 'Print'},
         actions: {
           edit: function () {
             window.location = <%= url(:reservation_edit, :id => @allocation.id).to_json %>
@@ -19,12 +23,16 @@ content_for :head do
           inter: function () {
             window.location = <%= url(:interment_new_from_reservation, :id => @allocation.id).to_json %>
           },
+          print: function () {
+            window.print()
+          },
           default: function () {
             alert('This function is not currently implemented.')
           }
         }
       })
-      $('#actions_section > div').append(multibutton.render().el)
+			var section = new Ts.FormViews.Section({title: 'Actions', body: multibutton.render().el})
+			$('#reservation_view').append($(section.render().el).addClass('noprint'))
     })
   </script>
 <%
@@ -32,7 +40,7 @@ end
 
 include_script_views('form')
 %>
-<div class="rowed very_wide view">
+<div id="reservation_view" class="rowed very_wide view">
   <% @allocation.roles.each do |role| %>
     <section>
       <h2 class="underline"><%= role.type.demodulize.titleize %></h2>
@@ -73,12 +81,6 @@ include_script_views('form')
         <span>Status</span>
         <div><%= print { @allocation.status.demodulize.titleize } %></div>
       </label>
-    </div>
-  </section>
-  <section>
-    <h2 class="underline">Actions</h2>
-    <div id="actions_section" class="section padded">
-      <div class="inline_layout"></div>
     </div>
   </section>
 </div>

@@ -4,6 +4,7 @@
   <title><%= @document[:title] %></title>
   <link rel="stylesheet" href="<%= url "/reset.css" %>" />
   <link rel="stylesheet" href="<%= url "/style.css" %>" />
+  <link rel="stylesheet" href="<%= url "/print.css" %>" />
   <link rel="stylesheet" href="<%= url "/scripts/vendor/jquery-ui/cupertino/jquery-ui-1.8.18.custom.css" %>" />
   <link rel="stylesheet" href="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.css' %>" />
   <script type="text/javascript" src="<%= url '/scripts/vendor/date-en-AU.js' %>"></script>
@@ -32,7 +33,10 @@
       </div>
       <div><%= print ('') { @user.role ? @user.role.demodulize.titleize : 'Guest' } %></div>
     </div>
-    <div id="banner">Tombstone <sup>v<%= Tombstone::VERSION %></sup></div>
+    <div id="main_banner">Tombstone <sup>v<%= Tombstone::VERSION %></sup></div>
+    <div id="print_banner">
+      <%= @document[:page_heading] %><img src="<%= url 'images/trc_logo.png' %>" />
+    </div>
     <%=
     if(@document[:breadcrumb].is_a? Array)
       '<div id="navigation_bar">'+build_breadcrumb(@document[:breadcrumb])+'</div>'
