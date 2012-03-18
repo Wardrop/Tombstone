@@ -45,7 +45,7 @@ namespace :db do
     db[:role_association] << {role_id: 1, allocation_id: 2, allocation_type: 'reservation'}
     db[:role_association] << {role_id: 3, allocation_id: 2, allocation_type: 'reservation'}
     db[:role_association] << {role_id: 2, allocation_id: 2, allocation_type: 'interment'}
-    db[:role_association] << {role_id: 4, allocation_id: 2, allocation_type: 'interment'}
+    db[:role_association] << {role_id: 4, allocation_id: 3, allocation_type: 'interment'}
     db[:role_association] << {role_id: 5, allocation_id: 1, allocation_type: 'reservation'}
     
     db[:transaction] << {:allocation_id => 2, :allocation_type => 'interment', :receipt_no => '69242a'}

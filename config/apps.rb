@@ -28,6 +28,7 @@
 require 'date'
 require 'logger'
 require 'json'
+require 'observer'
 
 Padrino.configure_apps do
   # enable :sessions

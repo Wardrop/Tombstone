@@ -11,6 +11,7 @@ gem "nokogiri"
 gem "tiny_tds"
 gem "titleize"
 gem "ri_cal"
+gem "mail"
 gem "net-ldap"
 
 group :spec do

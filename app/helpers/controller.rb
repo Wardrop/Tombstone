@@ -42,7 +42,7 @@ module Tombstone
             end
           end
         end
-        
+
         if params['transactions'].is_a? Array
           params['transactions'].reject{ |v| v.blank? }.each do |trans|
             trans = Transaction.new(allocation_id: allocation.id, allocation_type: allocation.type, receipt_no: trans)

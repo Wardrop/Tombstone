@@ -85,6 +85,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   htmlentities
+  mail
   net-ldap
   nokogiri
   padrino
