@@ -9,10 +9,10 @@ module Tombstone
     end
 
     attr_accessor :interment, :deceased, :place
-
+  
     def initialize(interment = nil, trigger_now = false)
       @interment = interment
-      @deceased = interment.roles_by_type('deceased')[0].person
+      @deceased = interment.role_by_type('deceased').person
       @place = interment.place
       interment.add_observer(self)
       update(nil, interment.status) if trigger_now

@@ -11,7 +11,7 @@
     <div class="list_rows">
       <%
       @calendar.retrieve_outstanding_tasks.all.each do |interment|
-        deceased_role = interment.roles_by_type('deceased')[0]
+        deceased_role = interment.role_by_type('deceased')
         %>
         <div class="padded">
         <%= interment.id %> -

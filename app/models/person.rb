@@ -24,14 +24,16 @@ module Tombstone
     end
     
     def roles_by_type(type)
-      self.roles do |ds|
-        ds.filter(:role__type => type).
+      self.roles_dataset.filter(:role__type => type).
           exclude(
             Allocation.
               left_join(:role_association, :allocation_id => :allocation__id, :allocation_type => :allocation__type).
               exclude(:status => 'deleted').filter(:role_association__role_id => :role__id).exists
           )
-      end
+    end
+    
+    def role_by_type(type)
+      roles_by_type(type).first
     end
   end
 end

@@ -83,7 +83,6 @@ module Tombstone
       if type == 'reservee' && self.person.roles_by_type('reservee').count > 0
         errors.add(:type, "cannot be reservee if person is already a reservee of another reservation")
       end
-      #errors.add(:person, 'must have date of death if deceased') if type == 'deceased' && !person.date_of_death
     end
   end
 end
