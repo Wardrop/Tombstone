@@ -48,7 +48,7 @@ module Tombstone
           allocation.remove_all_roles
           allocation.transactions_dataset.delete
           allocation.values.select { |k,v| model_class.restricted_columns.push(:id, :type) }
-          ##save_allocation(allocation, params)
+          save_allocation(allocation, params)
         end
       end
       
