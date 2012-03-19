@@ -20,7 +20,7 @@ module Tombstone
       self.place = interment.place
       interment.add_observer(self)
       if (trigger_now)
-        update(nil, interment.status)
+        self.update(nil, interment.status)
         sendMessages
       end
     end

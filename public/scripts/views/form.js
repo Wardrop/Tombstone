@@ -171,6 +171,7 @@ $( function () {
 			} else if (this.options.actions && this.options.actions['default']) {
 				var result = this.options.actions['default'](e)
 			}
+      this.hideList()
 			return (result == true) ? true : false
     },
     keydownHideEvent: function (e) {
