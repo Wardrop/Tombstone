@@ -2,20 +2,27 @@ module Tombstone
   class Notification
 
     @config = {}
+    @pending_mail_notifications = []
 
     class << self
       attr_accessor :config
       attr_accessor :general
     end
 
-    attr_accessor :interment, :deceased, :place
+    attr_accessor :interment
+    attr_accessor :deceased
+    attr_accessor :place
+    attr_accessor :pending_mail_notifications
 
     def initialize(interment = nil, trigger_now = false)
-      @interment = interment
-      @deceased = interment.roles_by_type('deceased')[0].person
-      @place = interment.place
+      self.interment = interment
+      self.deceased = interment.role_by_type('deceased').person
+      self.place = interment.place
       interment.add_observer(self)
-      update(nil, interment.status) if trigger_now
+      if (trigger_now)
+        update(nil, interment.status)
+        sendMessages
+      end
     end
 
     def subject
@@ -24,11 +31,11 @@ module Tombstone
 
     def update(old_status, new_status)
       self.class.config[:status_rules].each do |k, v|
-        sendMessage(v[:notify]) if (v[:from_status] == old_status and v[:to_status] == new_status)
+        queueNotification(v[:notify]) if (v[:from_status] == old_status and v[:to_status] == new_status)
       end
     end
 
-    def sendMessage(notify)
+    def queueNotification(notify)
 
       mail = Mail.new
       mail.to = notify
@@ -42,16 +49,17 @@ module Tombstone
         body plain_text
       end
 
-      ## mail.html_part do
-      ##   content_type 'text/html; charset=UTF-8'
-      ##   body '<h1>This is HTML</h1>'
-      ## end
+      mail.delivery_method :sendmail
+      self.pending_mail_notifications << mail
+      puts "Pending " << self.pending_mail_notifications.to_s
+    end
 
-      if (self.class.config[:enabled])
-        mail.delivery_method :sendmail
-        mail.deliver
+    def sendMessages
+      if (self.class.config[:enabled] && !self.pending_mail_notifications.nil? )
+        self.pending_mail_notifications.each do |mail|
+          mail.deliver
+        end
       end
-
     end
 
     def interment_site_url

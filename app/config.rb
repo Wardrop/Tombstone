@@ -3,7 +3,7 @@
         :port => 9292
     },
     notification: {
-        :enabled => false,
+        :enabled => true,
         :email => {
             :from => 'noreply@tombstone.trc.local',
             :cc => 'tatej@trc.qld.gov.au',
@@ -34,13 +34,13 @@
             :can_create => true,
             :can_edit => true,
             :can_delete => true,
-            :can_approve => false,
+            :can_approve => true,
             :can_inter => false,
             :can_complete => false,
             :can_delete_approved => false,
             :can_delete_interred => false,
             :can_delete_completed => false,
-            :can_edit_approved => false,
+            :can_edit_approved => true,
             :can_edit_interred => false,
             :can_edit_completed => false,
             :can_delete_photos => false,
