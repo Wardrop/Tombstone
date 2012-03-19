@@ -2,7 +2,6 @@ module Tombstone
   class Notification
 
     @config = {}
-    @pending_mail_notifications = []
 
     class << self
       attr_accessor :config
@@ -12,12 +11,13 @@ module Tombstone
     attr_accessor :interment
     attr_accessor :deceased
     attr_accessor :place
-    attr_accessor :pending_mail_notifications
+    attr_accessor :pending_notifications
 
     def initialize(interment = nil, trigger_now = false)
       self.interment = interment
       self.deceased = interment.role_by_type('deceased').person
       self.place = interment.place
+      self.pending_notifications = []
       interment.add_observer(self)
       if (trigger_now)
         self.update(nil, interment.status)
@@ -36,7 +36,6 @@ module Tombstone
     end
 
     def queueNotification(notify)
-
       mail = Mail.new
       mail.to = notify
       mail.cc = self.class.config[:email][:to]
@@ -50,16 +49,12 @@ module Tombstone
       end
 
       mail.delivery_method :sendmail
-      @pending_mail_notifications += mail
-
-      puts "Pending " << self.pending_mail_notifications.to_s
+      @pending_notifications << mail
     end
 
     def sendMessages
-      if (self.class.config[:enabled])
-        self.pending_mail_notifications.each do |mail|
-          mail.deliver
-        end
+      self.pending_notifications.each do |mail|
+        mail.deliver if (self.class.config[:enabled])
       end
     end
 

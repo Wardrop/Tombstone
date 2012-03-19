@@ -34,10 +34,31 @@ module Tombstone
       notification.subject.should == '[#3] Notification of Burial is "Approved"'
     end
 
-    it "send text email" do
+    it "executes invalid rules correctly" do
       interment = Interment.with_pk(3)
       notification = Notification.new(interment)
-      notification.sendMessage
+      interment.status = 'approved'
+      interment.status = 'pending'
+      notification.pending_notifications.size.should == 0
+      notification.sendMessages
+    end
+
+    it "executes valid rules correctly" do
+      interment = Interment.with_pk(3)
+      notification = Notification.new(interment)
+      interment.status = 'pending'
+      interment.status = 'approved'
+      notification.pending_notifications.size.should == 1
+      notification.sendMessages
+    end
+
+    it "executes empty rules correctly" do
+      interment = Interment.with_pk(3)
+      notification = Notification.new(interment)
+      interment.status = nil
+      interment.status = 'pending'
+      notification.pending_notifications.size.should == 1
+      notification.sendMessages
     end
 
   end
