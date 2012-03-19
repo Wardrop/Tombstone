@@ -32,7 +32,6 @@ module Tombstone
     end
 
     def queueNotification(notify)
-      puts 'notify ' << notify
       @notify << notify
     end
 
