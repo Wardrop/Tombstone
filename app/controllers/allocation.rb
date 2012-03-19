@@ -53,7 +53,7 @@ module Tombstone
       end
       
       if allocation.errors.empty?
-        notification.sendMessages
+        ##notification.sendMessages
         response.merge!(success: true, redirectTo: url(:"#{controller}_view", :id => allocation.id))
         flash[:banner] = ['success', "#{controller.capitalize} was amended successfully."]
       end
