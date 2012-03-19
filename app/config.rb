@@ -15,13 +15,14 @@
         Cemetery: <%= place.description %>
         Type: <%= interment.interment_type.capitalize %>
         At: <%= interment.interment_date.strftime('%A %d %B %Y') %>
-
-  For more details <%= interment_site_url %>"
-        },
-        :status_rules => {
-            :rule_1 => {:from_status => 'pending', :to_status => 'approved', :notify => 'tatej@trc.qld.gov.au'},
-            :rule_2 => {:from_status => nil, :to_status => 'pending', :notify => 'tatej@trc.qld.gov.au'}
-        }
+        
+        For more details <%= interment_site_url %>"
+      },
+      :status_rules => {
+        :rule_1 => {:from_status => 'pending', :to_status => 'approved', :notify => 'tatej@trc.qld.gov.au'},
+        :rule_2 => {:from_status => nil, :to_status => 'pending', :notify => 'tatej@trc.qld.gov.au'},
+        :rule_3 => {:from_status => nil, :to_status => 'provisional', :notify => 'tatej@trc.qld.gov.au'}
+      }
     },
     ldap: {
         servers: ['trcdc01.trc.local', 'trcdc02.trc.local'],
@@ -34,13 +35,13 @@
             :can_create => true,
             :can_edit => true,
             :can_delete => true,
-            :can_approve => true,
+            :can_approve => false,
             :can_inter => false,
             :can_complete => false,
             :can_delete_approved => false,
             :can_delete_interred => false,
             :can_delete_completed => false,
-            :can_edit_approved => true,
+            :can_edit_approved => false,
             :can_edit_interred => false,
             :can_edit_completed => false,
             :can_delete_photos => false,

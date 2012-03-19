@@ -9,19 +9,15 @@ module Tombstone
     end
 
     attr_accessor :interment
-    attr_accessor :deceased
-    attr_accessor :place
-    attr_accessor :pending_notifications
+    attr_accessor :notify
 
     def initialize(interment = nil, trigger_now = false)
       self.interment = interment
-      self.deceased = interment.role_by_type('deceased').person
-      self.place = interment.place
-      self.pending_notifications = []
+      self.notify = []
       interment.add_observer(self)
       if (trigger_now)
         self.update(nil, interment.status)
-        sendMessages
+        send_notifications
       end
     end
 
@@ -36,9 +32,20 @@ module Tombstone
     end
 
     def queueNotification(notify)
+      puts 'notify ' << notify
+      @notify << notify
+    end
+
+    def send_notifications()
+
+      return if self.notify.nil?
+
+      deceased = self.interment.role_by_type('deceased').person
+      place = self.interment.place
+
       mail = Mail.new
-      mail.to = notify
-      mail.cc = self.class.config[:email][:to]
+      mail.to = self.notify
+      mail.cc = self.class.config[:email][:cc]
       mail.from = self.class.config[:email][:from]
       mail.subject = self.subject
 
@@ -49,13 +56,7 @@ module Tombstone
       end
 
       mail.delivery_method :sendmail
-      @pending_notifications << mail
-    end
-
-    def sendMessages
-      self.pending_notifications.each do |mail|
-        mail.deliver if (self.class.config[:enabled])
-      end
+      mail.deliver if (self.class.config[:enabled])
     end
 
     def interment_site_url

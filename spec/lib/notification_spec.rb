@@ -5,7 +5,7 @@ module Tombstone
 
     it "initialise configuration" do
       Notification.config = {
-       :enabled => false,
+       :enabled => true,
         :email => {
             :from => 'noreply@tombstone.trc.local',
             :cc => 'tatej@trc.qld.gov.au',
@@ -39,8 +39,8 @@ module Tombstone
       notification = Notification.new(interment)
       interment.status = 'approved'
       interment.status = 'pending'
-      notification.pending_notifications.size.should == 0
-      notification.sendMessages
+      notification.notify.size.should == 0
+      notification.send_notifications
     end
 
     it "executes valid rules correctly" do
@@ -48,18 +48,28 @@ module Tombstone
       notification = Notification.new(interment)
       interment.status = 'pending'
       interment.status = 'approved'
-      notification.pending_notifications.size.should == 1
-      notification.sendMessages
+      notification.notify.size.should == 1
+      notification.send_notifications
     end
 
-    it "executes empty rules correctly" do
+    it "executes rules correctly" do
       interment = Interment.with_pk(3)
       notification = Notification.new(interment)
       interment.status = nil
       interment.status = 'pending'
-      notification.pending_notifications.size.should == 1
-      notification.sendMessages
+      notification.notify.size.should == 1
+      notification.send_notifications
     end
+
+    it "executes no rules correctly" do
+      interment = Interment.with_pk(3)
+      notification = Notification.new(interment)
+      interment.status = 'pending'
+      interment.status = 'pending'
+      notification.notify.size.should == 0
+      notification.send_notifications
+    end
+
 
   end
 end

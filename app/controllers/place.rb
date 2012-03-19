@@ -9,13 +9,16 @@ module Tombstone
       place = Place.with_pk(params[:parent_id])
       halt 404, "Place with ID ##{params[:parent_id]} does not exist." unless place
       next_available = place.next_available
-      ancestors = next_available.ancestors(false, params[:parent_id])
-      chain = ancestors.reverse.push(next_available)
-      
-      chain.reduce({}) { |memo, place|
-        memo[place.id] = place.siblings.with_child_count.available_only.naked.all
-        memo
-      }.to_json
+      if next_available
+        ancestors = next_available.ancestors(false, params[:parent_id])
+        chain = ancestors.reverse.push(next_available)
+        chain.reduce({}) { |memo, place|
+          memo[place.id] = place.siblings.with_child_count.available_only.naked.all
+          memo
+        }.to_json
+      else
+        nil.to_json
+      end
     end
     
     get :ancestors, :with => :id, :provides => :json do

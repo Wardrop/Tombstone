@@ -56,8 +56,11 @@ namespace :db do
     
     db[:user] << {id: 'tomw', role: 'supervisor'}
     db[:user] << {id: 'tatej', role: 'supervisor'}
-    db[:user] << {id: 'rogerj', role: 'operator'}
-    
+    db[:user] << {id: 'danielg', role: 'supervisor'}
+    db[:user] << {id: 'marar', role: 'supervisor'}
+    db[:user] << {id: 'adrians', role: 'supervisor'}
+    db[:user] << {id: 'amandar', role: 'supervisor'}
+    db[:user] << {id: 'ttu', role: 'operator'}
         
     db[:place] << {name: 'Atherton Cemetery', type: 'cemetery', status: 'available'}
     db[:place] << {name: 'Mareeba Cemetery', type: 'cemetery', status: 'available'}
