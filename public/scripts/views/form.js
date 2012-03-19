@@ -415,6 +415,7 @@ $( function () {
 				}, this),
 				error: _.bind( function (jqXHR, textStatus, errorThrown) {
 					// TODO
+          console.log(textStatus)
 					this.indicator.detach()
 					switch(textStatus) {
 						case 'error':
@@ -440,6 +441,7 @@ $( function () {
 		showFormErrors: function (errors) {
 			var container = $('<ul class="error_block" />')
 			errors = (errors.constructor == String) ? [errors] : errors
+      
       var iterateErrors = function (prefix, errors) {
         var array = []
 				_.each(errors, function (error, field) {
@@ -452,6 +454,7 @@ $( function () {
 					} else if (error.constructor == Object) {
 						array = array.concat(iterateErrors((prefix && prefix + " -> ") + field.split('_').join(' ').titleize(), error))
 					} else {
+            field = (field) ? field.split('_').join(' ').titleize() : ''
             array.push((prefix && prefix + " -> ") + field.split('_').join(' ').titleize() + " " + error)
 					}
 				})
