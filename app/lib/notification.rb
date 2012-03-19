@@ -50,12 +50,13 @@ module Tombstone
       end
 
       mail.delivery_method :sendmail
-      self.pending_mail_notifications << mail
+      @pending_mail_notifications += mail
+
       puts "Pending " << self.pending_mail_notifications.to_s
     end
 
     def sendMessages
-      if (self.class.config[:enabled] && !self.pending_mail_notifications.nil? )
+      if (self.class.config[:enabled])
         self.pending_mail_notifications.each do |mail|
           mail.deliver
         end
