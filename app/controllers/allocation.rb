@@ -28,8 +28,8 @@ module Tombstone
       response = {success: false, form_errors: allocation.errors, redirectTo: nil}
       place_id = (!params['place'].is_a?(Array) || params['place'].reject { |v| v.empty? }.empty?) ? nil : params['place'][-1]
       save_allocation(allocation, params)
-      # Notification.new(allocation, true)
       if allocation.errors.empty?
+        # Notification.new(allocation, true)
         response.merge!(success: true, redirectTo: url(:"#{controller}_view", :id => allocation.id))
         flash[:banner] = ['success', "#{controller.capitalize} was created successfully."]
       end

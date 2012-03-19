@@ -164,12 +164,13 @@ $( function () {
 		},
     onSelectButton: function (e) {
 			var target = e.currentTarget
-			var selectedName = $(target).children('input').attr('name')
+      var button = $(target).children('input')
+			var selectedName = button.attr('name')
       this.selectButton(selectedName)
 			if (this.options.actions && this.options.actions[selectedName]) {
-				var result = this.options.actions[selectedName](e)
+				var result = this.options.actions[selectedName](button)
 			} else if (this.options.actions && this.options.actions['default']) {
-				var result = this.options.actions['default'](e)
+				var result = this.options.actions['default'](button)
 			}
       this.hideList()
 			return (result == true) ? true : false
@@ -255,17 +256,20 @@ $( function () {
         type: 'GET',
 				dataType: 'json',
         success: _.bind(function (data, textStatus, jqXHR) {
-          _.each(data, function (places, selected_id) {
-            this.renderPlaces(new Ts.Places(places), {selected: selected_id})
-          }, this)
+          if (data && Object.keys(data).length > 0) {
+            _.each(data, function (places, selected_id) {
+              this.renderPlaces(new Ts.Places(places), {selected: selected_id})
+            }, this)
+            this.$('.indicator').remove()
+          } else {
+            this.$('.indicator').addClass('warning').
+              attr('title', this.collection.get(parent_id).get('type').demodulize().titleize() + ' does not contain any available places.')
+          }
         }, this),
         error: function (jqXHR, textStatus, errorThrown) {
           // TODO
-          if(textStatus != 'abort') alert('Some went wrong!')
-        },
-        complete: _.bind(function () {
-          this.$('.indicator').remove()
-        }, this)
+          if(textStatus != 'abort') alert(jqXHR.responseText)
+        }
       })
       return this
     },
@@ -374,8 +378,8 @@ $( function () {
 				name: 'submit',
 				values: this.options.states,
 				actions: {
-					default: _.bind(function (e) {
-						this.submit(e.currentTarget.name)
+					default: _.bind(function (el) {
+						this.submit(el.attr("name"))
 					}, this)
 				}
 			})
@@ -436,22 +440,6 @@ $( function () {
 		showFormErrors: function (errors) {
 			var container = $('<ul class="error_block" />')
 			errors = (errors.constructor == String) ? [errors] : errors
-			// var iterateErrors = function (ul, errors) {
-			// 	_.each(errors, function (error, field) {
-			// 		if (error.constructor == Array) {
-			// 			_.each(error, function (message) {
-			// 				errorObj = {}; errorObj[field] = message
-			// 				ul.append($('<li />').text(field.split('_').join(' ').titleize()))
-			// 				ul.append(iterateErrors($('<ul />'), errorObj))
-			// 			})
-			// 		} else if (error.constructor == Object) {
-			// 			ul.append(iterateErrors($('<ul />'), error))
-			// 		} else {
-			// 			ul.append($('<li />').text(error))
-			// 		}
-			// 	})
-			// 	return ul
-			// }
       var iterateErrors = function (prefix, errors) {
         var array = []
 				_.each(errors, function (error, field) {
@@ -459,14 +447,12 @@ $( function () {
 						_.each(error, function (message) {
 							errorObj = {}
               errorObj[field] = message
-              console.log(errorObj)
 							array = array.concat( iterateErrors(prefix, errorObj) )
 						})
 					} else if (error.constructor == Object) {
-            console.log('hit2')
-						array = array.concat(iterateErrors(prefix + field + "-> ", error))
+						array = array.concat(iterateErrors((prefix && prefix + " -> ") + field.split('_').join(' ').titleize(), error))
 					} else {
-            array.push(prefix + error)
+            array.push((prefix && prefix + " -> ") + field.split('_').join(' ').titleize() + " " + error)
 					}
 				})
 				return array

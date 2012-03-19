@@ -115,7 +115,7 @@ module Tombstone
           AND (id NOT IN (SELECT parent_id FROM [place] WHERE parent_id IS NOT NULL))
         ORDER BY LEVEL DESC, [order] ASC
       ", {:parent_id => self.id}].first
-      Place.call(place)
+      (Hash === place) ? Place.call(place) : nil
     end
   end
 end
