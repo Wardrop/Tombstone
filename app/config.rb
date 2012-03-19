@@ -1,17 +1,16 @@
-{
-  general: {
-      :hostname => 'localhost',
-      :port => 9292
-  },
-  notification: {
-      :enabled => false,
-      :email => {
-        :from => 'noreply@tombstone.trc.local',
-        :cc => 'tatej@trc.qld.gov.au',
-        :subject => '[#<%= interment.id %>] Notification of Burial is "<%= interment.status.capitalize %>"',
-        :body =>
-            "A request for a new burial is '<%= interment.status.capitalize %>'.
-        
+{   general: {
+        :hostname => 'localhost',
+        :port => 9292
+    },
+    notification: {
+        :enabled => true,
+        :email => {
+            :from => 'noreply@tombstone.trc.local',
+            :cc => 'tatej@trc.qld.gov.au',
+            :subject => '[#<%= interment.id %>] Notification of Burial is "<%= interment.status.capitalize %>"',
+            :body =>
+                "A request for a new burial is '<%= interment.status.capitalize %>'.
+
         Deceased: <%= deceased.title %> <%= deceased.given_name %> <%= deceased.surname %>
         Cemetery: <%= place.description %>
         Type: <%= interment.interment_type.capitalize %>
@@ -21,7 +20,8 @@
       },
       :status_rules => {
         :rule_1 => {:from_status => 'pending', :to_status => 'approved', :notify => 'tatej@trc.qld.gov.au'},
-        :rule_2 => {:from_status => nil, :to_status => 'pending', :notify => 'tatej@trc.qld.gov.au'}
+        :rule_2 => {:from_status => nil, :to_status => 'pending', :notify => 'tatej@trc.qld.gov.au'},
+        :rule_3 => {:from_status => nil, :to_status => 'provisional', :notify => 'tatej@trc.qld.gov.au'}
       }
     },
     ldap: {
