@@ -13,6 +13,8 @@ gem "titleize"
 gem "ri_cal"
 gem "mail"
 gem "net-ldap"
+gem "carrierwave"
+gem "carrierwave-sequel", :require => 'carrierwave/sequel'
 
 group :spec do
   gem "rspec"

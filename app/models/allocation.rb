@@ -103,7 +103,7 @@ module Tombstone
       end
 
       def valid_roles
-        ['deceased', 'applicant', 'next_of_kin']
+        ['deceased']
       end
 
       def valid_states

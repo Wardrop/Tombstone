@@ -29,6 +29,8 @@ require 'date'
 require 'logger'
 require 'json'
 require 'observer'
+require 'carrierwave'
+require 'carrierwave/sequel'
 
 Padrino.configure_apps do
   # enable :sessions
