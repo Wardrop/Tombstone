@@ -51,7 +51,8 @@ module Tombstone
         breadcrumb: true,
         banner: flash[:banner]
       }
-      (@user = User.with_pk session[:user_id]) && BaseModel.permissions = @user.role_permissions
+      @user = User.with_pk session[:user_id]
+      BaseModel.permissions = (@user.role_permissions rescue nil)
     end
     
     get :permissions_test do
@@ -88,7 +89,6 @@ module Tombstone
     
     get :logout do
       session.clear
-      p 'dog'
       flash[:banner] = 'success', 'You have been logged out successfully.'
       redirect url(:login)
     end

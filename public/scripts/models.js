@@ -119,3 +119,22 @@ Ts.RoleWizard = Backbone.Model.extend({
     }
   }
 })
+
+Ts.PlaceWizard = Backbone.Model.extend({
+	defaults: {
+		title: 'Untitled',
+    place: null,
+		currentPage: null,
+    pageHistory: null,
+    isLoading: false
+	},
+  initialize: function () {
+    if(!this.get('pageHistory')) this.set({pageHistory: []})
+    this.bind('change:currentPage', this.currentPageChanged, this)
+  },
+  currentPageChanged: function () {
+    if(this.previous('currentPage')) {
+      this.get('pageHistory').push(this.previous('currentPage'))
+    }
+  }
+})

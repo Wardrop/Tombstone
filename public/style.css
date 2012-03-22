@@ -77,6 +77,7 @@ small {
 	background: white;
   width: 880px;
 	border: 1px solid #c0c0c0;
+  border-top: none;
   box-shadow: 0px 0px 20px rgba(0,0,0, 0.10);
 }
 #container > .info {
@@ -298,7 +299,6 @@ section:last-child, .section:last-child {
 	bottom: 0;
 	right: 0;
 	cursor: pointer;
-	opacity: 0.75;
 }
 .list_rows .goto.ok {
 	background: url(images/goto_green.png) no-repeat center center;
@@ -311,7 +311,7 @@ section:last-child, .section:last-child {
 }
 
 .list_rows .goto:hover {
-	opacity: 1;
+	opacity: 0.75;
 }
 
 a.button, input[type=submit], input[type=button] {
@@ -383,11 +383,9 @@ a.button:hover, input[type=submit]:hover, input[type=button]:hover {
 
 .row_block .actions > .delete {
 	background: url('images/delete_24_hover.png') no-repeat  center center;
-	opacity: 0.75;
-
 }
 .row_block .actions > a.delete:hover {
-	opacity: 1;
+  opacity: 0.75;
 }
 
 a.row_button {
@@ -540,6 +538,33 @@ a.row_button:hover {
 	border: none;
 	vertical-align: middle;
 	height: auto;
+}
+
+.placepicker .add_child, .placepicker .add, .placepicker .edit, .placepicker .delete {
+  display: inline-block;
+  width: 20px;
+  height: 28px;
+  vertical-align: middle;
+  margin: 0 2px;
+  cursor: pointer;
+}
+.placepicker .add_child {
+  background: url('images/add_child_20.png') no-repeat center center;
+}
+.placepicker .add {
+  background: url('images/add_20.png') no-repeat center center;
+}
+.placepicker .edit {
+  background: url('images/edit_20.png') no-repeat center center;
+}
+.placepicker .delete {
+  background: url('images/delete_20.png') no-repeat center center;
+}
+.placepicker .add:first-child, .placepicker .edit:first-child, .placepicker .delete:first-child, .placepicker .add_child {
+  margin-left: 8px;
+}
+.placepicker .add:hover, .placepicker .edit:hover, .placepicker .delete:hover, .placepicker .add_child:hover {
+  opacity: 0.8; 
 }
 
 .multiinput_control input {
@@ -777,7 +802,6 @@ a.row_button:hover {
 	right: 0;
 	width: 36px;
 	background: url('images/close.png') no-repeat center center;
-	opacity: 0.8;
 }
 .overlay_container > .heading > a.back {
 	position: absolute;
@@ -786,10 +810,9 @@ a.row_button:hover {
 	right: 36px;
 	width: 36px;
 	background: url('images/back.png') no-repeat center center;
-	opacity: 0.8;
 }
 .overlay_container > .heading > a.close:hover, .overlay_container > .heading > a.back:hover {
-	opacity: 1;
+  opacity: 0.8;
 }
 
 .overlay_container > .body {

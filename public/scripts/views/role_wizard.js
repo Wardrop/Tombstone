@@ -3,14 +3,20 @@ $( function () {
   Ts.RoleWizardViews = {}
   Ts.RoleWizardViews.BasePage = Backbone.View.extend({
     events: {
-      'click input[type=submit],input[type=button]': 'doAction'
+      'click input[type=button]': 'doAction',
+      'keyup': function (e) { if(e.keyCode == 13) this.doAction() }
     },
-		initialize: function (opts) {
-      this.wizard = opts.wizard
+		initialize: function () {
+      this.wizard = this.options.wizard
       _.bindAll(this, 'doAction')
 		},
     doAction: function (e) {
-			var action = $(e.target).attr('action')
+      var action = null
+      if (e && e.target) {
+			  action = $(e.target).attr('action')
+      } else {
+        action = this.$('input[action]').attr('action')
+      }
       this.wizard[action](this.model)
       return false
 		}
@@ -166,46 +172,11 @@ $( function () {
 			return this
     }
 	})
-	
-	Ts.RoleWizardViews.WizardView = Backbone.View.extend({
-		className: 'overlay_background',
-		template: _.template($('#role_wizard\\:wizard_template').html()),
-		events: {
-			'click .close' : 'close',
-      'click .back' : 'goBack',
-			'click' : 'closeOnBlur'
-		},
-		initialize: function (opts) {
-			_.bindAll(this, 'close', 'goBack', 'closeOnBlur')
-			this.model.bind('change:currentPage', this.renderPage, this)
-      this.model.bind('change:isLoading', this.renderLoader, this)
-      this.onComplete = opts.onComplete
+  
+	Ts.RoleWizardViews.WizardView = Ts.FormViews.WizardView.extend({
+    initialize: function () {
+      Ts.FormViews.WizardView.prototype.initialize.apply(this, arguments)
       this.showFindPersonForm()
-		},
-		render: function () {
-			$(this.el).css({display: ''})
-			$(this.el).children().detach()
-      $(this.el).append(this.template({data: this.model.toJSON()}))
-			this.renderPage()
-      this.renderLoader()
-			return this
-		},
-    renderPage: function () {
-      this.$('.body').children(':not(.loading)').detach()
-      model = this.model.get('currentPage').model
-      if(model && model.errors && Object.keys(model.errors).length > 0) {
-        this.showErrors(model.errors)
-      } else {
-        this.hideErrors()
-      }
-      this.$('.body').append(this.model.get('currentPage').render().el)
-    },
-    renderLoader: function () {
-      if(this.model.get('isLoading')) {
-        this.$('.loading').css('display', '')
-      } else {
-        this.$('.loading').css('display', 'none')
-      }
     },
     showFindPersonForm: function () {
       this.findPersonModel = new Ts.Person
@@ -290,55 +261,6 @@ $( function () {
         this.model.set({currentPage: backDestination}, {silent: true})
         this.renderPage()
       }
-    },
-    showErrors: function (errors) {
-			var errorContainer = this.$('.error_block').empty()
-			if(errors.constructor == Object) {
-				if(Object.keys(errors).length > 0) {
-	        _.each(errors, function (errors, field) {
-						var errors = (errors instanceof Array) ? errors : [errors]
-						_.each(errors, function (error) {
-							errorContainer.append('<li>'+field.split('_').join(' ').titleize()+' '+error+'</li>')
-						})
-	        }, this)
-	        errorContainer.css({display: ''})
-	      }
-			} else {
-				var errors = (errors instanceof Array) ? errors : [errors]
-				if(errors.length > 0) {
-	        _.each(errors, function (error) {
-	          errorContainer.append('<li>'+error+'</li>')
-	        }, this)
-	        errorContainer.css({display: ''})
-	      }
-			}
-      
-      
-    },
-    hideErrors: function () {
-      this.$('.error_block').empty().css({display: 'none'})
-    },
-		close: function () {
-			this.remove()
-		},
-    closeOnBlur: function  (e) {
-			if(e.target == this.el) {
-				this.close()
-      }
-		},
-    ajaxErrorHandler: function (binding, context) {
-			context = (context) ? context : 'backbone'
-			if(context == 'jQuery') {
-				return _.bind( function (jqXHR, textStatus, errorThrown) {
-	        this.showErrors($.parseJSON(jqXHR.responseText).exception)
-	        this.model.set({isLoading: false})
-	      }, binding)
-			} else if (context == 'backbone') {
-				return _.bind( function (collection, jqXHR) {
-	        this.showErrors($.parseJSON(jqXHR.responseText).exception)
-	        this.model.set({isLoading: false})
-	      }, binding)
-			}
     }
 	})
 })

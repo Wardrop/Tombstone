@@ -1,0 +1,45 @@
+<script type="text/template" id="place_form:add_place_form_template">
+  <div class="section padded">
+  	<label>
+  		<span>Street Address</span>
+  		<input type="text" name="street_address" style="width: 75%;" />
+  	</label>
+  	<label>
+  		<span>Town</span>
+  		<input type="text" name="town" style="width: 75%;" />
+  	</label>
+    <label class="row">
+  		<span>State</span>
+  		<select name="state">
+        <option value=""></option>
+        <option>ACT</option>
+        <option>NT</option>
+        <option>NSW</option>
+        <option>QLD</option>
+        <option>SA</option>
+        <option>TAS</option>
+        <option>VIC</option>
+        <option>WA</option>
+      </select>
+  	</label>
+    <label>
+  		<span>Post Code</span>
+  		<input type="text" name="postal_code" style="width: 12%;" />
+  	</label>
+    <label>
+  		<span>Email</span>
+  		<input type="text" name="email" style="width: 75%;" />
+  	</label>
+    <label>
+  		<span>Primary Ph.</span>
+  		<input type="text" name="primary_phone" style="width: 30%;" />
+  	</label>
+    <label>
+  		<span>Secondary Ph.</span>
+  		<input type="text" name="secondary_phone" style="width: 30%;" />
+  	</label>
+    <div class="row">
+  		<input type="button" value="Save" action="addPlace" />
+  	</div>
+  </div>
+</script>

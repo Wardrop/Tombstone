@@ -1,7 +1,7 @@
 <% records.each do |record|
-  main_role = record.roles_by_type('reservee')[0] || record.roles_by_type('deceased')[0]
-  applicant = record.roles_by_type('applicant')[0]
-  next_of_kin = record.roles_by_type('next_of_kin')[0]
+  main_role = record.role_by_type('reservee') || record.role_by_type('deceased')
+  applicant = record.role_by_type('applicant')
+  next_of_kin = record.role_by_type('next_of_kin')
   %>
   <div class="clickable <%= record.status %>">
     <div class="summary">
