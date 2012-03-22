@@ -1,6 +1,11 @@
 module Tombstone
   App.controller :place do
     
+    get :index do
+      @place = Place.with_pk(params['place_id']) if params['place_id']
+      render 'place/new'
+    end
+    
     get :children, :with => :parent_id, :provides => :json do
       Place.filter(:parent_id => params[:parent_id]).order(:name).with_child_count.available_only.naked.all.to_json
     end

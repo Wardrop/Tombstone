@@ -18,3 +18,4 @@
   - ECMAScript5 shim
 * Test interface to make sure it works with missing allcation information, such as in the case of a partial save (may as well test missing place)
   Pages to test include: find, edit, view, delete, home
+* Test behaviour of sessions with ID's that don't exist in the database. In other words, test the robustness.

@@ -1,4 +1,6 @@
-Ts = {};
+Ts = {
+  FormViews: {}
+}
 
 /**** Common Page Behaviours ****/
 
@@ -32,7 +34,7 @@ $( function () {
   })
 })
 
-/**** Backbone helpers ****/
+/**** Backbone/Underscore helpers and overrides ****/
 
 _.extend(Backbone.Model.prototype, {
   recursiveToJSON: function () {
@@ -104,7 +106,7 @@ _.extend(Backbone.Model.prototype, {
 })(jQuery)
 
 
-/**** Prototype Extensions ****/
+/**** Helpers and Prototype Extensions ****/
 
 String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.slice(1);
@@ -145,3 +147,8 @@ String.prototype.demodulize = function () {
 		return (v == null) ? '' : original(v);
 	};
 })()
+
+function getParameterByName(name) {
+  var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search)
+  return match && decodeURIComponent(match[1].replace(/\+/g, ' '))
+}

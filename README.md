@@ -25,6 +25,11 @@ tool. As an example:
 Note, if the username or password contain special characters that invalidate the URI, such as a backslash, you must URI
 encode them, so for example, the backslash would become %5C.
 
+Mail
+----
+Sendmail is required for email capability, such as notifications. If it's not installed, attempts to email will likely
+result in a "broken pipe" error or something similar.
+
 Other Notes
 -----------
 Because of how the permissions model has been implemented, this application is not thread safe. Simultaneous processes

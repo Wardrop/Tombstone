@@ -27,11 +27,11 @@ module Tombstone
 
     def update(old_status, new_status)
       self.class.config[:status_rules].each do |k, v|
-        queueNotification(v[:notify]) if (v[:from_status] == old_status and v[:to_status] == new_status)
+        queue_notification(v[:notify]) if (v[:from_status] == old_status and v[:to_status] == new_status)
       end
     end
 
-    def queueNotification(notify)
+    def queue_notification(notify)
       @notify << notify
     end
 
@@ -41,7 +41,7 @@ module Tombstone
 
       deceased = self.interment.role_by_type('deceased').person
       place = self.interment.place
-
+      
       mail = Mail.new
       mail.to = self.notify
       mail.cc = self.class.config[:email][:cc]

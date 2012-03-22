@@ -18,7 +18,7 @@
   </script>
 <% end %>
 <%
-include_script_views('role_wizard', 'form')
+include_script_views('form', 'role_wizard', 'allocation_form')
 %>
 <form id="interment_form" class="rowed wide" action="<%= (Tombstone::Interment === @allocation) ? "/interment/#{@allocation.id}" : "/interment" %>">
   <section>

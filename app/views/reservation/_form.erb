@@ -18,7 +18,7 @@
   </script>
 <% end %>
 <%
-include_script_views('role_wizard', 'form')
+include_script_views('form', 'role_wizard', 'allocation_form')
 %>
 <form id="reservation_form" class="rowed wide" action="<%= (@allocation.id) ? "/reservation/#{@allocation.id}" : "/reservation" %>">
   <section>

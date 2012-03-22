@@ -9,7 +9,17 @@
   <span class="dropdown_button"></span>
 </script>
 
-<script type="text/template" id="form:place_list_template">
+<script type="text/template" id="form:place_picker_template">
+  <span><%= type.capitalize() %></span>
+  <select data-place-type="<%= type %>" name="place[]" <%= (disabled) ? 'disabled="disabled"' : '' %>>
+    <option value=""></option>
+    <% _.each(places, function (place) { %>
+      <option value="<%= place.id %>" <%= (place.id == selected) ? 'selected="selected"' : '' %>><%= place.name %></option>
+    <% }) %>
+  </select>
+</script>
+
+<script type="text/template" id="form:place_edit_picker_template">
   <span><%= type.capitalize() %></span>
   <select data-place-type="<%= type %>" name="place[]" <%= (disabled) ? 'disabled="disabled"' : '' %>>
     <option value=""></option>
@@ -32,4 +42,18 @@
 <script type="text/template" id="form:section_template">
   <h2 class="underline"><%= title %></h2>
   <div class="section padded" name="<%= name %>"></div>
+</script>
+
+<script type="text/template" id="form:wizard_template">
+  <div class="overlay_container">
+    <div class="heading">
+      <h2 class="underline"><%= data.title %></h2>
+      <a class="close" href="javascript:void(0)" title="Close"></a>
+      <a class="back" href="javascript:void(0)" title="Go Back"></a>
+    </div>
+    <ul class="error_block"></ul>
+    <div class="body">
+      <div class="loading"></div>
+    </div>
+  </div>
 </script>
