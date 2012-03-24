@@ -35,7 +35,7 @@ module Tombstone
       end
       response.to_json
     end
-    
+
     put :index, :with => :id, :provides => :json do
       allocation = model_class.with_pk(params[:id].to_i)
       notification = Notification.new(allocation)

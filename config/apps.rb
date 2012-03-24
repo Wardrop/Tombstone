@@ -31,11 +31,15 @@ require 'json'
 require 'observer'
 require 'carrierwave'
 require 'carrierwave/sequel'
+require 'carrierwave/processing/mime_types'
+require 'mini_magick'
 
 Padrino.configure_apps do
-  # enable :sessions
+  #enable :sessions
   set :session_secret, '159a1d94614773d02fd2f7bb10f3b945e0eef25c91f3741294e57c4f2e584b13'
 end
+
+CarrierWave.root = File.join(Padrino.root, "public")
 
 # Mounts the core application for this project
 Padrino.mount("Tombstone::App").to('/')

@@ -15,6 +15,8 @@ gem "mail"
 gem "net-ldap"
 gem "carrierwave"
 gem "carrierwave-sequel", :require => 'carrierwave/sequel'
+gem "mime-types"
+gem "mini_magick"
 
 group :spec do
   gem "rspec"

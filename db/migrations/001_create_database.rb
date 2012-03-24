@@ -102,5 +102,18 @@ Sequel.migration do
       String :id, :size => 64, :primary_key => true
       String :role, :size => 32
     end
+
+    create_table :blob do
+      primary_key [:id, :place_id]
+      Integer :id, :auto_increment => true, :null => false
+      Integer :place_id, :null => false
+      String :name, :size => 255
+      String :content_type, :size => 100
+      Integer :size, :size => 100
+      String :file
+      String :created_by, :size => 32
+      DateTime :created_at
+    end
+
   end
 end

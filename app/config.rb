@@ -3,7 +3,7 @@
         :port => 9292
     },
     notification: {
-        :enabled => true,
+        :enabled => false,
         :email => {
             :from => 'noreply@tombstone.trc.local',
             :cc => 'tatej@trc.qld.gov.au',

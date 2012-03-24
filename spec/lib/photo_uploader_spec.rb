@@ -1,7 +1,8 @@
 require 'carrierwave'
 require 'carrierwave/sequel'
 
-require_relative '../../app/lib/file_uploader'
+require_relative '../spec_helper'
+require_relative '../../app/lib/photo_uploader'
 
 module Tombstone
 
@@ -12,13 +13,13 @@ module Tombstone
     config.cache_dir = '/tmp/cache'
   end
 
-  describe FileUploader do
+  describe PhotoUploader do
 
     it "should store a simple file" do
       file = File.open(File.join(current_dir, '/example.jpg'))
-      file_uploader = FileUploader.new
-      file_uploader.store!(file)
-      file_uploader.store_path.should == 'tmp/example.jpg'
+      uploader = PhotoUploader.new
+      uploader.store!(file)
+      uploader.store_path.should == '/tmp/example.jpg'
     end
   end
 

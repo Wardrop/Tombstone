@@ -8,4 +8,5 @@ vendor/gems/*
 *.tmproj
 config/database.rb
 .idea/
+public/uploads/**
 tombstone-dev.iml
