@@ -101,7 +101,19 @@ Ts.Role = Backbone.Model.extend({
   }
 })
 
-Ts.RoleWizard = Backbone.Model.extend({
+Ts.Place = Backbone.Model.extend({
+  url: '/place',
+  defaults: {
+		id: undefined,
+  	parent_id: null,
+  	name: null,
+  	type: null,
+  	status: null,
+  	max_interments: 1
+	}
+})
+
+Ts.Wizard = Backbone.Model.extend({
 	defaults: {
 		title: 'Untitled',
     role: null,

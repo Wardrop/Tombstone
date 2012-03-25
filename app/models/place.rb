@@ -46,16 +46,20 @@ module Tombstone
       ancestors(true).reverse.reduce(1){|max, place| (place.max_interments.to_i > 0) ? place.max_interments : max}
     end
     
-    def siblings
-      self.class.filter(:parent_id => parent_id).order(:id)
-    end
-
     def description
       self.ancestors(true, 0).reverse.map{|p| p.name}.join(' - ')
     end
 
     def cemetery
       self.ancestors[-1]
+    end
+    
+    def siblings
+      self.class.filter(:parent_id => parent_id).order(:id)
+    end
+    
+    def children
+      self.class.filter(:parent_id => id).order(:id)
     end
 
     def ancestors(include_self = false, upto = 0)

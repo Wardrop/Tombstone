@@ -1,93 +1,31 @@
 // JavaScript Document
 $( function () {
   Ts.RoleWizardViews = {}
-  Ts.RoleWizardViews.BasePage = Backbone.View.extend({
-    events: {
-      'click input[type=button]': 'doAction',
-      'keyup': function (e) { if(e.keyCode == 13) this.doAction() }
-    },
-		initialize: function () {
-      this.wizard = this.options.wizard
-      _.bindAll(this, 'doAction')
-		},
-    doAction: function (e) {
-      var action = null
-      if (e && e.target) {
-			  action = $(e.target).attr('action')
-      } else {
-        action = this.$('input[action]').attr('action')
-      }
-      this.wizard[action](this.model)
-      return false
-		}
-  })
-  
-  Ts.RoleWizardViews.GenericForm = Ts.RoleWizardViews.BasePage.extend({
-    tagName: 'form',
-		className: 'rowed',
-    events: _.extend({}, Ts.RoleWizardViews.BasePage.prototype.events, {
-      'change' : 'formChanged'
-    }),
-		initialize: function () {
-      Ts.RoleWizardViews.BasePage.prototype.initialize.apply(this, arguments);
-      this.model.bind('change', this.modelChanged, this)
-			_.bindAll(this, 'formChanged');
-		},
-		render: function () {
-			$(this.el).html(this.template({data: this.model.toJSON(), wizard: this.wizard, action: this.options.action}));
-      this.populateForm(this.model.toJSON())
-			return this
-		},
-    formChanged: function (e) {
-      var target = $(e.target)
-      var name = target.attr("name")
-      var hash = {}
-      if(target.is('[type=checkbox')) {
-        hash[name] = target.is(':checked') ? true : false
-      } else {
-        hash[name] = target.val()
-      }
-      this.model.set(hash, {silent: true})
-    },
-    modelChanged: function () {
-      this.populateForm(this.model.changedAttributes())
-    },
-    populateForm: function (hash) {
-      _.each(hash, function (value, key) {
-        var field = this.$('[name='+key+']')
-        if(field.attr('type') == 'date' && value) {
-          value = Date.parse(value).toString('dd/MM/yyyy') // We need to reverse the date format due to JavaScript americanised parser.
-        }
-        field.fieldValue(value)
-      }, this)
-    }
-  })
-  
-	Ts.RoleWizardViews.FindPersonForm = Ts.RoleWizardViews.GenericForm.extend({
+	Ts.RoleWizardViews.FindPersonForm = Ts.WizardViews.GenericForm.extend({
 		template: _.template($('#role_wizard\\:person_form_template').html()),
 		initialize: function () {
-      Ts.RoleWizardViews.GenericForm.prototype.initialize.apply(this, arguments);
+      Ts.WizardViews.GenericForm.prototype.initialize.apply(this, arguments);
 		}
 	})
   
-  Ts.RoleWizardViews.CreatePersonForm = Ts.RoleWizardViews.GenericForm.extend({
+  Ts.RoleWizardViews.CreatePersonForm = Ts.WizardViews.GenericForm.extend({
 		template: _.template($('#role_wizard\\:person_form_template').html()),
 		initialize: function () {
-      Ts.RoleWizardViews.GenericForm.prototype.initialize.apply(this, arguments);
+      Ts.WizardViews.GenericForm.prototype.initialize.apply(this, arguments);
 		}
 	})
 	
-	Ts.RoleWizardViews.ContactForm = Ts.RoleWizardViews.GenericForm.extend({
+	Ts.RoleWizardViews.ContactForm = Ts.WizardViews.GenericForm.extend({
 		template: _.template($('#role_wizard\\:create_contact_form_template').html()),
 		initialize: function () {
-      Ts.RoleWizardViews.GenericForm.prototype.initialize.apply(this, arguments);
+     Ts.WizardViews.GenericForm.prototype.initialize.apply(this, arguments);
 		}
 	})
   
-	Ts.RoleWizardViews.PersonResults = Ts.RoleWizardViews.BasePage.extend({
+	Ts.RoleWizardViews.PersonResults = Ts.WizardViews.BasePage.extend({
 		template: _.template($('#role_wizard\\:person_results_template').html()),
 		initialize: function () {
-      Ts.RoleWizardViews.BasePage.prototype.initialize.apply(this, arguments)
+      Ts.WizardViews.BasePage.prototype.initialize.apply(this, arguments)
 		},
     render: function () {
       $(this.el).html(this.template())
@@ -102,10 +40,10 @@ $( function () {
     }
 	})
   
-  Ts.RoleWizardViews.ContactResults = Ts.RoleWizardViews.BasePage.extend({
+  Ts.RoleWizardViews.ContactResults = Ts.WizardViews.BasePage.extend({
 		template: _.template($('#role_wizard\\:contact_results_template').html()),
 		initialize: function () {
-      Ts.RoleWizardViews.BasePage.prototype.initialize.apply(this, arguments)
+      Ts.WizardViews.BasePage.prototype.initialize.apply(this, arguments)
 		},
     render: function () {
       $(this.el).html(this.template())
@@ -120,7 +58,7 @@ $( function () {
     }
 	})
   
-  Ts.RoleWizardViews.PersonBlock = Backbone.View.extend({
+  Ts.RoleWizardViews.PersonBlock = Ts.View.extend({
     className: 'row_block clickable',
     template: _.template($('#role_wizard\\:person_block_template').html()),
     events: {
@@ -135,13 +73,13 @@ $( function () {
 			return this
     },
     doAction: function (e) {
-      var action = $(e.target).attr('action')
+      var action = $(e.target).data('action')
       this.wizard.savePerson(this.model)
       return false
     }
   })
   
-  Ts.RoleWizardViews.ContactBlock = Backbone.View.extend({
+  Ts.RoleWizardViews.ContactBlock = Ts.View.extend({
     className: 'row_block clickable',
     template: _.template($('#role_wizard\\:contact_block_template').html()),
     events: {
@@ -156,16 +94,16 @@ $( function () {
 			return this
     },
     doAction: function (e) {
-      var action = $(e.target).attr('action')
+      var action = $(e.target).data('action')
       this.wizard.saveContact(this.model)
       return false
     }
   })
   
-	Ts.RoleWizardViews.RoleReview = Ts.RoleWizardViews.BasePage.extend({
+	Ts.RoleWizardViews.RoleReview = Ts.WizardViews.BasePage.extend({
 		template: _.template($('#role_wizard\\:role_review_template').html()),
 		initialize: function (opts) {
-      Ts.RoleWizardViews.BasePage.prototype.initialize.apply(this, arguments)
+      Ts.WizardViews.BasePage.prototype.initialize.apply(this, arguments)
 		},
     render: function () {
       $(this.el).html(this.template(this.model.recursiveToJSON()))
@@ -173,9 +111,9 @@ $( function () {
     }
 	})
   
-	Ts.RoleWizardViews.WizardView = Ts.FormViews.WizardView.extend({
+	Ts.RoleWizardViews.WizardView = Ts.WizardViews.Wizard.extend({
     initialize: function () {
-      Ts.FormViews.WizardView.prototype.initialize.apply(this, arguments)
+      Ts.WizardViews.Wizard.prototype.initialize.apply(this, arguments)
       this.showFindPersonForm()
     },
     showFindPersonForm: function () {
@@ -251,16 +189,7 @@ $( function () {
     },
     saveRole: function () {
       this.close()
-      if(this.onComplete) {
-        this.onComplete(this.model.get("role"))
-      }
-    },
-    goBack: function () {
-      var backDestination = this.model.get('pageHistory').pop()
-      if(backDestination) {
-        this.model.set({currentPage: backDestination}, {silent: true})
-        this.renderPage()
-      }
+      this.onComplete(this.model.get('role'))
     }
 	})
 })

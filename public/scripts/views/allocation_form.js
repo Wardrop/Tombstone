@@ -1,5 +1,5 @@
 $( function () {
-	Ts.FormViews.AllocationForm = Backbone.View.extend({
+	Ts.FormViews.AllocationForm = Ts.View.extend({
 		events: {
 			'submit' : 'onSubmit'
 		},

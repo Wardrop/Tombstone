@@ -743,17 +743,17 @@ a.row_button:hover {
 .indicator {
   display: inline-block;
 	min-height: 24px;
-  width: 32px;
+  width: 36px;
   vertical-align: middle;
 }
 .indicator.loading {
-	background: url('images/loader.gif') no-repeat center right;
+	background: url('images/loader.gif') no-repeat center center;
 }
 .indicator.success {
-	background: url('images/check-24.png') no-repeat center right;
+	background: url('images/check-24.png') no-repeat center center;
 }
 .indicator.warning {
-  background: url('images/warning-24.png') no-repeat center right;
+  background: url('images/warning-24.png') no-repeat center center;
 }
 
 /* OVERLAY */
@@ -820,12 +820,11 @@ a.row_button:hover {
 	height: auto;
 	width: 100%;
 	box-sizing: border-box;
-	padding: 3%;
 }
 .overlay_container > .body h3 {
 	margin-top: 0;
 }
-.overlay_container > .body > .loading {
+.overlay_container > .body > .indicator {
   position: absolute;
   z-index: 10;
   top: 0;
@@ -833,7 +832,10 @@ a.row_button:hover {
   width: 100%;
   height: 100%;
   display: block;
-  background: rgba(242,242,242,0.7) url('images/loader.gif') no-repeat center center;
+  background-color: rgba(242,242,242,0.7);
+}
+.overlay_container > .body > .page {
+  padding: 3%; 
 }
 .field_error {
   outline: 1px solid #c00;
@@ -851,8 +853,9 @@ a.row_button:hover {
   margin-left: 14px;
   padding: 3px 0;
 }
-.error_block ul {
-	margin-left: 20px;
+.error_block li:only-child {
+  list-style: none;
+  margin-left: 0;
 }
 
 /* LEGACY */

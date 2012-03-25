@@ -6,7 +6,9 @@
 <script type="text/template" id="role_wizard:contact_results_template">
   <h3 class="underline">Contacts Found</h3>
   <div class="blocks"></div>
-  <div style="text-align: right;"><input type="button" value="Create New Contact" action="showCreateContactForm" /></div>
+  <div style="text-align: right;">
+    <input type="button" value="Create New Contact" data-action="showCreateContactForm" />
+  </div>
 </script>
 
 <script type="text/template" id="role_wizard:create_contact_form_template">
@@ -50,7 +52,7 @@
   		<input type="text" name="secondary_phone" style="width: 30%;" />
   	</label>
     <div class="row">
-  		<input type="button" value="Save" action="saveContact" />
+  		<input type="button" value="Save" data-action="saveContact" />
   	</div>
   </div>
 </script>
@@ -92,7 +94,7 @@
   		<input type="date" name="date_of_birth" />
   	</label>
   	<div class="row">
-  		<input type="button" value="Next" action="<%= action %>" />
+  		<input type="button" value="Next" data-action="<%= action %>" />
   	</div>
   </div>
 </script>
@@ -105,7 +107,9 @@
 <script type="text/template" id="role_wizard:person_results_template">
   <h3 class="underline">People Found</h3>
   <div class="blocks"></div>
-  <div style="text-align: right;"><input type="button" value="Create New Person" action="showCreatePersonForm" /></div>
+  <div style="text-align: right;">
+    <input type="button" value="Create New Person" data-action="showCreatePersonForm" />
+  </div>
 </script>
 
 <script type="text/template" id="role_wizard:role_review_template">
@@ -144,5 +148,5 @@
       <% } %>
     </div>
   </div>
-  <div style="text-align: right;"><input type="button" value="Save" action="saveRole" /></div>
+  <div style="text-align: right;"><input type="button" value="Save" data-action="saveRole" /></div>
 </script>

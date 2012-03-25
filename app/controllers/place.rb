@@ -5,11 +5,22 @@ module Tombstone
       @place = Place.with_pk(params['place_id']) if params['place_id']
       render 'place/new'
     end
-    
-    get :children, :with => :parent_id, :provides => :json do
-      Place.filter(:parent_id => params[:parent_id]).order(:name).with_child_count.available_only.naked.all.to_json
+
+    get :index, :with => :id, :provides => :json do
+      Place.with_pk(params[:id]).values.to_json
     end
     
+    post :index, :provides => :json do
+      sleep(2)
+      p params
+      {success: false, form_errors: "It's all shit."}.to_json
+    end
+    
+    put :index, :with => :id, :provides => :json do
+      p params
+      {success: false, form_errors: {name: 'must be more awesome'}, redirectTo: nil}.to_json
+    end
+
     get :next_available, :with => :parent_id, :provides => :json do
       place = Place.with_pk(params[:parent_id])
       halt 404, "Place with ID ##{params[:parent_id]} does not exist." unless place
@@ -26,6 +37,31 @@ module Tombstone
       end
     end
     
+    get :children, :map => %r{/place/([0-9]+)/children(/[^/]+)?}, :provides => :json do |id, filter|
+      place = Place.with_pk(id)
+      halt 404, "Place with ID ##{id} does not exist." unless place
+      places = place.children
+      if filter
+        case params[:filter]
+        when :available
+          places.available_only
+        when :all
+        else
+          halt 404
+        end
+      end
+      places.order(:name).with_child_count.naked.all.to_json
+    end
+    
+    # get :children, :with => [:parent_id, :option], :provides => :json do
+    #   children = Place.filter(:parent_id => params[:parent_id]).order(:name).with_child_count
+    #   case params[:option]
+    #   when 'available'
+    #     children.available_only
+    #   end
+    #   Place.filter(:parent_id => params[:parent_id]).order(:name).with_child_count.available_only.naked.all.to_json
+    # end
+    
     get :ancestors, :with => :id, :provides => :json do
       place = Place.with_pk(params[:id])
       halt 404, "Place with ID ##{params[:id]} does not exist." unless place
@@ -34,5 +70,6 @@ module Tombstone
       end
       chain.to_json
     end
+    
   end
 end

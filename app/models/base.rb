@@ -19,17 +19,21 @@ module Tombstone
     end
     
     def set_only_valid(hash)
-      restricted = self.class.restricted_columns +
-                   (self.class.restrict_primary_key? ? [*self.class.primary_key] : [])
-      set(hash.select { |k,v|
-        k = k.to_sym
-        db_schema[k] && !restricted.include?(k)
-      })
+      set(self.class.valid_only(hash))
     end
     
     remove_instance_variable(:@dataset)
     
     class << self
+      def valid_only(hash)
+        restricted = restricted_columns +
+                     (restrict_primary_key? ? [*primary_key] : [])
+        hash.select { |k,v|
+          k = k.to_sym
+          db_schema[k] && !restricted.include?(k)
+        }
+      end
+      
       def implicit_table_name
         underscore(demodulize(name)).to_sym
       end
