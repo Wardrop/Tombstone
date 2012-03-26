@@ -43,7 +43,7 @@ $( function () {
       var name = target.attr("name")
       var hash = {}
       if(target.is('[type=checkbox')) {
-        hash[name] = target.is(':checked') ? true : false
+        hash[name] = target.is(':checked') ? target.val() : null
       } else {
         hash[name] = target.val()
       }
@@ -92,13 +92,15 @@ $( function () {
     renderPage: function () {
       this.hideErrors()
       this.$('.body > .page').children().detach()
-      model = this.model.get('currentPage').model
-      if(model && model.errors && Object.keys(model.errors).length > 0) {
-        this.showErrors(model.errors)
-      } else {
-        this.hideErrors()
+      model = this.model.get('currentPage') && this.model.get('currentPage').model
+      if (model) {
+        if(model && model.errors && Object.keys(model.errors).length > 0) {
+          this.showErrors(model.errors)
+        } else {
+          this.hideErrors()
+        }
+        this.$('.body > .page').html(this.model.get('currentPage').render().el)
       }
-      this.$('.body > .page').html(this.model.get('currentPage').render().el)
     },
     renderLoader: function () {
       if(this.model.get('isLoading')) {

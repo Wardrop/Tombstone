@@ -11,14 +11,18 @@ module Tombstone
     end
     
     post :index, :provides => :json do
-      sleep(2)
+      sleep(1)
       p params
-      {success: false, form_errors: "It's all shit."}.to_json
+      {success: true, form_errors: {}}.to_json
     end
     
     put :index, :with => :id, :provides => :json do
       p params
-      {success: false, form_errors: {name: 'must be more awesome'}, redirectTo: nil}.to_json
+      {success: true, form_errors: {}}.to_json
+    end
+    
+    delete :index, :with => :id, :provides => :json do
+      halt 500, {success: false, form_errors: 'Sorry, try again'}.to_json
     end
 
     get :next_available, :with => :parent_id, :provides => :json do
@@ -38,14 +42,15 @@ module Tombstone
     end
     
     get :children, :map => %r{/place/([0-9]+)/children(/[^/]+)?}, :provides => :json do |id, filter|
-      place = Place.with_pk(id)
-      halt 404, "Place with ID ##{id} does not exist." unless place
-      places = place.children
+      filter = filter[1..-1] if filter
+      p filter
+      id = (id.to_i < 1) ? nil : id.to_i
+      places = Place.filter(:parent_id => id)
       if filter
-        case params[:filter]
-        when :available
-          places.available_only
-        when :all
+        case filter
+        when 'available'
+          places = places.available_only
+        when 'all'
         else
           halt 404
         end
