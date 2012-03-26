@@ -102,7 +102,7 @@ module Tombstone
   App.controller :interment do
     get :new, :map => 'interment' do
       @allocation = Interment.new
-      @allocation.set_only_valid(params)
+      @allocation.set_valid_only(params)
       @funeral_directors = FuneralDirector.all
       if @allocation.place_id
         if not @allocation.place

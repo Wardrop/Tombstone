@@ -18,7 +18,7 @@ module Tombstone
       end
     end
     
-    def set_only_valid(hash)
+    def set_valid_only(hash)
       set(self.class.valid_only(hash))
     end
     

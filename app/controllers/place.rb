@@ -10,18 +10,36 @@ module Tombstone
       Place.with_pk(params[:id]).values.to_json
     end
     
+    # Valid ranges: Row [A-Z], Plot [1-49]a, Row [A-ZZ], Plot[001-150]
+    # Zero-prefixes are decided at a global level.
     post :index, :provides => :json do
-      sleep(1)
-      p params
-      {success: true, form_errors: {}}.to_json
+      place = Place.new.set_valid_only(params)
+      if place.valid?
+        parsed = parse_place_name(params['name'])
+        if parsed.nil?
+          place.save
+        elsif Array === parsed
+          Place.dataset.multi_insert(parsed.map { |v| params.merge({'name' => v}) })
+        else
+          place.errors.add(:name, parsed)
+        end
+      end
+      {success: place.errors.length > 0, form_errors: place.errors}.to_json
     end
     
     put :index, :with => :id, :provides => :json do
-      p params
-      {success: true, form_errors: {}}.to_json
+      place = Place.with_pk(params[:id])
+      halt 404, "Place with ID ##{params[:id]} does not exist." unless place
+      place.set_valid_only(params)
+      if place.valid?
+        place.save
+      end
+      {success: place.errors.length > 0, form_errors: place.errors}.to_json
     end
     
     delete :index, :with => :id, :provides => :json do
+      # Make sure the place is not associated with any allocations (inc. deleted)
+      # TODO: Handle the case where a place has associated images.
       halt 500, {success: false, form_errors: 'Sorry, try again'}.to_json
     end
 
