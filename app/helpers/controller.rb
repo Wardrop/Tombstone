@@ -53,7 +53,7 @@ module Tombstone
             end
           end
         end
-        
+
         if data['status'] == 'provisional'
           allocation.valid?
           allocation.errors.select!{ |k,v| k == :place && !v.empty? }
@@ -67,6 +67,9 @@ module Tombstone
         else
           raise Sequel::Rollback
         end
+
+        update_photos
+
       end
     end
     
@@ -87,6 +90,22 @@ module Tombstone
         pairs[field] = value.strip
       end
       return str[Range.new(0, indices.first || str.length, true)].strip.gsub(/ +/, ' '), pairs
+    end
+
+    def update_photos
+      if !session[:new_photos].to_a.empty?
+        Blob.filter(:id => session[:new_photos]).update(:enabled => 'TRUE' )
+        session[:new_photos] = []
+      end
+      if !session[:deleted_photos].to_a.empty?
+        Blob.filter(:id => session[:deleted_photos]).delete
+        session[:deleted_photos] = []
+      end
+    end
+
+    def reset_photos
+      session[:new_photos] = []
+      session[:deleted_photos] = []
     end
     
   end

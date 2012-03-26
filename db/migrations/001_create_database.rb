@@ -110,7 +110,8 @@ Sequel.migration do
       String :name, :size => 255
       String :content_type, :size => 100
       Integer :size, :size => 100
-      String :file
+      String :file, :size => 4096
+      String :enabled, :size => 5
       String :created_by, :size => 32
       DateTime :created_at
     end

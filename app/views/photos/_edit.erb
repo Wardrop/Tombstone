@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="<%= url "/reset.css" %>"/>
+  <link rel="stylesheet" href="<%= url "/style.css" %>"/>
+</head>
+<body>
+<div style="background: white;">
+  <form id="upload_photos" method="post" action="<%= url(:photos_add, :id => @place_id) %>" enctype="multipart/form-data">
+    <section>
+      <h2 class="underline">Photographs</h2>
+      <input type="file" name="file"/>
+      <input type="submit" name="upload" id="upload" value="Upload photo"/>
+
+      <div class="section padded">
+        <% @blobs.each do |blob| %>
+          <div class="row_block" title="Click to view photo">
+            <div>
+              <img src="<%= blob.file.thumbnail.url %>"/>
+              <span>Name:</span>
+              <span><%= blob[:name] %></span>
+            </div>
+            <div class="actions">
+              <a href="<%= url(:photos_delete, :place_id => blob[:place_id], :id => blob[:id]) %>" class="delete" onclick="return confirm('Are you sure you want to delete this photo?')" title="Delete photo"></a>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  </form>
+</div>
+</body>
+</html>
