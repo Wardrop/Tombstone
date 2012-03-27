@@ -7,7 +7,10 @@ module Tombstone
     one_to_many :allocations, :class => :'Tombstone::Allocation', :key => :place_id
     
     def_dataset_method(:with_child_count) do
-      left_join(Place.group(:parent_id).select{[count(parent_id).as(child_count), :parent_id___child_parent_id]}, :child_parent_id => :place__id)
+      left_join(
+        Place.group(:parent_id).select{[count(parent_id).as(child_count), :parent_id___child_parent_id]},
+        :child_parent_id => :place__id
+      )
     end
     
     def_dataset_method(:available_only) do
@@ -26,8 +29,13 @@ module Tombstone
     
     def validate
       super
-      errors.add(:status, "must be one of: #{self.class.valid_states.join(', ')}") if !self.class.valid_states.include? status
+      validates_min_length 2, :name
       validates_min_length 2, :type
+      validates_includes self.class.valid_states, :status
+      errors.add(:parent, "does not exist") if !parent_id.nil? && parent.nil?
+      siblings = siblings
+      errors.add(:type, "must be same as siblings (#{siblings[0].type.capitalize()})") unless type == siblings[0].type
+      errors.add(:name, "must be unique among siblings") unless siblings.select{ |s| s.name == name }.empty?
     end
     
     def allows_reservation?

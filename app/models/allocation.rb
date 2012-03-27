@@ -27,7 +27,7 @@ module Tombstone
       end
       if not Place === place
         errors.add(:place, 'cannot be empty and must exist')
-      elsif place.children.length >= 1
+      elsif place.children.count >= 1
         errors.add(:place, 'must not have any children')
       end
       validates_min_length 2, :status

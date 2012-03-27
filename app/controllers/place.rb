@@ -10,15 +10,37 @@ module Tombstone
       Place.with_pk(params[:id]).values.to_json
     end
     
+    # Valid ranges: Row [A-Z], Plot [1-49]a, Row [A-ZZ], Plot[001-150]
+    # Zero-prefixes are decided at a global level.
     post :index, :provides => :json do
-      sleep(2)
-      p params
-      {success: false, form_errors: "It's all shit."}.to_json
+      place = Place.new.set_valid_only(params)
+      if place.valid?
+        parsed = parse_place_name(params['name'])
+        if parsed.nil?
+          place.save
+        elsif Array === parsed
+          Place.dataset.multi_insert(parsed.map { |v| params.merge({'name' => v}) })
+        else
+          place.errors.add(:name, parsed)
+        end
+      end
+      {success: place.errors.length < 1, form_errors: place.errors}.to_json
     end
     
     put :index, :with => :id, :provides => :json do
-      p params
-      {success: false, form_errors: {name: 'must be more awesome'}, redirectTo: nil}.to_json
+      place = Place.with_pk(params[:id])
+      halt 404, "Place with ID ##{params[:id]} does not exist." unless place
+      place.set_valid_only(params)
+      if place.valid?
+        place.save
+      end
+      {success: place.errors.length < 1, form_errors: place.errors}.to_json
+    end
+    
+    delete :index, :with => :id, :provides => :json do
+      # Make sure the place is not associated with any allocations (inc. deleted)
+      # TODO: Handle the case where a place has associated images.
+      halt 500, {success: false, form_errors: 'Sorry, try again'}.to_json
     end
 
     get :next_available, :with => :parent_id, :provides => :json do
@@ -38,14 +60,15 @@ module Tombstone
     end
     
     get :children, :map => %r{/place/([0-9]+)/children(/[^/]+)?}, :provides => :json do |id, filter|
-      place = Place.with_pk(id)
-      halt 404, "Place with ID ##{id} does not exist." unless place
-      places = place.children
+      filter = filter[1..-1] if filter
+      p filter
+      id = (id.to_i < 1) ? nil : id.to_i
+      places = Place.filter(:parent_id => id)
       if filter
-        case params[:filter]
-        when :available
-          places.available_only
-        when :all
+        case filter
+        when 'available'
+          places = places.available_only
+        when 'all'
         else
           halt 404
         end

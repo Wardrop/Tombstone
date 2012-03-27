@@ -109,7 +109,7 @@ Ts.Place = Backbone.Model.extend({
   	name: null,
   	type: null,
   	status: null,
-  	max_interments: 1
+  	max_interments: null
 	}
 })
 

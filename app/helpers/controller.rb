@@ -17,7 +17,7 @@ module Tombstone
           [k, v]
         } ]
         
-        allocation.set_only_valid(values)
+        allocation.set_valid_only(values)
         allocation.save(validate: false)
 
         roles_data = data.select { |k,v| allocation.class.valid_roles.include?(k) && !v.nil? && Hash === v }
@@ -32,7 +32,7 @@ module Tombstone
         allocation.roles.each do |role|
           roles = roles_data.values.select{ |v| v['use'] ==  role.type }
           roles.each do |v|
-            r = Role.new.set_only_valid(role.values.merge(type: v['type']))
+            r = Role.new.set_valid_only(role.values.merge(type: v['type']))
             if r.valid?
               r.save
               allocation.add_role(r)
@@ -106,6 +106,30 @@ module Tombstone
     def reset_photos
       session[:new_photos] = []
       session[:deleted_photos] = []
+    end
+    
+    # Takes a plot name with optional range. Returns an array of generated names if range exists and is valid, otherwise
+    # returns an error string when invalid. Returns nil if there are no square brackets in the string.
+    # Error handling is made verbose as to guide to the user.
+    def parse_place_name(name)
+      if name =~ /[\[\]]/
+        if name.scan(/[\[\]]/).length > 2
+          'Found multiple opening or closing square brackets. Only one range can be specified.'
+        elsif not name.match(/\[[^\[\]]+\]/)
+          'Mismatched square brackets.'
+        elsif not name.match(/\[\w+[.]{2,3}\w+\]/)
+          'Invalid range specified. Must be in the form [\w..\w] or [\w...\w] where "\w" is one or more word '+
+            'characters (e.g. numbers, letters).'
+        else
+          full, before, from, type, to, after = name.match(/(.*)\[(\w+)([.]{2,3})(\w+)\](.*)/).to_a
+          begin
+            range = Range.new(from, to, (type.length == 3)).to_a
+            range.map! { |v| "#{before}#{v}#{after}" }
+          rescue ArgumentError => e
+            'Invalid range specified.'
+          end
+        end
+      end
     end
     
   end

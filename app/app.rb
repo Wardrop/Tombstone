@@ -17,7 +17,6 @@ module Tombstone
     end
     configure do
       disable :show_exceptions
-      disable :raise_errors
       use Rack::Session::Sequel, :db => Sequel::Model.db, :table_name => :session, :expire_after => 60 * 60 * 24 * 7
       use Rack::Lock
       
@@ -59,6 +58,8 @@ module Tombstone
     
     before do
       if request.content_type && request.content_type.match(%r{^application/json})
+        p request.path_info
+        p request.body.read
         self.params = JSON.parse(request.body.read)
       end
     end
@@ -68,8 +69,17 @@ module Tombstone
       render :index
     end
     
+    get :test do
+      p self.class.filters[:before]
+      raise StandardError, "Yep, it's all bad."
+    end
+    
     get :login do
       render 'login'
+    end
+    
+    get :dog do
+      raise StandardError, "Yep, it's all bad."
     end
     
     post :login do
