@@ -59,7 +59,7 @@ $( function () {
     addRole: function () {
       this.use = null
       wizard = new Ts.Wizard({title: "Add "+this.role_name, role: new Ts.Role({type: this.role_type})})
-			wizardView = new Ts.RoleWizardViews.WizardView({
+			wizardView = new Ts.WizardViews.RoleWizard({
         model: wizard,
         onComplete: this.onCompleteCallback
       })
@@ -77,7 +77,7 @@ $( function () {
       // })
       // clonedModel.get("person").set({id: null})
       wizard = new Ts.Wizard({title: "Change "+this.role_name, role: this.model})
-			wizardView = new Ts.RoleWizardViews.WizardView({
+			wizardView = new Ts.WizardViews.RoleWizard({
         model: wizard,
         onComplete: this.render
       })

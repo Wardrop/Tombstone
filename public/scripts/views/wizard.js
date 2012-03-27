@@ -264,7 +264,7 @@ $( function () {
 			return this
     }
 	})
-	Ts.WizardViews.WizardView = Ts.WizardViews.Wizard.extend({
+	Ts.WizardViews.RoleWizard = Ts.WizardViews.Wizard.extend({
     initialize: function () {
       this._super('initialize', arguments)
       this.showFindPersonForm()
