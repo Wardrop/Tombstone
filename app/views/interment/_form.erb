@@ -1,11 +1,10 @@
 <% content_for :head do %>
-
   <script type="application/json" id="json:allocation_data">
     <%=
     @allocation.to_json(include: {roles: {include: [:person, :residential_contact, :mailing_contact]}, place: {}, transactions: {}})
     %>
   </script>
-
+  
   <script type="application/json" id="json:place_data">
     <%=
     begin
@@ -17,13 +16,11 @@
     end.to_json
     %>
   </script>
-
+  <script type="text/javascript">
+    $('<iframe />').attr('src', 'http://www.google.com').append('body');
+  </script>
 <% end %>
-<%
-include_script_views('role_wizard', 'form')
-%>
-
-<form id="interment_form" class="rowed wide" action="<%= (Tombstone::Interment === @allocation) ? "/interment/#{@allocation.id}" : "/interment" %>" enctype="multipart/form-data">
+<form id="interment_form" class="rowed wide" action="<%= (Tombstone::Interment === @allocation) ? "/interment/#{@allocation.id}" : "/interment" %>">
   <section>
     <h2 class="underline">Funeral Service</h2>
     <div class="section padded">
@@ -90,8 +87,8 @@ include_script_views('role_wizard', 'form')
       </label>
     </div>
   </section>
-  <iframe src="<%= url :"photos_edit", :id => @allocation.place.id %>" width="100%" height="100%" scrolling="no" frameborder="0" hspace="0" vspace="0">Browser not compatible.</iframe>
   <% if @allocation.id  %>
+    <iframe src="<%= url :"photos_edit", :id => @allocation.place.id %>" onload='javascript:resizeIframe(this);'>Browser not compatible.</iframe>
     <input type="hidden" name="id" value="<%= @allocation.id %>" />
   <% end %>
   <input type="hidden" name="_method" value="<%= (Tombstone::Interment === @allocation && @allocation.id) ? 'put' : 'post'  %>" />

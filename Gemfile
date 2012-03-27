@@ -17,6 +17,7 @@ gem "carrierwave"
 gem "carrierwave-sequel", :require => 'carrierwave/sequel'
 gem "mime-types"
 gem "mini_magick"
+gem "chronic"
 
 group :spec do
   gem "rspec"

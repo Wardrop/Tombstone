@@ -5,7 +5,8 @@ module Tombstone
       names.each do |name|
         @document[:scripts] << "views/#{name}.js"
         content_for :head do
-          File.read File.join(settings.views, "script_templates/#{name}.html")
+          file_path = File.join(settings.views, "script_templates/#{name}.html")
+          File.exists?(file_path) ? File.read(file_path) : ''
         end
       end
     end

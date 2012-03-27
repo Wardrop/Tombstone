@@ -3,21 +3,29 @@
 <head>
   <link rel="stylesheet" href="<%= url "/reset.css" %>"/>
   <link rel="stylesheet" href="<%= url "/style.css" %>"/>
+  <script type="text/javascript" src="/scripts/vendor/jquery-1.7.1.min.js"></script>
 </head>
 <body>
 <div style="background: white;">
   <section>
     <h2 class="underline">Photographs</h2>
+
     <div class="section padded">
-      <% @blobs.each do |blob| %>
-        <div class="row_block" title="Click to view photo">
-          <div>
-            <img src="<%= blob.file.thumbnail.url %>"/>
-            <span>Name:</span>
-            <span><%= blob[:name] %></span>
+      <div class="photos">
+        <% @blobs.each do |blob| %>
+          <div class="imageSingle" title="Click to view photo">
+            <div class="image">
+              <a href="<%= blob.file.url %>">
+                <img src="<%= blob.file.thumbnail.url %>"/>
+              </a>
+            </div>
+            <div class="footer">
+              <span><%= blob[:name] %> - </span>
+              <span><%= blob[:timestamp] %></span>
+            </div>
           </div>
-        </div>
-      <% end %>
+        <% end %>
+      </div>
     </div>
   </section>
 </div>

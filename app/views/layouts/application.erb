@@ -1,3 +1,4 @@
+<% include_script_views('mixins', 'form', 'wizard', 'role_wizard', 'allocation_form', 'place_form') %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,8 +14,9 @@
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-1.8.18.custom.min.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/underscore.js' %>"></script>
-  <script type="text/javascript" src="<%= url '/scripts/vendor/backbone.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/vendor/backbone.custom.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/common.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/views.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/models.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/collections.js' %>"></script>
   <% @document[:scripts].each do |file| %>

@@ -1,0 +1,30 @@
+<script type="text/template" id="place_form:add_place_form_template">
+  <div class="section padded">
+  	<label>
+  		<span>Name</span>
+  		<input type="text" name="name" style="width: 75%;" />
+  	</label>
+    <label class="row">
+  		<span>Type</span>
+  		<select name="type">
+        <option value=""></option>
+        <option>Cemetery</option>
+        <option>Section</option>
+        <option>Sub-Section</option>
+        <option>Row</option>
+        <option>Plot</option>
+      </select>
+  	</label>
+  	<label>
+  		<span>Available</span>
+  		<input type="checkbox" name="available" />
+  	</label>
+    <label>
+  		<span>Max Interments</span>
+  		<input type="text" name="max_interments" style="width: 12%;" />
+  	</label>
+    <div class="row">
+  		<input type="button" value="Save" data-action="createPlace" />
+  	</div>
+  </div>
+</script>

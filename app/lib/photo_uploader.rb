@@ -15,6 +15,12 @@ module Tombstone
       process :resize_to_fill => [320,200]
     end
 
+    def get_exif(name)
+      manipulate! do |img|
+        return img["EXIF:" + name]
+      end
+    end
+
   end
 
 end

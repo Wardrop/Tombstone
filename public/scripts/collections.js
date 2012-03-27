@@ -15,5 +15,5 @@ Ts.People = Backbone.Collection.extend({
 })
 
 Ts.Places = Backbone.Collection.extend({
-  url: '/places'
+  url: '/place/all'
 })

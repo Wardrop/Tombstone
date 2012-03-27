@@ -112,6 +112,7 @@ Sequel.migration do
       Integer :size, :size => 100
       String :file, :size => 4096
       String :enabled, :size => 5
+      DateTime :timestamp
       String :created_by, :size => 32
       DateTime :created_at
     end

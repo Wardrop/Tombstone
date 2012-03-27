@@ -12,21 +12,22 @@ module Tombstone
     configure :spec, :production do
       set :log, Logger.new(nil)
     end
-    configure :development do 
+    configure :development do
       set :log, Logger.new(STDOUT)
     end
     configure do
       disable :show_exceptions
+      disable :raise_errors
       use Rack::Session::Sequel, :db => Sequel::Model.db, :table_name => :session, :expire_after => 60 * 60 * 24 * 7
       use Rack::Lock
       
       set :config, eval(File.read(File.expand_path('../config.rb', __FILE__)))
-
+    
       Permissions.map = config[:roles]
       LDAP.servers = config[:ldap][:servers]
       LDAP.domain = config[:ldap][:domain]
       LDAP.logger = log
-
+    
       Notification.config = config[:notification]
       Notification.general = config[:general]
       if environment != :spec
@@ -42,7 +43,8 @@ module Tombstone
     before do
       if request.path_info != url(:login) && request.path_info != url(:logout) && session[:user_id].nil?
         flash[:banner] = 'error', 'You must login to use this application.'
-        redirect url(:login)
+        referrer = URI.escape(request.fullpath, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+        redirect("#{url(:login)}?referrer=#{referrer}")
       end
       
       @document = {
@@ -51,11 +53,14 @@ module Tombstone
         breadcrumb: true,
         banner: flash[:banner]
       }
-      (@user = User.with_pk session[:user_id]) && BaseModel.permissions = @user.role_permissions
+      @user = User.with_pk session[:user_id]
+      BaseModel.permissions = (@user.role_permissions rescue nil)
     end
     
-    get :permissions_test do
-      Tombstone::Reservation.new.save(validate: false).inspect
+    before do
+      if request.content_type && request.content_type.match(%r{^application/json})
+        self.params = JSON.parse(request.body.read)
+      end
     end
     
     get :index do
@@ -76,7 +81,7 @@ module Tombstone
           flash[:banner] = 'success', "You have been logged in successfully."
           session[:user_id] = user_id
           session[:ldap] = user.ldap.user_details
-          redirect url(:index)
+          redirect(params['referrer'] || url(:index))
         else
           @document[:banner] = 'error', 'Invalid username or password.'
         end
@@ -88,14 +93,13 @@ module Tombstone
     
     get :logout do
       session.clear
-      p 'dog'
       flash[:banner] = 'success', 'You have been logged out successfully.'
       redirect url(:login)
     end
-    
-    error 500 do
+
+    error do
       if response.content_type.index(mime_type :json) == 0
-        halt 500, {success: false, exception: env['sinatra.error'].message}.to_json
+        halt 500, {success: false, exception: env['sinatra.error'] && env['sinatra.error'].message}.to_json
       else
         raise env['sinatra.error'] if env['sinatra.error']
       end

@@ -1,4 +1,18 @@
-Ts = {};
+Ts = {
+  FormViews: {},
+  getParameterByName: function (name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search)
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '))
+  },
+  elementInDocument: function(element) {
+    if (element instanceof jQuery) element = element[0]
+    while (element) {
+      if (element == document) return true;
+      element = element.parentNode;
+    }
+    return false;
+  }
+}
 
 /**** Common Page Behaviours ****/
 
@@ -30,23 +44,57 @@ $( function () {
     }
     if (e.type == "keyup") return false
   })
-})
-
-/**** Backbone helpers ****/
-
-_.extend(Backbone.Model.prototype, {
-  recursiveToJSON: function () {
-    var json = this.toJSON()
-    _.each(json, function (value, key) {
-      if(value) {
-        if(_.isFunction(value.recursiveToJSON)) {
-          json[key] = value.recursiveToJSON()
-        }
-      }
-    })
-    return json;
-  }
 });
+
+/**** Backbone/Underscore helpers and overrides ****/
+
+// _super taken from https://gist.github.com/1542120
+(function(Backbone) {
+
+  // The super method takes two parameters: a method name
+  // and an array of arguments to pass to the overridden method.
+  // This is to optimize for the common case of passing 'arguments'.
+  function _super(methodName, args) {
+
+    // Keep track of how far up the prototype chain we have traversed,
+    // in order to handle nested calls to _super.
+    this._superCallObjects || (this._superCallObjects = {});
+    var currentObject = this._superCallObjects[methodName] || this,
+        parentObject  = findSuper(methodName, currentObject);
+    this._superCallObjects[methodName] = parentObject;
+
+    var result = parentObject[methodName].apply(this, args || []);
+    delete this._superCallObjects[methodName];
+    return result;
+  }
+
+  // Find the next object up the prototype chain that has a
+  // different implementation of the method.
+  function findSuper(methodName, childObject) {
+    var object = childObject;
+    while (object[methodName] === childObject[methodName]) {
+      object = object.constructor.__super__;
+    }
+    return object;
+  }
+
+  _.each(["Model", "Collection", "View", "Router"], function(klass) {
+    Backbone[klass].prototype._super = _super;
+  });
+
+})(Backbone);
+
+Backbone.Model.prototype.recursiveToJSON = function () {
+  var json = this.toJSON()
+  _.each(json, function (value, key) {
+    if(value) {
+      if(_.isFunction(value.recursiveToJSON)) {
+        json[key] = value.recursiveToJSON()
+      }
+    }
+  })
+  return json;
+};
 
 
 /**** jQuery helpers ****/
@@ -100,11 +148,15 @@ _.extend(Backbone.Model.prototype, {
 			scrollTop: (this.offset().top + offset)
 		}, duration)
   };
+  
+  $.fn.inDOM = function () {
+    return Ts.elementInDocument.call(this, this)
+  }
 
 })(jQuery)
 
 
-/**** Prototype Extensions ****/
+/**** Helpers and Prototype Extensions ****/
 
 String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.slice(1);
@@ -138,10 +190,16 @@ String.prototype.demodulize = function () {
 
 // Modify the built-in encodeURIComponent function to return an empty string for null and undefined values.
 // It may be a little presumptive of me, but I figure there'd be few circumstances where a "null" or "undefined"
-// string would be a desireable return value.
+// string would be a desireable return value, especially in the context of converting javascript types to JSON.
 (function () {
 	original = encodeURIComponent;
 	window.encodeURIComponent = function (v) {
 		return (v == null) ? '' : original(v);
 	};
 })()
+
+function resizeIframe(obj) {
+ obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+ obj.style.width = obj.contentWindow.document.body.scrollWidth + 'px';
+}
+

@@ -9,7 +9,7 @@
   <span class="dropdown_button"></span>
 </script>
 
-<script type="text/template" id="form:place_list_template">
+<script type="text/template" id="form:place_picker_template">
   <span><%= type.capitalize() %></span>
   <select data-place-type="<%= type %>" name="place[]" <%= (disabled) ? 'disabled="disabled"' : '' %>>
     <option value=""></option>
@@ -24,7 +24,7 @@
     <span><strong><%= model.person.given_name %> <%= model.person.surname %></strong></span>
     <div><%= model.residential_contact.street_address %>, <%= model.residential_contact.town %>, <%= model.residential_contact.state %> <%= model.residential_contact.postal_code %></div>
     <div class="actions">
-      <a href="javascript:void(0);" class="delete" confirm="Are you sure you want to delete this object?" action="/delete/stuff" data="id=56&amp;delete=now" title="Delete"></a>
+      <a href="javascript:void(0);" class="delete" title="Delete"></a>
     </div>
   </div>
 </script>

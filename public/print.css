@@ -10,6 +10,7 @@
     border: none;
     box-shadow: none;
     width: 100%;
+    margin-bottom: 0;
   }
   #main_banner {
     display: none;
@@ -22,5 +23,12 @@
   }
   #navigation_bar {
     display: none;
-  } 
+  }
+  section {
+    page-break-inside: avoid;
+    margin: 1.2em 0;
+  }
+  h2 {
+    margin: 1.2em 0;
+  }
 }

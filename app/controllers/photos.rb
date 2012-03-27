@@ -15,12 +15,14 @@ module Tombstone
     end
 
     post :add, :map => "photos/:id/add" do
-      blob = Blob.new(:place_id => params[:id].to_i)
-      blob.file = params[:file]
-      blob.save(validate:false)
-      blob.reload
-      session[:new_photos] ||= []
-      session[:new_photos].push(blob[:id])
+      if params[:file]
+        blob = Blob.new(:place_id => params[:id].to_i)
+        blob.file = params[:file]
+        blob.save(validate:false)
+        blob.reload
+        session[:new_photos] ||= []
+        session[:new_photos].push(blob[:id])
+      end
       redirect to(url(:photos_edit, :id => params[:id].to_i))
     end
 

@@ -1,0 +1,24 @@
+<%
+@document[:title] = 'Create Places'
+content_for :head do
+%>
+  <script type="text/javascript">
+    $(function () {
+      (new Ts.FormViews.PlaceForm({el: $('#place_form')[0]})).render()
+    })
+  </script>
+  <script type="application/json" id="json:place_data">
+    <%=
+    begin
+      if places = @place && @place.ancestors(true).reverse
+        Hash[*places.map { |place| [place.id, place.siblings.naked.all] }.flatten(1)]
+      else
+        {nil => Tombstone::Place.filter(:parent_id => nil).order(:name).naked.all}
+      end
+    end.to_json
+    %>
+  </script>
+<%
+end
+%>
+<form id="place_form" class="rowed wide"></form>

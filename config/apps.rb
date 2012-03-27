@@ -33,6 +33,7 @@ require 'carrierwave'
 require 'carrierwave/sequel'
 require 'carrierwave/processing/mime_types'
 require 'mini_magick'
+require 'chronic'
 
 Padrino.configure_apps do
   #enable :sessions
