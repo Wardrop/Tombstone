@@ -24,7 +24,7 @@ module Tombstone
           place.errors.add(:name, parsed)
         end
       end
-      {success: place.errors.length > 0, form_errors: place.errors}.to_json
+      {success: place.errors.length < 1, form_errors: place.errors}.to_json
     end
     
     put :index, :with => :id, :provides => :json do
@@ -34,7 +34,7 @@ module Tombstone
       if place.valid?
         place.save
       end
-      {success: place.errors.length > 0, form_errors: place.errors}.to_json
+      {success: place.errors.length < 1, form_errors: place.errors}.to_json
     end
     
     delete :index, :with => :id, :provides => :json do

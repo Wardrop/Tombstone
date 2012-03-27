@@ -102,7 +102,7 @@ module Tombstone
           'Invalid range specified. Must be in the form [\w..\w] or [\w...\w] where "\w" is one or more word '+
             'characters (e.g. numbers, letters).'
         else
-          full, before, from, type, to, after = name.match(/\(.*)[(\w+)([.]{2,3})(\w+)\](.*)/).to_a
+          full, before, from, type, to, after = name.match(/(.*)\[(\w+)([.]{2,3})(\w+)\](.*)/).to_a
           begin
             range = Range.new(from, to, (type.length == 3)).to_a
             range.map! { |v| "#{before}#{v}#{after}" }

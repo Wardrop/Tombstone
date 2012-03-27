@@ -16,6 +16,7 @@ $( function () {
     syncCallbacks: {
       'sync:before': function () {
         this.indicator.css({display: ''}).addClass('loading')
+        this.hideErrors()
       },
       'sync:done': function (type, model, data) {
         if(data.success == false) {
@@ -27,6 +28,7 @@ $( function () {
       },
       'sync:fail': function (method, model, jqXHR, textStatus, errorThrown) {
         if (textStatus == 'error') {
+          var parsed
           try {
             parsed = $.parseJSON(jqXHR.responseText)
           } catch (err) {

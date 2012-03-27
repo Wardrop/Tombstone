@@ -30,10 +30,10 @@ require 'logger'
 require 'json'
 require 'observer'
 
-Padrino.configure_apps do
-  # enable :sessions
-  set :session_secret, '159a1d94614773d02fd2f7bb10f3b945e0eef25c91f3741294e57c4f2e584b13'
-end
+# Padrino.configure_apps do
+#   # enable :sessions
+#   set :session_secret, '159a1d94614773d02fd2f7bb10f3b945e0eef25c91f3741294e57c4f2e584b13'
+# end
 
 # Mounts the core application for this project
 Padrino.mount("Tombstone::App").to('/')

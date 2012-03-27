@@ -109,31 +109,6 @@ $( function () {
         this.$('.indicator').removeClass('loading').css('display', 'none')
       }
     },
-    // showErrors: function (errors) {
-    //      var errorContainer = this.$('.error_block').empty()
-    //      if(errors.constructor == Object) {
-    //        if(Object.keys(errors).length > 0) {
-    //          _.each(errors, function (errors, field) {
-    //            var errors = (errors instanceof Array) ? errors : [errors]
-    //            _.each(errors, function (error) {
-    //              errorContainer.append('<li>'+field.split('_').join(' ').titleize()+' '+error+'</li>')
-    //            })
-    //          }, this)
-    //          errorContainer.css({display: ''})
-    //        }
-    //      } else {
-    //        var errors = (errors instanceof Array) ? errors : [errors]
-    //        if(errors.length > 0) {
-    //          _.each(errors, function (error) {
-    //            errorContainer.append('<li>'+error+'</li>')
-    //          }, this)
-    //          errorContainer.css({display: ''})
-    //        }
-    //      }
-    //     },
-    //     hideErrors: function () {
-    //       this.$('.error_block').empty().css({display: 'none'})
-    //     },
 		close: function () {
 			this.remove()
 		},
@@ -164,4 +139,210 @@ $( function () {
       }
     }
   })
+  
+  
+  /*** Place Wizard Views ***/
+
+  Ts.WizardViews.PlaceWizard = Ts.WizardViews.Wizard.extend({
+    showPlaceForm: function () {
+      placeForm = new Ts.WizardViews.PlaceForm({
+        model: this.model.get('place'),
+        wizard: this,
+        indicator: this.indicator,
+        errorBlock: this.errorBlock
+      })
+      this.model.set({currentPage: placeForm})
+    },
+    savePlace: function (place) {
+      place.save({
+        success: _.bind( function () {
+          if(data.success != false) {
+  				  this.close()
+            this.onComplete(this.model.get('place'))
+          }
+				}, this)
+      })
+    }
+  })
+  
+  Ts.WizardViews.PlaceForm = Ts.WizardViews.GenericForm.extend({
+    templateId: 'place_form:place_form_template'
+  })
+  
+  
+  /*** Role Wizard Views ***/
+  
+  Ts.WizardViews.FindPersonForm = Ts.WizardViews.GenericForm.extend({
+		template: _.template($('#role_wizard\\:person_form_template').html())
+	})
+  
+  Ts.WizardViews.CreatePersonForm = Ts.WizardViews.GenericForm.extend({
+		template: _.template($('#role_wizard\\:person_form_template').html())
+	})
+	
+	Ts.WizardViews.ContactForm = Ts.WizardViews.GenericForm.extend({
+		template: _.template($('#role_wizard\\:create_contact_form_template').html())
+	})
+  
+	Ts.WizardViews.PersonResults = Ts.WizardViews.BasePage.extend({
+		template: _.template($('#role_wizard\\:person_results_template').html()),
+    render: function () {
+      $(this.el).html(this.template())
+      if(this.collection.length > 0) {
+        this.collection.each(function (person) {
+          this.$('.blocks').append((new Ts.WizardViews.PersonBlock({model: person, wizard: this.wizard})).render().el)
+        }, this)
+      } else {
+        this.$('.blocks').append('<small class="padded">No matches found.</small>')
+      }
+			return this
+    }
+	})
+  
+  Ts.WizardViews.ContactResults = Ts.WizardViews.BasePage.extend({
+		template: _.template($('#role_wizard\\:contact_results_template').html()),
+    render: function () {
+      $(this.el).html(this.template())
+      if(this.collection.length > 0) {
+        this.collection.each(function (contact) {
+          this.$('.blocks').append((new Ts.WizardViews.ContactBlock({model: contact, wizard: this.wizard})).render().el)
+        }, this)
+      } else {
+        this.$('.blocks').append('<small class="padded">No matches found.</small>')
+      }
+			return this
+    }
+	})
+  
+  Ts.WizardViews.PersonBlock = Ts.View.extend({
+    className: 'row_block clickable',
+    template: _.template($('#role_wizard\\:person_block_template').html()),
+    events: {
+      'click' : 'doAction'
+    },
+    initialize: function () {
+      this._super('initialize', arguments)
+      this.wizard = this.options.wizard
+      _.bindAll(this, 'doAction')
+    },
+    render: function () {
+      $(this.el).html(this.template({person: this.model.toJSON()}))
+			return this
+    },
+    doAction: function (e) {
+      var action = $(e.target).data('action')
+      this.wizard.savePerson(this.model)
+      return false
+    }
+  })
+  
+  Ts.WizardViews.ContactBlock = Ts.View.extend({
+    className: 'row_block clickable',
+    template: _.template($('#role_wizard\\:contact_block_template').html()),
+    events: {
+      'click' : 'doAction'
+    },
+    initialize: function (opts) {
+      this.wizard = opts.wizard
+      _.bindAll(this, 'doAction')
+    },
+    render: function () {
+      $(this.el).html(this.template({contact: this.model.toJSON()}))
+			return this
+    },
+    doAction: function (e) {
+      var action = $(e.target).data('action')
+      this.wizard.saveContact(this.model)
+      return false
+    }
+  })
+  
+	Ts.WizardViews.RoleReview = Ts.WizardViews.BasePage.extend({
+		template: _.template($('#role_wizard\\:role_review_template').html()),
+    render: function () {
+      $(this.el).html(this.template(this.model.recursiveToJSON()))
+			return this
+    }
+	})
+	Ts.WizardViews.WizardView = Ts.WizardViews.Wizard.extend({
+    initialize: function () {
+      this._super('initialize', arguments)
+      this.showFindPersonForm()
+    },
+    showFindPersonForm: function () {
+      this.findPersonModel = new Ts.Person
+      var findPersonForm = new Ts.WizardViews.FindPersonForm({model: this.findPersonModel, wizard: this, action: 'findPeople'})
+      this.model.set({currentPage: findPersonForm})
+    },
+    showCreatePersonForm: function () {
+      var createPersonForm = new Ts.WizardViews.CreatePersonForm({model: this.findPersonModel, wizard: this, action: 'savePerson'}, 'savePerson')
+      this.model.set({currentPage: createPersonForm})
+    },
+    showCreateContactForm: function () {
+      var contactForm = new Ts.WizardViews.ContactForm({model: this.model.get('role').get('residential_contact'), wizard: this})
+      this.model.set({currentPage: contactForm})
+    },
+    showRoleReview: function () {
+      var roleReview = new Ts.WizardViews.RoleReview({model: this.model.get('role'), wizard: this})
+      this.model.set({currentPage: roleReview})
+    },
+    findPeople: function (person) {
+      var matches = new Ts.People()
+      var self = this
+      this.model.set({isLoading: true})
+      matches.fetch({
+        success: _.bind( function (collection, response) {
+          var resultsView = new Ts.WizardViews.PersonResults({collection: collection, wizard: this})
+          this.model.set({currentPage: resultsView, isLoading: false})
+        }, this),
+        error: this.ajaxErrorHandler(this),
+        data: person.toJSON()
+      })
+    },
+    findContacts: function (person) {
+      var contacts = new Ts.Contacts()
+      var self = this
+      this.model.set({isLoading: true})
+      contacts.fetch({
+        success: function (results) {
+          var resultsView = new Ts.WizardViews.ContactResults({collection: results, wizard: self})
+          self.model.set({currentPage: resultsView, isLoading: false})
+        },
+        error: this.ajaxErrorHandler(this),
+        data: {person_id: person.get('id')}
+      })
+    },
+    savePerson: function (person) {
+      this.model.get('role').set({person: person})
+      if(person.get('id')) {
+        this.findContacts(person)
+      } else {
+        this.model.set({isLoading: true})
+				person.serverValidate({
+					valid: _.bind( function () { this.showCreateContactForm() }, this),
+					invalid: _.bind( function (errors) { this.showCreatePersonForm() }, this),
+					error: this.ajaxErrorHandler(this, 'jQuery'),
+          complete: _.bind(function () { this.model.set({isLoading: false}) }, this)
+				})
+      }
+    },
+    saveContact: function (contact) {
+      if(contact.get('id')) {
+        this.model.get('role').set({residential_contact: contact})
+        this.showRoleReview()
+      } else {
+        this.model.set({isLoading: true})
+				contact.serverValidate({
+					valid: _.bind( function () { this.showRoleReview() }, this),
+					invalid: _.bind( function (errors) { this.showCreateContactForm() }, this),
+					error: this.ajaxErrorHandler(this, 'jQuery'),
+          complete: _.bind(function () { this.model.set({isLoading: false}) }, this)
+				})
+      }
+    },
+    saveRole: function () {
+      this.close()
+      this.onComplete(this.model.get('role'))
+    }
+	})
 })
