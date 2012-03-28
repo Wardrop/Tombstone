@@ -3,31 +3,29 @@
 <head>
   <link rel="stylesheet" href="<%= url "/reset.css" %>"/>
   <link rel="stylesheet" href="<%= url "/style.css" %>"/>
-  <script type="text/javascript" src="/scripts/vendor/jquery-1.7.1.min.js"></script>
 </head>
 <body>
-<div style="background: white;">
-  <section>
-    <h2 class="underline">Photographs</h2>
+<section>
+  <h2 class="underline">Photographs</h2>
 
-    <div class="section padded">
-      <div class="photos">
-        <% @blobs.each do |blob| %>
-          <div class="imageSingle" title="Click to view photo">
-            <div class="image">
-              <a href="<%= blob.file.url %>" target="_parent">
-                <img src="<%= blob.file.thumbnail.url %>"/>
-              </a>
-            </div>
-            <div class="footer">
-              <span><%= blob[:name] %> - </span>
-              <span><%= blob[:timestamp].strftime("%Y-%m-%d %-I:%M%P") %></span>
-            </div>
+  <div class="section padded">
+    <div class="photos">
+      <% @blobs.each do |blob| %>
+        <div class="imageSingle" title="Click to view photo">
+          <div class="image">
+            <a href="<%= blob.file.url %>" title="<%= blob[:name] %> - <%= blob[:timestamp].strftime("%Y-%m-%d %-I:%M%P") %>" target="_parent">
+              <img src="<%= blob.file.thumbnail.url %>"/>
+            </a>
           </div>
-        <% end %>
-      </div>
+          <div class="footer">
+            <span><%= blob[:name] %> - </span>
+            <span><%= blob[:timestamp].strftime("%Y-%m-%d %-I:%M%P") %></span>
+          </div>
+        </div>
+      <% end %>
     </div>
-  </section>
+  </div>
+</section>
 </div>
 </body>
 </html>
