@@ -26,7 +26,7 @@ module Tombstone
     end
 
     def get_exif_date_time(date_time)
-      DateTime.strptime(date_time, "%Y:%m:%d %H:%M:%S").to_time
+      DateTime.strptime(date_time +  DateTime.now.strftime("%Z"), "%Y:%m:%d %H:%M:%S %Z")
     end
 
     def extract_geolocation

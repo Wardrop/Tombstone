@@ -932,6 +932,7 @@ iframe {
   padding: 10px;
   float:left
 }
+
 .photos .imageSingle {
   float: left;
   margin: 5px;
@@ -939,17 +940,27 @@ iframe {
   text-align:center;
   border: 1px dotted #58595b;
 }
+
 .photos .imageSingle .image {
   width:320px;
   height:200px;
   margin:5px;
 }
+
+.photos .imageSingle .delete {
+  position: relative;
+  display: inline-block;
+  width: 330px;
+  height:20px;
+  background: url('images/delete_20.png') no-repeat  center center;
+}
+
 .photos .footer {
   text-align:center;
   width: 330px;
   color:#000000;
-  font-weight:bold;
-  padding-top: 7px;
-  padding-bottom:7px;
-  margin-top: 10px;
+  padding-top: 2px;
+  padding-bottom:2px;
+  margin-top: 5px;
 }
+

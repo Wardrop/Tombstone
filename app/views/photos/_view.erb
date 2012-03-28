@@ -15,13 +15,13 @@
         <% @blobs.each do |blob| %>
           <div class="imageSingle" title="Click to view photo">
             <div class="image">
-              <a href="<%= blob.file.url %>">
+              <a href="<%= blob.file.url %>" target="_parent">
                 <img src="<%= blob.file.thumbnail.url %>"/>
               </a>
             </div>
             <div class="footer">
               <span><%= blob[:name] %> - </span>
-              <span><%= blob[:timestamp] %></span>
+              <span><%= blob[:timestamp].strftime("%Y-%m-%d %-I:%M%P") %></span>
             </div>
           </div>
         <% end %>
