@@ -5,7 +5,7 @@ content_for :head do
     <script type="text/javascript">
         $(function () {
             var state_map = {pending: 'Submit', provisional: 'Save',  approved: 'Approve', interred: 'Inter', completed: 'Complete'}
-            var permitted_states = <%= @allocation.permitted_states.to_json %>
+            var permitted_states = <%= Tombstone::Interment.new.permitted_states.to_json %>
             var states = {}
             permitted_states.forEach(function (s) { if (state_map[s]) states[s] = state_map[s] })
             new Ts.FormViews.AllocationForm({

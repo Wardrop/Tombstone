@@ -5,11 +5,11 @@ module Tombstone
       @place = Place.with_pk(params['place_id']) if params['place_id']
       render 'place/new'
     end
-
+    
     get :index, :with => :id, :provides => :json do
       Place.with_pk(params[:id]).values.to_json
     end
-    
+     
     # Valid ranges: Row [A-Z], Plot [1-49]a, Row [A-ZZ], Plot[001-150]
     # Zero-prefixes are decided at a global level.
     post :index, :provides => :json do
@@ -26,7 +26,7 @@ module Tombstone
       end
       {success: place.errors.length < 1, form_errors: place.errors}.to_json
     end
-    
+
     put :index, :with => :id, :provides => :json do
       place = Place.with_pk(params[:id])
       halt 404, "Place with ID ##{params[:id]} does not exist." unless place
@@ -36,46 +36,43 @@ module Tombstone
       end
       {success: place.errors.length < 1, form_errors: place.errors}.to_json
     end
-    
+
     delete :index, :with => :id, :provides => :json do
       # Make sure the place is not associated with any allocations (inc. deleted)
       # TODO: Handle the case where a place has associated images.
       halt 500, {success: false, form_errors: 'Sorry, try again'}.to_json
     end
 
-    get :next_available, :with => :parent_id, :provides => :json do
-      place = Place.with_pk(params[:parent_id])
-      halt 404, "Place with ID ##{params[:parent_id]} does not exist." unless place
+    get :next_available, :map => %r{/place/([0-9]+)/next_available}, :provides => :json do |id|
+      place = Place.with_pk(id)
+      halt 404, "Place with ID ##{id} does not exist." unless place
       next_available = place.next_available
       if next_available
-        ancestors = next_available.ancestors(false, params[:parent_id])
-        chain = ancestors.reverse.push(next_available)
-        chain.reduce({}) { |memo, place|
-          memo[place.id] = place.siblings.with_child_count.available_only.naked.all
-          memo
+        ancestors = next_available.ancestors(true, id).reverse
+        ancestors.map { |place|
+        place.siblings.with_child_count.available_only.naked.all
         }.to_json
       else
         nil.to_json
       end
     end
-    
+
     get :children, :map => %r{/place/([0-9]+)/children(/[^/]+)?}, :provides => :json do |id, filter|
       filter = filter[1..-1] if filter
-      p filter
       id = (id.to_i < 1) ? nil : id.to_i
       places = Place.filter(:parent_id => id)
       if filter
         case filter
         when 'available'
-          places = places.available_only
+        places = places.available_only
         when 'all'
         else
-          halt 404
+        halt 404
         end
       end
       places.order(:name).with_child_count.naked.all.to_json
     end
-    
+
     # get :children, :with => [:parent_id, :option], :provides => :json do
     #   children = Place.filter(:parent_id => params[:parent_id]).order(:name).with_child_count
     #   case params[:option]
@@ -84,7 +81,7 @@ module Tombstone
     #   end
     #   Place.filter(:parent_id => params[:parent_id]).order(:name).with_child_count.available_only.naked.all.to_json
     # end
-    
+
     get :ancestors, :with => :id, :provides => :json do
       place = Place.with_pk(params[:id])
       halt 404, "Place with ID ##{params[:id]} does not exist." unless place
@@ -93,6 +90,6 @@ module Tombstone
       end
       chain.to_json
     end
-    
+
   end
 end

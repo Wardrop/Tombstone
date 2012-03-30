@@ -11,12 +11,43 @@
   </div>
 </script>
 
-<script type="text/template" id="role_wizard:contact_block_template">
+<script type="text/template" id="wizard:place_form_template">
+  <div class="section padded">
+  	<label>
+  		<span>Name</span>
+  		<input type="text" name="name" style="width: 75%;" />
+  	</label>
+    <label class="row">
+  		<span>Type</span>
+  		<select name="type">
+        <option value=""></option>
+        <option>cemetery</option>
+        <option>section</option>
+        <option>sub-section</option>
+        <option>row</option>
+        <option>plot</option>
+      </select>
+  	</label>
+  	<label>
+  		<span>Available</span>
+  		<input type="checkbox" name="status" value="available" checked="checked" />
+  	</label>
+    <label>
+  		<span>Max Interments</span>
+  		<input type="text" name="max_interments" style="width: 12%;" />
+  	</label>
+    <div class="row">
+  		<input type="button" value="Save" data-action="savePlace" />
+  	</div>
+  </div>
+</script>
+
+<script type="text/template" id="wizard:contact_block_template">
   <span><strong><%= contact.street_address %></strong></span>
   <div><%= contact.town %>, <%= contact.state %> <%= contact.postal_code %></div>
 </script>
 
-<script type="text/template" id="role_wizard:contact_results_template">
+<script type="text/template" id="wizard:contact_results_template">
   <h3 class="underline">Contacts Found</h3>
   <div class="blocks"></div>
   <div style="text-align: right;">
@@ -24,7 +55,7 @@
   </div>
 </script>
 
-<script type="text/template" id="role_wizard:create_contact_form_template">
+<script type="text/template" id="wizard:create_contact_form_template">
   <div class="section padded">
   	<label>
   		<span>Street Address</span>
@@ -70,7 +101,7 @@
   </div>
 </script>
 
-<script type="text/template" id="role_wizard:person_form_template">
+<script type="text/template" id="wizard:person_form_template">
   <div class="section padded">
     <label>
   		<span>Title</span>
@@ -112,12 +143,12 @@
   </div>
 </script>
 
-<script type="text/template" id="role_wizard:person_block_template">
+<script type="text/template" id="wizard:person_block_template">
   <span><strong><%= person.title %> <%= person.given_name %> <%= person.surname %></strong></span>
   DOB: <%= Date.parse(person.date_of_birth).toString('dd/MM/yyyy') %>, Gender: <%= person.gender %>
 </script>
 
-<script type="text/template" id="role_wizard:person_results_template">
+<script type="text/template" id="wizard:person_results_template">
   <h3 class="underline">People Found</h3>
   <div class="blocks"></div>
   <div style="text-align: right;">
@@ -125,7 +156,7 @@
   </div>
 </script>
 
-<script type="text/template" id="role_wizard:role_review_template">
+<script type="text/template" id="wizard:role_review_template">
   <h3 class="underline">Review</h3>
   <div class="rowed display wide">
     <div class="row">

@@ -123,12 +123,13 @@ Ts.Wizard = Backbone.Model.extend({
 	},
   initialize: function () {
     if(!this.get('pageHistory')) this.set({pageHistory: []})
-    this.bind('change:currentPage', this.currentPageChanged, this)
-  },
-  currentPageChanged: function () {
-    if(this.previous('currentPage')) {
-      this.get('pageHistory').push(this.previous('currentPage'))
-    }
+    this.bind('change:currentPage', function () {
+      if(this.previous('currentPage')
+         && this.previous('currentPage') != this.get('pageHistory')
+      ) {
+        this.get('pageHistory').push(this.previous('currentPage'))
+      }
+    }, this)
   }
 })
 

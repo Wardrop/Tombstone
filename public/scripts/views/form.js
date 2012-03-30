@@ -1,17 +1,20 @@
+window.indicators = []
+
 $( function () {
   Ts.FormViews.Section = Ts.View.extend({
     tagName: 'section',
     templateId: 'form:section_template',
     initialize: function () {
       this.body = []
-      if (body = this.options.body) {
+      if (this.options.body) {
+        body = this.options.body
         this.body = (body.constructor == Array) ? body : [body]
       }
     },
     render: function () {
       this.$el.html(this.template(this.options))
       _.each(this.body, function (element) {
-        this.$('div').append(element)
+        this.$('> div').append(element)
       }, this)
       return this
     }
@@ -112,11 +115,13 @@ $( function () {
       var viewport = this.$('.viewport')
       var height = viewport.find('li').outerHeight() || 34
       viewport.css({height: height});
-      if (Object.keys(this.options.values).length <= 1)
+      if (Object.keys(this.options.values).length <= 1) {
         this.$el.addClass('no_dropdown')
-      else
+      } else {
         this.$el.removeClass('no_dropdown')
-      this.selectButton(this.options.selected || this.$('input:first')[0].name)
+      }
+      console.log(this.$el)
+      this.selectButton(this.options.selected || this.$('input')[0].name)
       this.hideList()
       
   		return this
@@ -179,128 +184,103 @@ $( function () {
     }
   })
   
-  Ts.FormViews.PlacePicker = Ts.View.extend({
-    tagName: 'label',
-    className: 'placepicker',
-    templateId: 'form:place_picker_template',
-    events: {
-      'change': 'selectPlace'
-    },
-    initialize: function () {
-      _.bindAll(this, 'selectPlace')
-      this.options.insertFunction = this.options.insertFunction || 'append'
-    },
-    render: function () {
-      this.$el.html(this.template({
-        type: this.collection.first().get('type'),
-        places: this.collection.toJSON(),
-        selected: this.options.selected,
-        disabled: this.options.disabled
-			}))
-			setTimeout("this.$('select').focus()")
-      return this
-    },
-    renderPlaces: function (places, options) {
-      options = options || {}
-      var view = new Ts.FormViews.PlacePicker($.extend({}, this.options, options, {collection: places}))
-      this.$el.parent()[this.options.insertFunction](view.render().el)
-      return this
-    },
-    selectPlace: function (e) {
-      var target = $(e.target)
-      var placeId = target.children(':selected').attr('value')
-      this.$el.nextAll().remove()
-      if(placeId) {
-        if(target.data('placeType') == 'section') {
-          this.nextAvailable(placeId)
-        } else {
-          this.load(placeId)
-        }
-      }
-      return this
-    },
-    load: function (parent_id) {
-      this.lastRequest && this.lastRequest.abort()
-      this.$el.append('<div class="indicator loading" />')
-      this.lastRequest = $.ajax('/place/children/'+parent_id, {
-				type: 'GET',
-				dataType: 'json',
-        success: _.bind(function (data, textStatus, jqXHR) {
-          var places = new Ts.Places(data) 
-          if(places.length > 0) {
-            this.renderPlaces(places)
-            this.$('.indicator').remove()
-          } else if (this.collection.get(parent_id).get('child_count') > 0) {
-            this.$('.indicator').attr({
-              class: 'indicator warning',
-              title: this.collection.get(parent_id).get('type').demodulize().titleize() + ' is not available.'
-            })
-          } else {
-            this.$('.indicator').remove()
-          }
-        }, this),
-        error: function (jqXHR, textStatus, errorThrown) {
-          // TODO
-          this.$('.indicator').remove()
-          if(textStatus != 'abort') alert('Some went wrong!')
-        }
-      })
-      return this
-    },
-    nextAvailable: function (parent_id) {
-      this.lastRequest && this.lastRequest.abort()
-      this.$('.indicator').remove()
-      this.$el.append('<div class="indicator loading" />')
-      this.lastRequest = $.ajax('/place/next_available/'+parent_id, {
-        type: 'GET',
-				dataType: 'json',
-        success: _.bind(function (data, textStatus, jqXHR) {
-          if (data && Object.keys(data).length > 0) {
-            _.each(data, function (places, selected_id) {
-              this.renderPlaces(new Ts.Places(places), {selected: selected_id})
-            }, this)
-            this.$('.indicator').remove()
-          } else {
-            this.$('.indicator').attr({
-              class: 'indicator warning',
-              title: this.collection.get(parent_id).get('type').demodulize().titleize() +
-                ' does not contain any available places.'
-            })
-          }
-        }, this),
-        error: function (jqXHR, textStatus, errorThrown) {
-          // TODO
-          if(textStatus != 'abort') alert(jqXHR.responseText)
-          this.$('.indicator').remove()
-        }
-      })
-      return this
-    }
-    // loadWithAncestors: function (id) {
-    //   this.lastRequest && this.lastRequest.abort()
-    //   this.$el.append('<div class="indicator loading" />')
-    //   this.lastRequest = $.ajax('/place/ancestors/'+id, {
-    //     type: 'GET',
-		//     dataType: 'json',
-    //     data: {include_self: true},
-    //     success: _.bind(function (data, textStatus, jqXHR) {
-    //       var lastParent = id
-    //       _.each(data, function (placeList) {
-    //         this.renderPlaces(new Ts.Places(placeList), {selected: lastParent, insertFunction: 'prepend'})
-    //         lastParent = placeList[0].parent_id
-    //       }, this)
-    //     }, this),
-    //     error: function (jqXHR, textStatus, errorThrown) {
-    //       // TODO
-    //       if(textStatus != 'abort') alert('Some went wrong!')
-    //     },
-    //     complete: _.bind(function () {
-    //       this.$('.indicator').remove()
-    //     }, this)
-    //   })
-    //   return this
-    // }
-  })
+  // Ts.FormViews.PlacePicker = Ts.View.extend({
+  //   tagName: 'label',
+  //   className: 'placepicker',
+  //   templateId: 'form:place_picker_template',
+  //   events: {
+  //     'change': 'selectPlace'
+  //   },
+  //   initialize: function () {
+  //     _.bindAll(this, 'selectPlace')
+  //   },
+  //   render: function () {
+  //     this.$el.html(this.template({
+  //       type: this.collection.first().get('type'),
+  //       places: this.collection.toJSON(),
+  //       selected: this.options.selected,
+  //       disabled: this.options.disabled
+  //      }))
+  //     return this
+  //   },
+  //   renderPlaces: function (places, options) {
+  //     options = options || {}
+  //     var view = new Ts.FormViews.PlacePicker($.extend({}, this.options, options, {collection: places}))
+  //     this.$el.parent().append(view.render().el)
+  //     setTimeout("view.$('select').focus()")
+  //     return this
+  //   },
+  //   selectPlace: function (e) {
+  //     var target = $(e.target)
+  //     var placeId = target.children(':selected').attr('value')
+  //     this.$el.nextAll().remove()
+  //     if(placeId) {
+  //       if(target.data('placeType') == 'section') {
+  //         this.nextAvailable(placeId)
+  //       } else {
+  //         this.load(placeId)
+  //       }
+  //     }
+  //     return this
+  //   },
+  //   load: function (parent_id) {
+  //     this.lastRequest && this.lastRequest.abort()
+  //     this.$el.append('<div class="indicator loading" />')
+  //     this.lastRequest = $.ajax('/place/children/'+parent_id, {
+  //        type: 'GET',
+  //        dataType: 'json',
+  //       success: _.bind(function (data, textStatus, jqXHR) {
+  //         var places = new Ts.Places(data) 
+  //         if(places.length > 0) {
+  //           this.renderPlaces(places)
+  //           this.$('.indicator').remove()
+  //         } else if (this.collection.get(parent_id).get('child_count') > 0) {
+  //           this.$('.indicator').attr({
+  //             class: 'indicator warning',
+  //             title: this.collection.get(parent_id).get('type').demodulize().titleize() + ' is not available.'
+  //           })
+  //         } else {
+  //           this.$('.indicator').remove()
+  //         }
+  //       }, this),
+  //       error: function (jqXHR, textStatus, errorThrown) {
+  //         // TODO
+  //         this.$('.indicator').remove()
+  //         if(textStatus != 'abort') alert('Some went wrong!')
+  //       }
+  //     })
+  //     return this
+  //   },
+  //   nextAvailable: function (parent_id) {
+  //     this.lastRequest && this.lastRequest.abort()
+  //     this.$('.indicator').remove()
+  //     this.$el.append('<div class="indicator loading" />')
+  //     this.lastRequest = $.ajax('/place/next_available/'+parent_id, {
+  //       type: 'GET',
+  //        dataType: 'json',
+  //       success: _.bind(function (data, textStatus, jqXHR) {
+  //         if (data && Object.keys(data).length > 0) {
+  //           _.each(data, function (places, selected_id) {
+  //             this.renderPlaces(new Ts.Places(places), {selected: selected_id})
+  //           }, this)
+  //           this.$('.indicator').remove()
+  //         } else {
+  //           this.$('.indicator').attr({
+  //             class: 'indicator warning',
+  //             title: this.collection.get(parent_id).get('type').demodulize().titleize() +
+  //               ' does not contain any available places.'
+  //           })
+  //         }
+  //       }, this),
+  //       error: function (jqXHR, textStatus, errorThrown) {
+  //         // TODO
+  //         if(textStatus != 'abort') alert(jqXHR.responseText)
+  //         this.$('.indicator').remove()
+  //       }
+  //     })
+  //     return this
+  //   }
+  // })
   
   Ts.FormViews.PlaceForm = Ts.View.extend({
     initialize: function () {
@@ -332,10 +312,91 @@ $( function () {
 		}
   })
   
-  Ts.FormViews.PlaceEditPicker = Ts.View.extend({
+  Ts.FormViews.PlacePicker = Ts.View.extend({
     tagName: 'label',
     className: 'placepicker',
     templateId: 'form:place_picker_template',
+    events: {
+      change: function () { this.selectPlace() }
+    },
+    initialize: function () {
+      this._super('initialize', arguments)
+      this.collection.on('reset', function () {
+        this.render()
+        this.selectPlace()
+      }, this)
+      this.render()
+    },
+    render: function () {
+      if (this.collection.length > 0) {
+        this.$el.html(this.template ({
+  					type: (this.collection.first()) ? this.collection.first().get('type') : 'unknown',
+  					places: this.collection.toJSON(),
+  					options: this.options
+  			}))
+      } else {
+        this.remove()
+      }
+      this.$el.append(this.indicator)
+      return this
+    },
+    renderChildPicker: function (places, options) {
+      options = options || {}
+      var parent_id = this.collection.at(0).get('parent_id')
+      var view = new this.constructor($.extend({}, this.options, options, {collection: places}))
+      this.$el.after(view.el)
+      setTimeout(function () { view.$('select').focus() })
+      return view
+    },
+    selectPlace: function (placeId) {
+      var element = this.$('select')
+      if (placeId == undefined) {
+        placeId = element.val()
+      } else {
+        element.val(placeId)
+      }
+      this.$el.nextAll().remove()
+      if(placeId) {
+        if(this.options.nextAvailableFrom && this.options.nextAvailableFrom == element.data('placeType')) {
+          this.nextAvailable(placeId)
+        } else {
+          this.loadChildren(placeId)
+        }
+      }
+      return this
+    },
+    loadChildren: function (parent_id) {
+      places = new Ts.Places
+      this.renderChildPicker(places)
+      places.fetch({url: '/place/'+parent_id+'/children'})
+      return this
+    },
+    nextAvailable: function (parent_id) {
+      var dummy = new Backbone.Collection
+      this.bindToSync(dummy)
+      Backbone.sync('read', dummy, {
+        url: '/place/'+parent_id+'/next_available',
+        success: _.bind(function (data, textStatus, jqXHR) {
+          if (data && Object.keys(data).length > 0) {
+            var lastPickerView = null
+            for(var i=0; data[i]; i++) {
+              var selected_id = (data[i+1]) ? data[i+1][0].parent_id : data[i][0].id
+              lastPickerView = (lastPickerView || this).renderChildPicker(new Ts.Places(data[i]), {selected: selected_id})
+            }
+          } else {
+            this.indicator.attr({
+              class: 'indicator warning',
+              title: this.collection.get(parent_id).get('type').demodulize().titleize() +
+                ' does not contain any available places.'
+            })
+          }
+        }, this)
+      })
+      return this
+    }
+  })
+  
+  Ts.FormViews.PlaceEditPicker = Ts.FormViews.PlacePicker.extend({
     events: {
       change: function () { this.selectPlace() },
       'click .add_child': 'selectAction',
@@ -343,30 +404,12 @@ $( function () {
       'click .edit': 'selectAction',
       'click .delete': 'selectAction'
     },
-    initialize: function () {
-      this._super('initialize', arguments)
-      this.collection.on('reset', this.render, this)
-      this.render()
-    },
-    render: function () {
-      if (this.collection.length > 0) {
-        this.$el.html( this.template({
-  					type: (this.collection.first()) ? this.collection.first().get('type') : 'unknown',
-  					places: this.collection.toJSON(),
-  					selected: this.options.selected,
-            disabled: this.options.disabled
-  			}))
-        this.$el.append('<div class="controls" />')
-                .append(this.indicator)
-        this.selectPlace()
-        setTimeout("this.$('select').focus()")
-      } else {
-        this.remove()
-      }
-      return this
-    },
     renderControls: function () {
-      this.$('.controls').empty()
+      if (this.$('.controls').length == 0) {
+        this.indicator.before('<div class="controls" />')
+      } else {
+        this.$('.controls').empty()
+      }
       var selectedPlaceId = this.$(':selected').val()
       if(selectedPlaceId) {
         this.$('.controls').append('<span class="add_child" title="Add Child" />')
@@ -377,32 +420,9 @@ $( function () {
         this.$('.controls').append('<span class="add" title="Add" />')
       }
     },
-    renderChildPicker: function (places, options) {
-      options = options || {}
-      var parent_id = this.collection.at(0).get('parent_id')
-      var view = new this.constructor($.extend({}, this.options, options, {collection: places}))
-      
-      this.$el.after(view.el)
-      return this
-    },
-    selectPlace: function (placeId) {
-      var element = this.$('select')
-      if (placeId == undefined) {
-        placeId = element.children(':selected').attr('value')
-      } else {
-        element.val(placeId)
-      }
-      this.$el.nextAll().remove()
-      if(placeId) {
-        this.loadChildren(placeId)
-      }
+    selectPlace: function () {
+      this._super('selectPlace', arguments)
       this.renderControls()
-      return this
-    },
-    loadChildren: function (parent_id) {
-      places = new Ts.Places
-      this.renderChildPicker(places)
-      places.fetch({url: '/place/'+parent_id+'/children'})
       return this
     },
     selectAction: function (e) {
@@ -449,7 +469,6 @@ $( function () {
       this.wizardView.render()
     },
     refresh: function () {
-      console.log('refreshing')
       var place = this.collection.get(this.$(':selected').val())
       var placeId = (place) ? place.get('id') : null
       var parentId = (place) ? place.get('parent_id') : 0
@@ -466,15 +485,15 @@ $( function () {
 		events: {
 			'submit' : 'onSubmit'
 		},
-		onSubmit: function () {
-			return false
-		},
 		initialize: function () {
+		  this._super('initialize', arguments)
 			this.firstSection = $(this.el).children('section').first()
 			this.placeData = $('#json\\:place_data').parseJSON() || {}
 			this.allocationData = $('#json\\:allocation_data').parseJSON() || {}
-			this.indicator = $('<div class="indicator" />')
 			this.render()
+		},
+		onSubmit: function () {
+			return false
 		},
 		render: function () {
 			this.renderRoles()
@@ -513,23 +532,22 @@ $( function () {
 		renderPlaces: function () {
 			var section = new Ts.FormViews.Section({title: 'Location', name: 'place'})
 			if(place_id = this.allocationData.place_id) {
-				var currentPlace = place_id
-				while (currentPlace > 0) {
-					var siblings = this.placeData[currentPlace]
-					var collection = new Ts.Places(siblings)
+				var places;
+				for (var i = 0; places = this.placeData[i]; i++) {
+				  var selected = (this.placeData[i+1]) ? this.placeData[i+1][0].parent_id : this.allocationData.place_id
 					var placeView = new Ts.FormViews.PlacePicker({
-            selected: currentPlace,
-            collection: collection,
+            selected: selected,
+            collection: new Ts.Places(places),
+            nextAvailableFrom: 'section',
             disabled: !this.allocationData.id
           })
-					section.body.unshift(placeView.render().el)
-          currentPlace = siblings[0].parent_id
+					section.body.push(placeView.render().el)
 				}
         if (placeView.options.disabled) {
           section.body.unshift($('<input type="hidden" name="place[]" value="'+place_id+'" />')[0])
         }
 			} else {
-				var collection = new Ts.Places(this.placeData[''])
+				var collection = new Ts.Places(this.placeData[0])
 				var placeView = new Ts.FormViews.PlacePicker({collection: collection})
 				section.body.push(placeView.render().el)
 			}

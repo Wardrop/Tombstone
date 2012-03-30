@@ -5,8 +5,9 @@ $( function () {
       return this.template(obj)
     },
     initialize: function () {
-      this.indicator = this.options.indicator || $('<div class="indicator" style="display: none" />')
-      this.errorBlock = this.options.errorBlock || $('<ul class="error_block" style="display: none" />')
+      this.options.scrollToErrors = true
+      this.indicator = this.options.indicator || $('<div class="indicator" style="display: none;" />')
+      this.errorBlock = this.options.errorBlock || $('<ul class="error_block" style="display: none;" />')
       _.each([this.collection, this.model], function (obj) {
         if (obj) {
           this.bindToSync(obj)
@@ -62,7 +63,7 @@ $( function () {
       try {
         return $(selector).parseJSON() || {}
       } catch (err) {
-        console.log('Contents of '+selector+ ' could not be parses as JSON')
+        console.log('Contents of '+selector+ ' could not be parsed as JSON')
         return {}
       }
     },
@@ -92,7 +93,9 @@ $( function () {
       }
       
       this.errorBlock.css({display: 'none'}).slideDown(300)
-      this.errorBlock.scrollTo(300, -10);
+      if(this.options.scrollToErrors) {
+        this.errorBlock.scrollTo(300, -10);
+      }
     },
     stringifyErrors: function (errors) {
       errors = (errors.constructor == String) ? [errors] : errors
