@@ -28,7 +28,7 @@ encode them, so for example, the backslash would become %5C.
 
 Mail
 ----
-Sendmail is required for email capability, such as notifications. If it's not installed, attempts to email will likely
+Sendmail (or something sendmail-compatible) is required for email capability, such as notifications. If it's not installed, attempts to email will likely
 result in a "broken pipe" error or something similar.
 
 Other Notes

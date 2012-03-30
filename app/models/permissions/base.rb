@@ -4,12 +4,14 @@ module Tombstone
     module BaseModel
       def self.included(klass)
         delegate :permissions, :to => klass
-        klass.extend(Module.new {
-          attr_writer :permissions
-          def permissions
-            @permissions ||= Permissions.new
-          end
-        })
+        klass.extend ClassMethods
+      end
+      
+      module ClassMethods
+        attr_writer :permissions
+        def permissions
+          @permissions ||= Permissions.new
+        end
       end
       
       def before_save

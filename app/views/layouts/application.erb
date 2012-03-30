@@ -30,10 +30,18 @@
     <div class="info">
       <div>
         <%= print ('<small>Not logged in</small>') {
-          "Hello, #{session[:ldap][:displayName].first} [ <a href='#{url :logout}'>logout</a> ]"
+          "Hello, #{session[:ldap][:displayName].first} (#{@user.role ? @user.role.demodulize.titleize : 'Guest'})"
         } %>
       </div>
-      <div><%= print ('Guest') { @user.role ? @user.role.demodulize.titleize : 'Guest' } %></div>
+      <div style="margin-top: 1em;">
+        <%=
+        select_tag( :role_actions, :style => 'height: 1.8em;', :options => {
+          nil => nil,
+          'Add Place' => url('/place'),
+          'Logout' => url('/logout')
+        })
+        %>
+      </div>
     </div>
     <div id="main_banner">Tombstone <sup>v<%= Tombstone::VERSION %></sup></div>
     <div id="print_banner">

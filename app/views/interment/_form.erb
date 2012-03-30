@@ -8,16 +8,14 @@
   <script type="application/json" id="json:place_data">
     <%=
     begin
-      if places = @allocation.place && @allocation.place.ancestors(true).reverse
-        Hash[*places.map { |place| [place.id, place.siblings.naked.all] }.flatten(1)]
+      places = @allocation.place && @allocation.place.ancestors(true).reverse
+      if places
+        places.map { |place| place.siblings.naked.all }
       else
-        {nil => Tombstone::Place.filter(:parent_id => nil).available_only.order(:name).naked.all}
+        [Tombstone::Place.filter(:parent_id => nil).available_only.order(:name).naked.all]
       end
     end.to_json
     %>
-  </script>
-  <script type="text/javascript">
-    $('<iframe />').attr('src', 'http://www.google.com').append('body');
   </script>
 <% end %>
 <form id="interment_form" class="rowed wide" action="<%= (Tombstone::Interment === @allocation) ? "/interment/#{@allocation.id}" : "/interment" %>">
@@ -87,7 +85,7 @@
       </label>
     </div>
   </section>
-  <% if @allocation.id  %>
+  <% if @allocation.id %>
     <iframe src="<%= url :"photos_edit", :id => @allocation.place.id %>" onload='javascript:resizeIframe(this);'>Browser not compatible.</iframe>
     <input type="hidden" name="id" value="<%= @allocation.id %>" />
   <% end %>

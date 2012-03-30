@@ -1,8 +1,7 @@
 module Tombstone
   module ModelPermissions
     
-    module Allocation 
-      
+    module Allocation
       def permitted_states
         can_delete = case self.status
         when 'approved'
@@ -14,7 +13,7 @@ module Tombstone
         else
           true
         end
-        
+
         unpermitted = [
           permissions.can_approve? ? nil : 'approved',
           permissions.can_inter? ? nil : 'interred',

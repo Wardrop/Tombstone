@@ -9,6 +9,7 @@ $( function () {
   	  this._super('initialize', arguments)
       this.wizard = this.options.wizard
       _.bindAll(this, 'doAction')
+      this.options.scrollToErrors = false
   	},
     doAction: function (e) {
       var action = null
@@ -77,6 +78,7 @@ $( function () {
 			this.model.bind('change:currentPage', this.renderPage, this)
       this.model.bind('change:isLoading', this.renderLoader, this)
       this.onComplete = this.options.onComplete || new Function
+      this.options.scrollToErrors = false
       $('body').prepend(this.$el.css({display: 'none'}))
 		},
 		render: function () {
@@ -93,14 +95,12 @@ $( function () {
       this.hideErrors()
       this.$('.body > .page').children().detach()
       model = this.model.get('currentPage') && this.model.get('currentPage').model
-      if (model) {
-        if(model && model.errors && Object.keys(model.errors).length > 0) {
-          this.showErrors(model.errors)
-        } else {
-          this.hideErrors()
-        }
-        this.$('.body > .page').html(this.model.get('currentPage').render().el)
+      if (model && model.errors && Object.keys(model.errors).length > 0) {
+        this.showErrors(model.errors)
+      } else {
+        this.hideErrors()
       }
+      this.$('.body > .page').html(this.model.get('currentPage').render().el)
     },
     renderLoader: function () {
       if(this.model.get('isLoading')) {
@@ -134,6 +134,7 @@ $( function () {
     goBack: function () {
       var backDestination = this.model.get('pageHistory').pop()
       if(backDestination) {
+        if (backDestination.model) Object.keys(backDestination.model.errors).length = 0
         this.model.set({currentPage: backDestination}, {silent: true})
         this.renderPage()
       }
@@ -166,105 +167,13 @@ $( function () {
   })
   
   Ts.WizardViews.PlaceForm = Ts.WizardViews.GenericForm.extend({
-    templateId: 'place_form:place_form_template'
+    templateId: 'form:place_form_template'
   })
   
   
   /*** Role Wizard Views ***/
   
-  Ts.WizardViews.FindPersonForm = Ts.WizardViews.GenericForm.extend({
-		template: _.template($('#role_wizard\\:person_form_template').html())
-	})
-  
-  Ts.WizardViews.CreatePersonForm = Ts.WizardViews.GenericForm.extend({
-		template: _.template($('#role_wizard\\:person_form_template').html())
-	})
-	
-	Ts.WizardViews.ContactForm = Ts.WizardViews.GenericForm.extend({
-		template: _.template($('#role_wizard\\:create_contact_form_template').html())
-	})
-  
-	Ts.WizardViews.PersonResults = Ts.WizardViews.BasePage.extend({
-		template: _.template($('#role_wizard\\:person_results_template').html()),
-    render: function () {
-      $(this.el).html(this.template())
-      if(this.collection.length > 0) {
-        this.collection.each(function (person) {
-          this.$('.blocks').append((new Ts.WizardViews.PersonBlock({model: person, wizard: this.wizard})).render().el)
-        }, this)
-      } else {
-        this.$('.blocks').append('<small class="padded">No matches found.</small>')
-      }
-			return this
-    }
-	})
-  
-  Ts.WizardViews.ContactResults = Ts.WizardViews.BasePage.extend({
-		template: _.template($('#role_wizard\\:contact_results_template').html()),
-    render: function () {
-      $(this.el).html(this.template())
-      if(this.collection.length > 0) {
-        this.collection.each(function (contact) {
-          this.$('.blocks').append((new Ts.WizardViews.ContactBlock({model: contact, wizard: this.wizard})).render().el)
-        }, this)
-      } else {
-        this.$('.blocks').append('<small class="padded">No matches found.</small>')
-      }
-			return this
-    }
-	})
-  
-  Ts.WizardViews.PersonBlock = Ts.View.extend({
-    className: 'row_block clickable',
-    template: _.template($('#role_wizard\\:person_block_template').html()),
-    events: {
-      'click' : 'doAction'
-    },
-    initialize: function () {
-      this._super('initialize', arguments)
-      this.wizard = this.options.wizard
-      _.bindAll(this, 'doAction')
-    },
-    render: function () {
-      $(this.el).html(this.template({person: this.model.toJSON()}))
-			return this
-    },
-    doAction: function (e) {
-      var action = $(e.target).data('action')
-      this.wizard.savePerson(this.model)
-      return false
-    }
-  })
-  
-  Ts.WizardViews.ContactBlock = Ts.View.extend({
-    className: 'row_block clickable',
-    template: _.template($('#role_wizard\\:contact_block_template').html()),
-    events: {
-      'click' : 'doAction'
-    },
-    initialize: function (opts) {
-      this.wizard = opts.wizard
-      _.bindAll(this, 'doAction')
-    },
-    render: function () {
-      $(this.el).html(this.template({contact: this.model.toJSON()}))
-			return this
-    },
-    doAction: function (e) {
-      var action = $(e.target).data('action')
-      this.wizard.saveContact(this.model)
-      return false
-    }
-  })
-  
-	Ts.WizardViews.RoleReview = Ts.WizardViews.BasePage.extend({
-		template: _.template($('#role_wizard\\:role_review_template').html()),
-    render: function () {
-      $(this.el).html(this.template(this.model.recursiveToJSON()))
-			return this
-    }
-	})
-	Ts.WizardViews.RoleWizard = Ts.WizardViews.Wizard.extend({
+  Ts.WizardViews.RoleWizard = Ts.WizardViews.Wizard.extend({
     initialize: function () {
       this._super('initialize', arguments)
       this.showFindPersonForm()
@@ -320,7 +229,7 @@ $( function () {
         this.model.set({isLoading: true})
 				person.serverValidate({
 					valid: _.bind( function () { this.showCreateContactForm() }, this),
-					invalid: _.bind( function (errors) { this.showCreatePersonForm() }, this),
+					invalid: _.bind( function (errors) { this.renderPage() }, this),
 					error: this.ajaxErrorHandler(this, 'jQuery'),
           complete: _.bind(function () { this.model.set({isLoading: false}) }, this)
 				})
@@ -345,4 +254,98 @@ $( function () {
       this.onComplete(this.model.get('role'))
     }
 	})
+  
+  Ts.WizardViews.FindPersonForm = Ts.WizardViews.GenericForm.extend({
+		template: _.template($('#wizard\\:person_form_template').html())
+	})
+  
+  Ts.WizardViews.CreatePersonForm = Ts.WizardViews.GenericForm.extend({
+		template: _.template($('#wizard\\:person_form_template').html())
+	})
+	
+	Ts.WizardViews.ContactForm = Ts.WizardViews.GenericForm.extend({
+		template: _.template($('#wizard\\:create_contact_form_template').html())
+	})
+  
+	Ts.WizardViews.PersonResults = Ts.WizardViews.BasePage.extend({
+		template: _.template($('#wizard\\:person_results_template').html()),
+    render: function () {
+      $(this.el).html(this.template())
+      if(this.collection.length > 0) {
+        this.collection.each(function (person) {
+          this.$('.blocks').append((new Ts.WizardViews.PersonBlock({model: person, wizard: this.wizard})).render().el)
+        }, this)
+      } else {
+        this.$('.blocks').append('<small class="padded">No matches found.</small>')
+      }
+			return this
+    }
+	})
+  
+  Ts.WizardViews.ContactResults = Ts.WizardViews.BasePage.extend({
+		template: _.template($('#wizard\\:contact_results_template').html()),
+    render: function () {
+      $(this.el).html(this.template())
+      if(this.collection.length > 0) {
+        this.collection.each(function (contact) {
+          this.$('.blocks').append((new Ts.WizardViews.ContactBlock({model: contact, wizard: this.wizard})).render().el)
+        }, this)
+      } else {
+        this.$('.blocks').append('<small class="padded">No matches found.</small>')
+      }
+			return this
+    }
+	})
+  
+  Ts.WizardViews.PersonBlock = Ts.View.extend({
+    className: 'row_block clickable',
+    template: _.template($('#wizard\\:person_block_template').html()),
+    events: {
+      'click' : 'doAction'
+    },
+    initialize: function () {
+      this._super('initialize', arguments)
+      this.wizard = this.options.wizard
+      _.bindAll(this, 'doAction')
+    },
+    render: function () {
+      $(this.el).html(this.template({person: this.model.toJSON()}))
+			return this
+    },
+    doAction: function (e) {
+      var action = $(e.target).data('action')
+      this.wizard.savePerson(this.model)
+      return false
+    }
+  })
+  
+  Ts.WizardViews.ContactBlock = Ts.View.extend({
+    className: 'row_block clickable',
+    template: _.template($('#wizard\\:contact_block_template').html()),
+    events: {
+      'click' : 'doAction'
+    },
+    initialize: function (opts) {
+      this.wizard = opts.wizard
+      _.bindAll(this, 'doAction')
+    },
+    render: function () {
+      $(this.el).html(this.template({contact: this.model.toJSON()}))
+			return this
+    },
+    doAction: function (e) {
+      var action = $(e.target).data('action')
+      this.wizard.saveContact(this.model)
+      return false
+    }
+  })
+  
+	Ts.WizardViews.RoleReview = Ts.WizardViews.BasePage.extend({
+		template: _.template($('#wizard\\:role_review_template').html()),
+    render: function () {
+      $(this.el).html(this.template(this.model.recursiveToJSON()))
+			return this
+    }
+	})
+	
 })
