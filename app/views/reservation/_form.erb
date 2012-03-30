@@ -1,5 +1,5 @@
 <% content_for :head do %>
-    <script type="application/json" id="json:allocation_data">
+  <script type="application/json" id="json:allocation_data">
     <%=
     @allocation.to_json(include: {roles: {include: [:person, :residential_contact, :mailing_contact]}, place: {}, transactions: {}})
     %>
@@ -8,10 +8,11 @@
   <script type="application/json" id="json:place_data">
     <%=
     begin
-      if places = @allocation.place && @allocation.place.ancestors(true).reverse
-        Hash[*places.map { |place| [place.id, place.siblings.naked.all] }.flatten(1)]
+      places = @allocation.place && @allocation.place.ancestors(true).reverse
+      if places
+        places.map { |place| place.siblings.naked.all }
       else
-        {nil => Tombstone::Place.filter(:parent_id => nil).available_only.order(:name).naked.all}
+        [Tombstone::Place.filter(:parent_id => nil).available_only.order(:name).naked.all]
       end
     end.to_json
     %>

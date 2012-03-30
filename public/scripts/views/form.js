@@ -548,7 +548,7 @@ $( function () {
         }
 			} else {
 				var collection = new Ts.Places(this.placeData[0])
-				var placeView = new Ts.FormViews.PlacePicker({collection: collection})
+				var placeView = new Ts.FormViews.PlacePicker({collection: collection, nextAvailableFrom: 'section',})
 				section.body.push(placeView.render().el)
 			}
 			this.firstSection.before(section.render().el)
