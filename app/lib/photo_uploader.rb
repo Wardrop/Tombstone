@@ -12,7 +12,7 @@ module Tombstone
     end
 
     version :thumbnail do
-      process :resize_to_fill => [320,200]
+      process :resize_to_fill => [250,156]
     end
 
     def get_exif(name)

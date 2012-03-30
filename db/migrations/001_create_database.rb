@@ -104,14 +104,14 @@ Sequel.migration do
     end
 
     create_table :blob do
-      primary_key [:id, :place_id]
+      primary_key :id
       Integer :id, :auto_increment => true, :null => false
       Integer :place_id, :null => false
       String :name, :size => 255
       String :content_type, :size => 100
-      Integer :size, :size => 100
+      Integer :size
       String :file, :size => 255
-      String :enabled, :size => 5
+      bit :enabled
       DateTime :timestamp
       String :created_by, :size => 32
       DateTime :created_at

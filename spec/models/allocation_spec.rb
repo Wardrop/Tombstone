@@ -173,35 +173,35 @@ module Tombstone
 
       ## approved rules
 
-      interment.interment_date = (Time.now + (0 * 60 * 60)).to_datetime
+      interment.interment_date = (Time.now - (0 * 60 * 60)).to_datetime
       interment.status = 'approved'
       interment.alert_status.should == 'ok'
 
-      interment.interment_date = (Time.now + (13 * 60 * 60)).to_datetime
+      interment.interment_date = (Time.now - (13 * 60 * 60)).to_datetime
       interment.status = 'approved'
       interment.alert_status.should == 'warning'
 
-      interment.interment_date = (Time.now + (25 * 60 * 60)).to_datetime
+      interment.interment_date = (Time.now - (25 * 60 * 60)).to_datetime
       interment.status = 'approved'
       interment.alert_status.should == 'warning'
 
-      interment.interment_date = (Time.now + (200 * 60 * 60)).to_datetime
+      interment.interment_date = (Time.now - (200 * 60 * 60)).to_datetime
       interment.status = 'approved'
       interment.alert_status.should == 'danger'
 
-      interment.interment_date = (Time.now + (0 * 60 * 60)).to_datetime
+      interment.interment_date = (Time.now - (0 * 60 * 60)).to_datetime
       interment.status = 'interred'
       interment.alert_status.should == 'ok'
 
-      interment.interment_date = (Time.now + (13 * 60 * 60)).to_datetime
+      interment.interment_date = (Time.now - (13 * 60 * 60)).to_datetime
       interment.status = 'interred'
       interment.alert_status.should == 'ok'
 
-      interment.interment_date = (Time.now + (25 * 60 * 60)).to_datetime
+      interment.interment_date = (Time.now - (25 * 60 * 60)).to_datetime
       interment.status = 'interred'
       interment.alert_status.should == 'warning'
 
-      interment.interment_date = (Time.now + (200 * 60 * 60)).to_datetime
+      interment.interment_date = (Time.now - (200 * 60 * 60)).to_datetime
       interment.status = 'interred'
       interment.alert_status.should == 'danger'
 

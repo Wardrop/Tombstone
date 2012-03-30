@@ -4,13 +4,13 @@ module Tombstone
 
     get :view, :map => "photos/:id/view", :provides => :html do
       @place_id = params[:id].to_i
-      @blobs = Blob.filter(:place_id => @place_id).and(:enabled => 'TRUE').all
+      @blobs = Blob.filter(:place_id => @place_id).and(:enabled => 1).all
       partial "photos/view"
     end
 
     get :edit, :map => "photos/:id/edit", :provides => :html do
       @place_id = params[:id].to_i
-      @blobs = Blob.filter(:place_id => @place_id).and(:enabled => 'TRUE').and(~{:id => session[:deleted_photos]}).or(:id => session[:new_photos]).all
+      @blobs = Blob.filter(:place_id => @place_id).and(:enabled => 1).and(~{:id => session[:deleted_photos]}).or(:id => session[:new_photos]).all
       partial "photos/edit"
     end
 

@@ -22,7 +22,7 @@ module Tombstone
 
     def validate
       super
-      self.class.valid_roles.each do |role_type|
+      self.class.required_roles.each do |role_type|
         errors.add(role_type.to_sym, "must be added") if roles.select { |r| r.type == role_type}.empty?
       end
       if not Place === place
@@ -73,6 +73,10 @@ module Tombstone
         ['reservee', 'applicant', 'next_of_kin']
       end
 
+      def required_roles
+        ['reservee', 'applicant']
+      end
+
       def valid_states
         ['active', 'deleted']
       end
@@ -103,6 +107,10 @@ module Tombstone
       end
 
       def valid_roles
+        ['deceased', 'next_of_kin']
+      end
+
+      def required_roles
         ['deceased']
       end
 
@@ -129,25 +137,29 @@ module Tombstone
         # internment date time >= 24hrs and <= 48hrs and the status is either 'provisional' or 'pending' then 'warning'
         # internment date time >= 48hrs and <= 168hrs and the status is either 'provisional' or 'pending' then 'ok'
         # internment date time >= 168hrs and the status is either 'provisional' or 'pending' then 'ok'
-        return calculate_alert_status(Allocation.valid_alert_statuses, [24,48,168], interment_date ) if ['provisional','pending'].include? status
+        return calculate_alert_status(Allocation.valid_alert_statuses, [24,48,168], interment_date) if ['provisional','pending'].include? status
 
         # internment date time < 12hrs and the status is either 'approved' then 'ok'
         # internment date time >= 12hrs and <= 168hrs and the status is either 'approved' then 'warning'
         # internment date time >= 168hrs and the status is either 'approved' then 'danger'
-        return calculate_alert_status(Allocation.valid_alert_statuses.reverse, [12,168,999], interment_date ) if ['approved'].include? status
-        return calculate_alert_status(Allocation.valid_alert_statuses.reverse, [24,168,999], interment_date ) if ['interred'].include? status
+        return calculate_alert_status(Allocation.valid_alert_statuses.reverse, [12,168,999], interment_date, true) if ['approved'].include? status
+        return calculate_alert_status(Allocation.valid_alert_statuses.reverse, [24,168,999], interment_date, true) if ['interred'].include? status
       end
       Allocation.valid_alert_statuses.last
     end
 
-    def calculate_alert_status(valid_alert_statuses, hours_thresholds, interment_date)
-      thresholds_reached = hours_thresholds.find_all{|threshold| self.has_alert_been_reached(threshold, interment_date)}
+    def calculate_alert_status(valid_alert_statuses, hours_thresholds, interment_date, reverse=false)
+      thresholds_reached = hours_thresholds.find_all{|threshold| self.has_alert_been_reached(threshold, interment_date, reverse)}
       return valid_alert_statuses[hours_thresholds.index(thresholds_reached.first)] unless thresholds_reached.empty?
       valid_alert_statuses.last
     end
 
-    def has_alert_been_reached(hours_threshold, interment_date)
-      return interment_date < (Time.now + (hours_threshold * 60 * 60)).to_datetime unless interment_date.nil?
+    def has_alert_been_reached(hours_threshold, interment_date, reverse)
+      if (reverse)
+        return interment_date > (Time.now - (hours_threshold * 60 * 60)).to_datetime unless interment_date.nil?
+      else
+        return interment_date < (Time.now + (hours_threshold * 60 * 60)).to_datetime unless interment_date.nil?
+      end
       false
     end
 
@@ -164,6 +176,7 @@ module Tombstone
       validates_min_length 5, :funeral_service_location
       validates_presence [:advice_received_date, :interment_date]
       validates_includes self.class.valid_interment_types, :interment_type
+      errors.add(:interment_date, "must be greater than the current time") unless (interment_date.is_a?(Time) && interment_date >= Date.today)
     end
 
     def before_create
