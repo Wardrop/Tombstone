@@ -100,7 +100,9 @@ $( function () {
       } else {
         this.hideErrors()
       }
-      this.$('.body > .page').html(this.model.get('currentPage').render().el)
+      if(this.model.get('currentPage')) {
+        this.$('.body > .page').html(this.model.get('currentPage').render().el)
+      }
     },
     renderLoader: function () {
       if(this.model.get('isLoading')) {
@@ -167,7 +169,7 @@ $( function () {
   })
   
   Ts.WizardViews.PlaceForm = Ts.WizardViews.GenericForm.extend({
-    templateId: 'form:place_form_template'
+    templateId: 'wizard:place_form_template'
   })
   
   

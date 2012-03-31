@@ -33,7 +33,6 @@ module Tombstone
       validates_min_length 2, :type
       validates_includes self.class.valid_states, :status
       errors.add(:parent, "does not exist") if !parent_id.nil? && parent.nil?
-      siblings = siblings
       errors.add(:type, "must be same as siblings (#{siblings[0].type.capitalize()})") unless type == siblings[0].type
       errors.add(:name, "must be unique among siblings") unless siblings.select{ |s| s.name == name }.empty?
     end

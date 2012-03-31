@@ -305,7 +305,7 @@ $( function () {
 			} else {
 				var collection = new Ts.Places(this.placeData[''])
 				var placeView = new Ts.FormViews.PlaceEditPicker({collection: collection})
-				section.body.push(placeView.render().el)
+				section.body.push(placeView.render().selectPlace().el)
 			}
 			this.$el.append(section.render().el)
 			return this

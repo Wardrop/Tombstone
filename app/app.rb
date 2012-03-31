@@ -40,6 +40,9 @@ module Tombstone
     end
     
     before do
+      puts 'Before block running...'
+      puts (@before_block_has_run == true) ? 'Before block has already run!' : 'Before block has not already.'
+      @before_block_has_run = true
       if request.path_info != url(:login) && request.path_info != url(:logout) && session[:user_id].nil?
         flash[:banner] = 'error', 'You must login to use this application.'
         referrer = URI.escape(request.fullpath, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
@@ -54,13 +57,10 @@ module Tombstone
       }
       @user = User.with_pk session[:user_id]
       BaseModel.permissions = (@user.role_permissions rescue nil)
-    end
-    
-    before do
+
       if request.content_type && request.content_type.match(%r{^application/json})
-        p request.path_info
-        p request.body.read
-        self.params = JSON.parse(request.body.read)
+        p request.body.read.empty?
+        self.params = JSON.parse(request.body.read) unless request.body.read.empty?
       end
     end
     
@@ -70,16 +70,11 @@ module Tombstone
     end
     
     get :test do
-      p self.class.filters[:before]
       raise StandardError, "Yep, it's all bad."
     end
     
     get :login do
       render 'login'
-    end
-    
-    get :dog do
-      raise StandardError, "Yep, it's all bad."
     end
     
     post :login do
