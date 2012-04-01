@@ -9,10 +9,10 @@ module Tombstone
     register Padrino::Mailer
     register Padrino::Helpers
     
-    configure :spec, :production do
+    configure :spec do
       set :log, Logger.new(nil)
     end
-    configure :development do
+    configure :development, :production do
       set :log, Logger.new(STDOUT)
     end
     configure do
@@ -54,13 +54,13 @@ module Tombstone
       }
       @user = User.with_pk session[:user_id]
       BaseModel.permissions = (@user.role_permissions rescue nil)
-    end
-    
-    before do
+
       if request.content_type && request.content_type.match(%r{^application/json})
-        p request.path_info
-        p request.body.read
-        self.params = JSON.parse(request.body.read)
+        body = request.body.read
+        unless body.empty?
+          params.merge!(JSON.parse(body))
+        end
+        request.body.rewind
       end
     end
     
@@ -69,17 +69,8 @@ module Tombstone
       render :index
     end
     
-    get :test do
-      p self.class.filters[:before]
-      raise StandardError, "Yep, it's all bad."
-    end
-    
     get :login do
       render 'login'
-    end
-    
-    get :dog do
-      raise StandardError, "Yep, it's all bad."
     end
     
     post :login do
@@ -107,11 +98,28 @@ module Tombstone
       redirect url(:login)
     end
 
+    # after do
+    #   p response.status
+    #   # Sets the status code to 500 for proper handling by client-side code.
+    #   if response.status == 200 && response.content_type.index(mime_type :json) == 0
+    #     begin
+    #       parsed = JSON.parse(response.body.read)
+    #       if Hash === parsed && parsed.has_key?('success') && !parsed['success']
+    #         response.status = 500
+    #       end
+    #     rescue JSON::ParserError => e
+    #       
+    #     end
+    #   end
+    # end
+
     error do
-      if response.content_type.index(mime_type :json) == 0
-        halt 500, {success: false, exception: env['sinatra.error'] && env['sinatra.error'].message}.to_json
-      else
-        raise env['sinatra.error'] if env['sinatra.error']
+      if env['sinatra.error']
+        if response.content_type.index(mime_type :json) == 0
+          halt 500, {error: "Server error encountered: #{env['sinatra.error'].message}"}.to_json
+        else
+          raise env['sinatra.error']
+        end
       end
     end
   

@@ -1,0 +1,45 @@
+<% records.each do |record| %>
+  <div class="clickable">
+    <div class="summary">
+      <%= record.name %>
+      <a class="goto" href="<%= url(:place_index, :id => record.id) %>" title="View record"></a>
+    </div>
+    <div class="details">
+      <div class="left rowed wide">
+        <div class="row">
+          <span>Max Interments:</span>
+          <div><%=
+            if !record.max_interments && record.parent_id.nil?
+              '<small>default</small>'
+            elsif !record.max_interments
+              '<small>inherited</small>'
+            else
+              record.max_interments
+            end
+          %></div>
+        </div>
+        <div class="row">
+          <span>Type:</span>
+          <div><%= print { record.type.demodulize.titleize} %></div>
+        </div>
+        <div class="row">
+          <span>Interment Allowed:</span>
+          <div><%= (record.allows_interment?) ? 'Yes' : 'No' %></div>
+        </div>
+      </div>
+      <div class="right rowed wide">
+        <div class="row">
+          <span>Reserved:</span>
+          <div><%= (record.allocations.select { |a| a.type == 'reservation' }.empty?) ? 'No' : 'Yes' %></div>
+        </div>
+        <div class="row">
+          <span>Interments:</span>
+          <div><%=
+            allocations = record.allocations.select { |a| a.type == 'interment' }
+            (allocations.empty?) ? 'None' : allocations.length
+          %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

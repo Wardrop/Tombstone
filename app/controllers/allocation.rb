@@ -26,23 +26,24 @@ module Tombstone
 
     post :index, :provides => :json do
       allocation = model_class.new
-      response = {success: false, form_errors: allocation.errors, redirectTo: nil}
+      response = {errors: allocation.errors, redirectTo: nil}
       place_id = (!params['place'].is_a?(Array) || params['place'].reject { |v| v.empty? }.empty?) ? nil : params['place'][-1]
       save_allocation(allocation, params)
       if allocation.errors.empty?
         Notification.new(allocation, true)
-        response.merge!(success: true, redirectTo: url(:"#{controller}_view", :id => allocation.id))
+        response[:redirectTo] = url(:"#{controller}_view", :id => allocation.id)
         flash[:banner] = ['success', "#{controller.capitalize} was created successfully."]
       end
+      self.response.status = 500 unless response[:errors].empty?
       response.to_json
     end
 
     put :index, :with => :id, :provides => :json do
       allocation = model_class.with_pk(params[:id].to_i)
       notification = Notification.new(allocation)
-      response = {success: false, form_errors: allocation.errors, redirectTo: nil}
+      response = {errors: allocation.errors, redirectTo: nil}
       if allocation.nil?
-        response[:form_errors] = "Could not amend #{controller} ##{params[:id]} as it does not exist."
+        response[:errors] = "Could not amend #{controller} ##{params[:id]} as it does not exist."
       else
         model_class.db.transaction do
           allocation.roles_dataset.delete
@@ -55,9 +56,10 @@ module Tombstone
       
       if allocation.errors.empty?
         notification.send_notifications
-        response.merge!(success: true, redirectTo: url(:"#{controller}_view", :id => allocation.id))
+        response[:redirectTo] = url(:"#{controller}_view", :id => allocation.id)
         flash[:banner] = ['success', "#{controller.capitalize} was amended successfully."]
       end
+      self.response.status = 500 unless response[:errors].empty?
       response.to_json
     end
     

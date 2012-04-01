@@ -33,10 +33,13 @@ module Tombstone
       validates_min_length 2, :name
       validates_min_length 2, :type
       validates_includes self.class.valid_states, :status
+      validates_not_string :max_interments
       errors.add(:parent, "does not exist") if !parent_id.nil? && parent.nil?
-      siblings = siblings
-      errors.add(:type, "must be same as siblings (#{siblings[0].type.capitalize()})") unless type == siblings[0].type
-      errors.add(:name, "must be unique among siblings") unless siblings.select{ |s| s.name == name }.empty?
+      siblings = self.siblings(false).all
+      unless siblings.empty?
+        errors.add(:type, "must be same as siblings (#{siblings[0].type.capitalize()})") unless type == siblings[0].type
+        errors.add(:name, "must be unique among siblings") unless siblings.select{ |s| s.name == name }.empty?
+      end
     end
     
     def allows_reservation?
@@ -67,8 +70,9 @@ module Tombstone
       self.ancestors[-1]
     end
     
-    def siblings
-      self.class.filter(:parent_id => parent_id).order(:id)
+    def siblings(include_self = true)
+      dataset = self.class.filter(:parent_id => parent_id).order(:id)
+      dataset.exclude(:id => id) unless include_self
     end
     
     def children

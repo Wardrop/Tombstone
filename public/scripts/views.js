@@ -5,44 +5,36 @@ $( function () {
       return this.template(obj)
     },
     initialize: function () {
-      this.options.scrollToErrors = true
+      if (this.options.bindToSync == undefined) {
+        this.options.bindToSync = true
+      }
+      this.options.scrollToErrors = this.options.scrollToErrors || true
       this.indicator = this.options.indicator || $('<div class="indicator" style="display: none;" />')
       this.errorBlock = this.options.errorBlock || $('<ul class="error_block" style="display: none;" />')
-      _.each([this.collection, this.model], function (obj) {
-        if (obj) {
-          this.bindToSync(obj)
-        }
-      }, this)
+      if(this.options.bindToSync) {
+        _.each([this.collection, this.model], function (obj) {
+          if (obj) this.bindToSync(obj)
+        }, this)
+      }
     },
     syncCallbacks: {
-      'sync:before': function () {
+      'sync:before': function (method, obj) {
         this.indicator.css({display: ''}).addClass('loading')
         this.hideErrors()
       },
-      'sync:done': function (type, model, data) {
-        if(data.success == false) {
-          this.showErrors(data.form_errors)
-        }
-      },
-      'sync:always': function () {
+      'sync:always': function (method, obj)  {
         if (this.indicator.hasClass('loading')) this.indicator.css({display: 'none'})
       },
-      'sync:fail': function (method, model, jqXHR, textStatus, errorThrown) {
+      'sync:fail': function (method, obj, jqXHR, textStatus, errorThrown) {
         if (textStatus == 'error') {
           var parsed
           try {
             parsed = $.parseJSON(jqXHR.responseText)
-          } catch (err) {
-            this.showErrors("Server error encountered during '"+method+"' operation: "+errorThrown+" \n"+jqXHR.responseText)
-          }
+          } catch (err) { }
           if (parsed) {
-            if (parsed.exception) {
-              this.showErrors("Server error encountered during '"+method+"' operation: "+parsed.exception.capitalize())
-            } else if (parsed.form_errors) {
-              this.showErrors("Server error encountered during '"+method+"' operation: "+errorThrown+" \n"+parsed.form_errors)
-            } else {
-              this.showErrors("Server error encountered during '"+method+"' operation: "+errorThrown+" \n"+(parsed.consturctor == String ? parsed : ''))
-            }
+            (parsed.errors) ? this.showErrors(parsed.errors) : this.showErrors(parsed)
+          } else {
+            this.showErrors("Server error encountered during '"+method+"' operation: "+errorThrown+" \n"+jqXHR.responseText)
           }
         } else {
           this.showErrors("Client error encountered during '"+method+"' operation: "+errorThrown)
@@ -50,12 +42,12 @@ $( function () {
       }
     },
     bindToSync: function (obj) {
-      _.each(['sync:before', 'sync:done', 'sync:fail', 'sync:always'], function (event) {
+      _.each(['sync:before', 'sync:fail', 'sync:always'], function (event) {
         obj.on(event, this.syncCallbacks[event], this)
       }, this)
     },
     unbindFromSync: function (obj) {
-      _.each(['sync:before', 'sync:done', 'sync:fail', 'sync:always'], function (event) {
+      _.each(['sync:before', 'sync:fail', 'sync:always'], function (event) {
         obj.off(event, this.syncCallbacks[event], this)
       }, this)
     },
@@ -68,14 +60,17 @@ $( function () {
       }
     },
     showErrors: function (errors) {
+      if (!errors) errors = "Unknown error occured."
       if (this.errorBlock instanceof jQuery
           && this.errorBlock.length > 0
           && this.errorBlock.inDOM())
       {
         this.showErrorBlock(errors)
       } else {
-        var errorStr = (!errors || errors.constructor == String)
-          ? errors : 'The submitted data failed validation'
+        var errorStr = errors
+        if (errors.constructor != String) {
+          errorStr = this.stringifyErrors(errors).join("\n")
+        }
         alert(errorStr)
       }
     },

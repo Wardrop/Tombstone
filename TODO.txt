@@ -1,9 +1,11 @@
 * Role-Wizard
   - Fix issues with the back behaviour of the role wizard.
-    + Going to the review page, pressing back, selecting the same address, and selecting back again, causes nothing to happen.
+    + Going to the review page, pressing back, selecting the same address, and selecting back again, causes nothing to =
+      happen.
       If back is then pressed again, jumps back to people page.
   - Add mailing contact to Role Wizard.
-  - The change reservee function doesn't allow you to edit previously entered details. May need to make a new interface for changing a reservee.
+  - The change reservee function doesn't allow you to edit previously entered details. May need to make a new interface
+    for changing a reservee.
   - Limit the number of records returned over JSON (no pagination; limit only)
 * Simplify breadcrumb into a list (<ul>) and use the CSS pseudo element :before to render the slashes in-between.
 * Indicate which form fields are required.
@@ -16,7 +18,17 @@
   On such a view page, it would show associated records and photos.
 * Add polyfills for IE8 compatibility: https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-browser-Polyfills
   - ECMAScript5 shim
-* Test interface to make sure it works with missing allcation information, such as in the case of a partial save (may as well test missing place)
+* Test interface to make sure it works with missing allocation information, such as in the case of a partial save
+  (may as well test missing place)
   Pages to test include: find, edit, view, delete, home
 * Test behaviour of sessions with ID's that don't exist in the database. In other words, test the robustness.
 * What should happen when a place being deleted has associated blob data (i.e. images)
+* Should a place be allowed to be deleted if it has only 'deleted' allocations associated with it?
+* If attempting to delete a place that has child places, what should be behaviour be considering the performance
+  implications?
+* Refactor delete operations to use the before_destroy hook to DRY-up delete operations with conditions or other tasks
+  that need to be carried out, such as deleting associations.
+* Type field for place form
+  - Does a free-text field need to be provided for the "type" field for the place form?
+  - List of types should be dynamic based on those already in the database.
+* Add checkboxes to place results on search page for the sake of bulk deleting places.

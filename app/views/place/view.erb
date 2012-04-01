@@ -1,0 +1,69 @@
+<%
+@document[:title] = 'Create Places'
+content_for :head do
+%>
+  <script type="text/javascript">
+    $( function () {
+      var multibutton = new Ts.FormViews.Multibutton({
+        values: {manage: 'Manage', print: 'Print'},
+        actions: {
+          manage: function () {
+            window.location = <%= url("/place?place_id=#{@place.id}").to_json %>
+          },
+          print: function () {
+            window.print()
+          },
+          default: function () {
+            alert('This function is not currently implemented.')
+          }
+        }
+      })
+      var section = new Ts.FormViews.Section({title: 'Actions', body: multibutton.render().el})
+			$('#place_view').append($(section.render().el).addClass('noprint'))
+    })
+  </script>
+<%
+end
+%>
+<div id="place_view" class="rowed wide view">
+  <section>
+    <h2 class="underline">Details</h2>
+    <div class="row">
+      <span>Name</span>
+      <span><%= print { @place.name } %></span>
+    </div>
+    <div class="row">
+      <span>Type</span>
+      <span><%= print { @place.type.demodulize.titleize } %></span>
+    </div>
+    <div class="row">
+      <span>Status</span>
+      <span><%= print { @place.status.demodulize.titleize} %></span>
+    </div>
+    <div class="row">
+      <span>Max Interments</span>
+      <span>
+        <%= print { @place.calculated_max_interments } %>
+        <%=
+        if !@place.max_interments && @place.parent
+          '<small>(inherited)</small>'
+        elsif !@place.max_interments
+          '<small>(default)</small>'
+        end
+        %>
+      </span>
+    </div>
+    <div class="row">
+      <span class="align_top">Ancestors</span>
+      <% if @place.parent
+        @place.ancestors.reverse.each do |ancestor| %>
+          <div class="hierarchy" style="vertical-align: top;">
+            <a href="<%= url :place_index, :id => ancestor.id %>"><%= ancestor.name %></a>
+        <% end %>
+        <%= @place.ancestors.reduce("") { |memo| memo << "</div>" } %>
+      <% else %>
+        <small>root</small>
+      <% end %>
+    </div>
+  </section>
+</div>

@@ -13,10 +13,12 @@ body {
 html {
   overflow-y: scroll;
 }
+input, select, button, textarea {
+  padding: 0.4em;
+  font-size: 100%;
+}
 input, select, button {
-  padding: 4px 3px;
   height: 28px;
-  font-size: 13px;
 }
 select {
 	min-width: 64px;
@@ -27,14 +29,27 @@ input[type=text], input[type=password], select {
 input[type=text]:focus, input[type=password]:focus, select:focus {
   border: 1px solid #0080ff;
 }
-input[type=submit], input[type=reset], input[type=button], button {
-	padding: 0px 6px;
-	height: 30px;
-	vertical-align: middle;
-}
 input[type=checkbox], input[type=radio] {
+  height: 1.3em;
 	vertical-align: middle !important;
 	margin: auto 0.4em;
+}
+input[type=submit], input[type=button], input[type=reset], a.button {
+	display: inline-block;
+	border-radius: 5px;
+	padding: 0.7em 1.4em;
+	text-decoration: none;
+	background: #2980cc;
+	color: white;
+	border: none;
+	vertical-align: middle;
+	height: auto;
+}
+a.button:visited {
+	color: white;
+}
+input[type=submit]:hover, input[type=button]:hover, a.button:hover {
+	background: #5499d6;
 }
 
 form {
@@ -68,6 +83,7 @@ small {
   color: #666;
 }
 
+
 #container {
 	text-align: left;
 	position: relative;
@@ -80,7 +96,7 @@ small {
   border-top: none;
   box-shadow: 0px 0px 20px rgba(0,0,0, 0.10);
 }
-#container > .info {
+#banner_info {
 	position: absolute;
 	right: 0;
 	top: 0;
@@ -314,28 +330,6 @@ section:last-child, .section:last-child {
 	opacity: 0.75;
 }
 
-a.button, input[type=submit], input[type=button] {
-	display: inline-block;
-	border-radius: 5px;
-	padding: 10px 20px;
-	text-decoration: none;
-	background: #2980cc;
-	color: white;
-	border: none;
-	vertical-align: middle;
-	height: auto;
-}
-input[type=submit], input[type=button] {
-	padding: 9px 20px;
-}
-a.button:visited {
-	color: white;
-}
-a.button:hover, input[type=submit]:hover, input[type=button]:hover {
-	background: #5499d6;
-}
-
-
 .row_block {
 	position: relative;
 	background: #dfecf7;
@@ -445,6 +439,10 @@ a.row_button:hover {
 .rowed label > span.align_top:first-child, .rowed div.row > span.align_top:first-child {
 	vertical-align: top;
 	padding-top: 0.3em;
+}
+.rowed.view label > span.align_top:first-child, .rowed.view div.row > span.align_top:first-child {
+	vertical-align: top;
+	padding-top: 0;
 }
 .rowed div.row label {
 	display: inline;
@@ -577,7 +575,17 @@ a.row_button:hover {
 .multibutton {
 	position: relative;
   display: inline-block;
-	padding-right: 28px;
+	padding-right: 2.4em;
+}
+.multibutton.no_dropdown {
+  padding-right: 0;
+}
+.multibutton.small input[type=submit],
+.multibutton.small input[type=button],
+.multibutton.small input[type=reset],
+.multibutton.small button,
+.multibutton.small a.button {
+	padding: 0.6em 1.2em;
 }
 .multibutton > .viewport {
   border-radius: 5px 0 0 5px;
@@ -590,19 +598,21 @@ a.row_button:hover {
 .multibutton.no_dropdown > .viewport {
   border-radius: 5px;
 }
-
 .multibutton > .dropdown_button {
 	display: block;
 	position: absolute;
 	top: 0;
 	right: 0;
 	height: 100%;
-	width: 28px;
+	width: 2.4em;
 	border-radius: 0 5px 5px 0;
 	background: #2980cc url('images/dropdown_arrow.png') no-repeat center center;
 	color: white;
 	text-align: center;
 	border-left: 1px solid #7fb3e0;
+}
+.multibutton.small > .dropdown_button {
+  background-image: url('images/dropdown_arrow_small.png');
 }
 .multibutton > .dropdown_button:hover {
 	background-color: #5499d6;
@@ -610,7 +620,6 @@ a.row_button:hover {
 .multibutton.no_dropdown > .dropdown_button {
   display: none;
 }
-
 .multibutton > .viewport > ul {
 	display: block;
 	position: relative;
@@ -641,104 +650,29 @@ a.row_button:hover {
 .multibutton > .viewport > ul > li:hover {
 	background: #5499d6;
 }
-.multibutton > .viewport > ul input[type=button], .multibutton > .viewport > a.button {
+.multibutton > .viewport > ul input[type=button], .multibutton > .viewport > ul a.button {
+  display: block;
 	border-radius: 0;
 	text-align: left;
 	background: none;
 }
 
-/*.multibutton {
-  position: relative;
-  display: inline-block;
-  padding: 1px 28px 1px 0;
+.multibutton.light > .viewport {
+  background: #626262;
 }
-.multibutton.top {
-  border-top: 1px solid #7fb3e0;
-  padding-top: 0;
+.multibutton.light > .dropdown_button {
+	background-color: #626262;
+	border-left: 1px solid #a0a0a0;
 }
-.multibutton.bottom {
-  border-bottom: 1px solid #7fb3e0;
-  padding-bottom: 0;
+.multibutton.light > .dropdown_button:hover {
+	background-color: #777;
 }
-.multibutton > input[type=button], .multibutton > a.button {
-  display: inline-block;
-  border-radius: 5px 0 0 5px;
-  padding: 10px 16px 10px 20px;
-  text-decoration: none;
-  background: #2980cc;
-  color: white;
-  border: none;
-  vertical-align: middle;
-  height: auto;
+.multibutton.light > .viewport > ul > li {
+  background: #626262;
 }
-.multibutton.top > input[type=button], .multibutton.top > a.button {
-  border-radius: 0 0 0 5px;
+.multibutton.light > .viewport > ul > li:hover {
+	background: #777;
 }
-.multibutton.bottom > input[type=button], .multibutton.bottom > a.button {
-  border-radius: 5px 0 0 0;
-}
-.multibutton > input[type=button]:hover, .multibutton > a.button:hover {
-  background: #5499d6;
-}
-.multibutton > span {
-  display: block;
-  position: absolute;
-  top: 1px;
-  right: 0;
-  bottom: 1px;
-  width: 28px;
-  border-radius: 0 5px 5px 0;
-  background: #2980cc url('images/dropdown_arrow.png') no-repeat center center;
-  color: white;
-  text-align: center;
-  border-left: 1px solid #7fb3e0;
-}
-.multibutton.top > span {
-  top: 0;
-  border-radius: 0 0 5px 0;
-}
-.multibutton.bottom > span {
-  bottom: 0;
-  border-radius: 0 5px 0 0;
-}
-.multibutton > span:hover {
-  background-color: #5499d6;
-}
-.multibutton > ul {
-  position: absolute;
-  left: 0;
-  background: #2980cc;
-  margin: 1px 0;
-  z-index: 10;
-}
-.multibutton.top > ul {
-  top: inherit;
-  bottom: 100%;
-  padding-top: 5px;
-  border-radius: 5px 5px 0 0;
-}
-.multibutton.bottom > ul {
-  top: 100%;
-  bottom: inherit;
-  padding-bottom: 5px;
-  border-radius: 0 0 5px 5px;
-}
-.multibutton > ul > li {
-  display: block;
-  text-align: left;
-}
-.multibutton > ul > li:hover {
-  background: #5499d6;
-}
-.multibutton > ul > li.selected {
-  display: none;
-}
-.multibutton > ul input[type=button], .multibutton ul > a.button {
-  border-radius: 0;
-  width: 100%;
-  text-align: left;
-  background: none;
-}*/
 
 .indicator {
   display: inline-block;
@@ -754,6 +688,18 @@ a.row_button:hover {
 }
 .indicator.warning {
   background: url('images/warning-24.png') no-repeat center center;
+}
+
+.hierarchy > .hierarchy {
+  padding: 0.3em 0 0 0.6em;
+}
+.hierarchy > .hierarchy > .hierarchy {
+  padding-left: 1.7em;
+}
+.hierarchy > .hierarchy:before {
+  content: "∟";
+  color: gray;
+  font-size: 1.5;
 }
 
 /* OVERLAY */

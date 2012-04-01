@@ -836,6 +836,14 @@
     // events simply proxy through. "add" and "remove" events that originate
     // in other collections are ignored.
     _onModelEvent: function(event, model, collection, options) {
+      // <Customisation>
+      // Allows one to override how a collection responds to model events.
+      if (this.onModelEvents) {
+        this.onModelEvents.apply(this, arguments)
+        return;
+      }
+      // </Customisation
+      
       if ((event == 'add' || event == 'remove') && collection != this) return;
       if (event == 'destroy') {
         this.remove(model, options);
@@ -1315,6 +1323,7 @@
   // instead of `application/json` with the model in a param named `model`.
   // Useful when interfacing with server-side languages like **PHP** that make
   // it difficult to read the body of `PUT` requests.
+  /* <Customisation> */
   Backbone.sync = function(method, model, options) {
     var type = methodMap[method];
 
@@ -1338,7 +1347,7 @@
     // For older servers, emulate JSON by encoding the request into an HTML-form.
     if (Backbone.emulateJSON) {
       params.contentType = 'application/x-www-form-urlencoded';
-      params.data = params.data ? {model: params.data} : {};
+      params.data || (params.data = {});
     }
 
     // For older servers, emulate HTTP by mimicking the HTTP method with `_method`
@@ -1356,9 +1365,9 @@
     // Don't process data on a non-GET request.
     if (params.type !== 'GET' && !Backbone.emulateJSON) {
       params.processData = false;
+      if (options.data) options.data = JSON.stringify(options.data)
     }
-
-    /* <Customisation> */
+    
     var paramsBeforeSend = params.beforeSend
     var optionsBeforeSend = options.beforeSend
     params.beforeSend = function (jqXHR, settings) {
@@ -1366,6 +1375,7 @@
       if (optionsBeforeSend) optionsBeforeSend.apply(this, arguments)
       model.trigger("sync:before", method, model, jqXHR, settings);
     }
+    console.log(Backbone.emulateJSON)
     var ajaxDeferred = $.ajax(_.extend(params, options));
     ajaxDeferred.done( function(data, textStatus, jqXHR) {
       model.trigger("sync:done", method, model, data, textStatus, jqXHR)
@@ -1377,8 +1387,8 @@
       model.trigger("sync:always", method, model, jqXHR, textStatus)
     });
     return ajaxDeferred
-    /* </Customisation> */
   };
+  /* </Customisation> */
 
   // Wrap an optional error callback with a fallback error event.
   Backbone.wrapError = function(onError, originalModel, options) {

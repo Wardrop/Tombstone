@@ -23,24 +23,31 @@
     <script type="text/javascript" src="<%= url "/scripts/#{file}" %>"></script>
   <% end %>
   <%= yield_content :head %>
+  <script type="text/javascript">
+    $( function () {
+      <%
+      actions = {url(:logout) => 'Logout'}
+      actions[url('/place')] = 'Manage Places' if @user && @user.role_permissions.can_manage_cemeteries?
+      %>
+      var logged_in = <%= (!!session[:user_id]).to_json %>
+      var multilink = new Ts.FormViews.Multilink({
+        'class': 'small light',
+        values: <%= actions.to_json %>
+      })
+      if (logged_in) {
+        $('#banner_info').append($('<div style="margin-top: 1em;" />').append(multilink.render().el))
+      }
+    })
+  </script>
   <link rel="stylesheet" href="<%= url '/jquery.css' %>"/>
 </head>
 <body>
 	<div id="container">
-    <div class="info">
+    <div id="banner_info">
       <div>
         <%= print ('<small>Not logged in</small>') {
           "Hello, #{session[:ldap][:displayName].first} (#{@user.role ? @user.role.demodulize.titleize : 'Guest'})"
         } %>
-      </div>
-      <div style="margin-top: 1em;">
-        <%=
-        select_tag( :role_actions, :style => 'height: 1.8em;', :options => {
-          nil => nil,
-          'Add Place' => url('/place'),
-          'Logout' => url('/logout')
-        })
-        %>
       </div>
     </div>
     <div id="main_banner">Tombstone <sup>v<%= Tombstone::VERSION %></sup></div>

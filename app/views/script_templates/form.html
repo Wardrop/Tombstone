@@ -1,8 +1,19 @@
 <script type="text/template" id="form:multibutton_template">
   <div class="viewport">
     <ul>
-      <% _.each(options, function (value, name) { %>
-      	<li><input type="button" name="<%= name %>" value="<%= value %>" /></li>
+      <% _.each(values, function (value, key) { %>
+      	<li><input type="button" name="<%= key %>" value="<%= value %>" /></li>
+      <% }) %>
+    </ul>
+  </div>
+  <span class="dropdown_button"></span>
+</script>
+
+<script type="text/template" id="form:multilink_template">
+  <div class="viewport">
+    <ul>
+      <% _.each(values, function (value, key) { %>
+      	<li><a href="<%= key %>" class="button"><%= value %></a></li>
       <% }) %>
     </ul>
   </div>

@@ -48,7 +48,6 @@ $( function () {
           }
         }, this)
         var multibutton = new Ts.FormViews.Multibutton({
-          name: this.role_type + '_action',
           values: values,
           actions: actions
         })
@@ -111,17 +110,23 @@ $( function () {
       _.bindAll(this, 'hideList', 'showList', 'keydownHideEvent')
     },
     render: function () {
-      this.$el.html(this.template({name: this.options.name, options: this.options.values}))
+      this.$el.css({display: 'none'}).html(this.template(this.options))
       var viewport = this.$('.viewport')
-      var height = viewport.find('li').outerHeight() || 34
-      viewport.css({height: height});
+      // Because the height of an element can't be retrieved until it's inserted into the DOM, we wrap the sizing
+      // logic in a 10ms timeout, so a call like ```multibutton.render().el``` will be rendered correctly.
+      setTimeout(_.bind( function () {
+        this.$el.css({display: ''})
+        var height = viewport.find('li').outerHeight() || 34
+        viewport.css({height: height});
+      }, this))
       if (Object.keys(this.options.values).length <= 1) {
         this.$el.addClass('no_dropdown')
       } else {
         this.$el.removeClass('no_dropdown')
       }
-      console.log(this.$el)
-      this.selectButton(this.options.selected || this.$('input')[0].name)
+      this.$el.addClass(this.options.class)
+      this.$('li:first').addClass('selected')
+      if (this.options.selected) this.selectButton(this.options.selected)
       this.hideList()
       
   		return this
@@ -159,16 +164,20 @@ $( function () {
       var height = viewport.find('li').outerHeight()
       if (height > 0) viewport.css({height: height})
     },
-    selectButton: function(selectedName) {
+    selectButton: function(selectedItem) {
       var list = this.$('.viewport > ul')
-      selected = list.find('li > input[name='+selectedName+']').parent()
+      if (selectedItem.constructor == String) {
+        selected = list.find('li > [name='+selectedItem+']').parent()
+      } else {
+        selected = $(selectedItem)
+      }
       list.css({top: -selected.position().top})
 		  list.children('li').removeClass('selected')
 		  selected.addClass('selected')
 		},
     onSelectButton: function (e) {
 			var target = e.currentTarget
-      var button = $(target).children('input')
+      var button = $(target).children()
 			var selectedName = button.attr('name')
       this.selectButton(selectedName)
 			if (this.options.actions && this.options.actions[selectedName]) {
@@ -181,6 +190,14 @@ $( function () {
     },
     keydownHideEvent: function (e) {
       if (e.keyCode == 27) this.hideList();
+    }
+  })
+  
+  Ts.FormViews.Multilink = Ts.FormViews.Multibutton.extend({
+    templateId: 'form:multilink_template',
+    events: {
+      'click span.dropdown_button' : 'toggleList',
+      'click li': function (e) { this.selectButton(e.currentTarget) }
     }
   })
   
@@ -290,20 +307,17 @@ $( function () {
     },
     render: function () {
 			var section = new Ts.FormViews.Section({title: 'Place Editor', name: 'place'})
-			if(this.defaultPlaceId) {
-				var currentPlace = this.defaultPlaceId
-				while (currentPlace > 0) {
-					var siblings = this.placeData[currentPlace]
-					var collection = new Ts.Places(siblings)
+			if (this.defaultPlaceId) {
+				for (var i = 0; places = this.placeData[i]; i++) {
+				  var selected = (this.placeData[i+1]) ? this.placeData[i+1][0].parent_id : this.defaultPlaceId
 					var placeView = new Ts.FormViews.PlaceEditPicker({
-            selected: currentPlace,
-            collection: collection
+            selected: selected,
+            collection: new Ts.Places(places)
           })
-					section.body.unshift(placeView.el)
-          currentPlace = siblings[0].parent_id
+					section.body.push(placeView.render().el)
 				}
 			} else {
-				var collection = new Ts.Places(this.placeData[''])
+				var collection = new Ts.Places(this.placeData[0])
 				var placeView = new Ts.FormViews.PlaceEditPicker({collection: collection})
 				section.body.push(placeView.render().el)
 			}
@@ -335,7 +349,7 @@ $( function () {
   					options: this.options
   			}))
       } else {
-        this.remove()
+        this.$el.empty()
       }
       this.$el.append(this.indicator)
       return this
@@ -404,7 +418,17 @@ $( function () {
       'click .edit': 'selectAction',
       'click .delete': 'selectAction'
     },
+    initialize: function () {
+      this._super('initialize', arguments)
+      this.collection.onModelEvents = function () {}
+    },
+    render: function () {
+      this._super('render', arguments)
+      this.renderControls()
+      return this
+    },
     renderControls: function () {
+      if (this.$el.children('select').length == 0) return false
       if (this.$('.controls').length == 0) {
         this.indicator.before('<div class="controls" />')
       } else {
@@ -433,14 +457,21 @@ $( function () {
     },
     add_child: function () {
       this.prepareWizard()
-      this.wizardView.model.set('place', new Ts.Place({status: 'available'}))
+      this.wizardView.model.set('place', new Ts.Place({
+        parent_id: this.collection.get(this.$(':selected').val()).get('id'),
+        status: 'available'
+      }))
       this.wizardView.model.set('title', 'Add Place')
       this.wizardView.showPlaceForm()
     },
     add: function () {
       this.prepareWizard()
       var placeData = this.wizardView.model.get('place').toJSON()
-      this.wizardView.model.set('place', new Ts.Place({type: placeData.type, status: 'available'}))
+      this.wizardView.model.set('place', new Ts.Place({
+        parent_id: this.collection.at(0).get('parent_id'),
+        type: placeData.type,
+        status: 'available'
+      }))
       this.wizardView.model.set('title', 'Add Place')
       this.wizardView.showPlaceForm()
     },
@@ -451,19 +482,24 @@ $( function () {
     },
     delete: function () {
       var place = this.collection.get(this.$(':selected').val())
+      this.bindToSync(place)
       place.destroy({
         wait: true,
-        success: function (data) {
-          if(data.success != false) this.refresh()
-        }
+        success: _.bind( function (data) {
+          this.refresh()
+        }, this),
+        complete: _.bind( function () {
+          this.unbindFromSync(place)
+        }, this)
       })
     },
     prepareWizard: function () {
-      var place = this.collection.get(this.$(':selected').val())
+      var place = (
+        this.collection.get(this.$(':selected').val()) ||
+        new Ts.Place({parent_id: this.collection.at(0).get('parent_id'), type: this.collection.at(0).get('type')})
+      )
 			this.wizardView = new Ts.WizardViews.PlaceWizard({
-        model: new Ts.PlaceWizard({
-          place: place || new Ts.Place({parent_id: this.collection.at(0).get('parent_id')})
-        }),
+        model: new Ts.PlaceWizard({place: place}),
         onComplete: _.bind(this.refresh, this)
       })
       this.wizardView.render()
@@ -471,7 +507,7 @@ $( function () {
     refresh: function () {
       var place = this.collection.get(this.$(':selected').val())
       var placeId = (place) ? place.get('id') : null
-      var parentId = (place) ? place.get('parent_id') : 0
+      var parentId = (place && place.get('parent_id')) || this.collection.at(0).get('parent_id') || 0
       this.collection.fetch({
         url: '/place/'+parentId+'/children',
         success: _.bind(function () {
@@ -490,6 +526,9 @@ $( function () {
 			this.firstSection = $(this.el).children('section').first()
 			this.placeData = $('#json\\:place_data').parseJSON() || {}
 			this.allocationData = $('#json\\:allocation_data').parseJSON() || {}
+			this.bindToSync(
+			  this.eventReceiver = _.clone(Backbone.Events)
+			)
 			this.render()
 		},
 		onSubmit: function () {
@@ -499,6 +538,7 @@ $( function () {
 			this.renderRoles()
 			this.renderPlaces()
 			this.renderActions()
+			this.errorBlock.prependTo(this.$el)
 			return this
 		},
 		renderRoles: function () {
@@ -556,7 +596,6 @@ $( function () {
 		},
 		renderActions: function () {
 			this.multibutton = new Ts.FormViews.Multibutton({
-				name: 'submit',
 				values: this.options.states,
 				actions: {
 					default: _.bind(function (el) {
@@ -566,49 +605,38 @@ $( function () {
 			})
 			var section = new Ts.FormViews.Section({
 				title: 'Actions',
-				body: this.multibutton.render().el
+				body: [this.multibutton.render().el, this.indicator]
 			})
 			$(this.el).append(section.render().el)
 		},
 		submit: function (status) {
 			var data = this.formData()
+			console.log(data)
 			data.status = status
-			this.indicator.attr('class', 'indicator loading').insertAfter(this.multibutton.el)
-			this.hideFormErrors()
+			this.hideErrors()
 			if(this.lastRequest && this.lastRequest.state() == 'pending') {
-				if (confirm('The last submit operation has not yet completed. Would you like to abort the last submit operations?')) {
+				if (confirm('The last submit operation has not yet completed. Would you like to abort the last submit operation?')) {
 					this.lastRequest.abort()
 				} else {
 					return false
 				}
 			}
-			this.lastRequest = $.ajax(this.el.action, {
-				type: 'POST',
-				data: data,
-				success: _.bind( function (data, textStatus, jqXHR) {
-					if(data.success == false) {
-						this.showFormErrors(data.form_errors)
-						this.indicator.detach()
-					} else {
-						this.indicator.attr('class', 'indicator success')
-						window.location = data.redirectTo
-					}
-				}, this),
-				error: _.bind( function (jqXHR, textStatus, errorThrown) {
-					this.indicator.detach()
-					switch(textStatus) {
-						case 'error':
-							try {
-								this.showFormErrors($.parseJSON(jqXHR.responseText).exception.capitalize())
-							} catch (err) {
-								this.showFormErrors("Server error encountered: "+errorThrown+"\n"+jqXHR.responseText)
-							}
-							break;
-						default:
-							this.showFormErrors("Error encountered: "+errorThrown)
-					}
-				}, this)
-			})
+			
+			var method = (this.allocationData.id) ? 'update' : 'create'
+			var emulateJSON = Backbone.emulateJSON
+			try {
+			  Backbone.emulateJSON = true
+  			this.lastRequest = Backbone.sync(method, this.eventReceiver, {
+          url: this.el.action,
+          data: data,
+          success: _.bind( function (data, textStatus, jqXHR) {
+  					this.indicator.attr('class', 'indicator success')
+  					window.location = data.redirectTo
+  				}, this)
+        })
+      } finally {
+        Backbone.emulateJSON = emulateJSON
+      }
 		},
 		formData: function () {
 			var data = $(this.el).serializeObject()
@@ -616,43 +644,6 @@ $( function () {
 				data[role_type] = roleBlock.getJSON()
 		  })
 			return data
-		},
-		showFormErrors: function (errors) {
-			var container = $('<ul class="error_block" />')
-			errors = (errors.constructor == String) ? [errors] : errors
-      
-      var iterateErrors = function (prefix, errors) {
-        var array = []
-				_.each(errors, function (error, field) {
-					if (error.constructor == Array) {
-						_.each(error, function (message) {
-							errorObj = {}
-              errorObj[field] = message
-							array = array.concat( iterateErrors(prefix, errorObj) )
-						})
-					} else if (error.constructor == Object) {
-						array = array.concat(iterateErrors((prefix && prefix + " -> ") + field.split('_').join(' ').titleize(), error))
-					} else {
-            field = (field) ? field.split('_').join(' ').titleize() : ''
-            array.push((prefix && prefix + " -> ") + field.split('_').join(' ').titleize() + " " + error)
-					}
-				})
-				return array
-			}
-			iterateErrors('', errors).forEach( function (error) {
-        container.append($('<li />').text(error))
-      })
-			
-			_.each(errors, function (value, field) {
-				if (value.length > 0) this.$('[name='+field+']').addClass('field_error')
-			})
-	
-			container.css({display: 'none'}).prependTo(this.el).slideDown(300)
-			this.$(':first').scrollTo(300, -10);
-		},
-		hideFormErrors: function () {
-			this.$('.error_block').remove()
-			this.$('[name]').removeClass('field_error')
 		}
 	})
 })
