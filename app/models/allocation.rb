@@ -177,6 +177,7 @@ module Tombstone
       validates_presence [:advice_received_date, :interment_date]
       validates_includes self.class.valid_interment_types, :interment_type
       errors.add(:interment_date, "must be greater than the current time") unless (interment_date.is_a?(Time) && interment_date >= Date.today)
+      ##errors.add(:photographs, 'must be added to "complete" this intermnet') if (['interred', 'completed'].include? status) && (self.place.has_photos? == false)
     end
 
     def before_create

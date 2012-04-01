@@ -5,6 +5,7 @@ module Tombstone
     many_to_one :parent, :class => self, :key => :parent_id
     one_to_many :children, :class => self, :key => :parent_id
     one_to_many :allocations, :class => :'Tombstone::Allocation', :key => :place_id
+    one_to_many :blobs, :class => :'Tombstone::Blob', :key => :place_id
     
     def_dataset_method(:with_child_count) do
       left_join(
@@ -48,6 +49,10 @@ module Tombstone
       status == 'available' \
       && children_dataset.count == 0 \
       && calculated_max_interments > allocations_dataset.filter(type: 'interment').exclude(:status => 'deleted').count
+    end
+
+    def has_photos?
+      Blob.filter(:place_id => :place_id).and(:enabled => 1).count > 0
     end
     
     def calculated_max_interments
