@@ -3,7 +3,16 @@ module Tombstone
     
     get :index do
       @place = Place.with_pk(params['place_id']) if params['place_id']
-      render 'place/new'
+      render 'place/manage'
+    end
+    
+    get :index, :with => :id do
+      @place = Place.with_pk(params[:id])
+      if @place
+        render 'place/view'
+      else
+        halt 404, render("error", :locals => {message: "Place with ID ##{params[:id]} does not exist."})
+      end
     end
     
     get :index, :with => :id, :provides => :json do
@@ -24,23 +33,38 @@ module Tombstone
           place.errors.add(:name, parsed)
         end
       end
-      {success: place.errors.length < 1, form_errors: place.errors}.to_json
+      self.response.status = 500 unless place.errors.empty?
+      {errors: place.errors}.to_json
     end
 
     put :index, :with => :id, :provides => :json do
+      p params
       place = Place.with_pk(params[:id])
       halt 404, "Place with ID ##{params[:id]} does not exist." unless place
       place.set_valid_only(params)
       if place.valid?
         place.save
       end
-      {success: place.errors.length < 1, form_errors: place.errors}.to_json
+      self.response.status = 500 unless place.errors.empty?
+      {errors: place.errors}.to_json
     end
 
     delete :index, :with => :id, :provides => :json do
-      # Make sure the place is not associated with any allocations (inc. deleted)
+      place = Place.with_pk(params[:id])
+      halt 404, "Place with ID ##{params[:id]} does not exist." unless place
+      response = {}
+      if place.allocations_dataset.count > 0
+        response[:errors] = "Cannot delete place with ID ##{params[:id]} because it has associated allocations."
+      elsif place.children_dataset.count > 0
+        response[:errors] = "Cannot delete place with ID ##{params[:id]} because it contains child places."
+      else
+        unless place.destroy
+          response[:errors] = "An unknown error occured while deleting place with ID ##{params[:id]}."
+        end
+      end
+      self.response.status = 500 if response[:errors] && !response[:errors].empty?
+      response.to_json
       # TODO: Handle the case where a place has associated images.
-      halt 500, {success: false, form_errors: 'Sorry, try again'}.to_json
     end
 
     get :next_available, :map => %r{/place/([0-9]+)/next_available}, :provides => :json do |id|

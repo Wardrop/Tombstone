@@ -29,6 +29,7 @@ content_for :head do %>
         <select type="text" name="type" style="width: 100%">
           <option value="allocations">Find Allocations</option>
           <option value="people">Find People</option>
+          <option value="places">Find Places</option>
         </select>
       </label>
       <label style="text-align: right; width: 12%">
@@ -59,8 +60,10 @@ content_for :head do %>
         partial 'find/allocation_records', :locals => {records: @records}
       when Tombstone::Person
         partial 'find/person_records', :locals => {records: @records}
+      when Tombstone::Place
+        partial 'find/place_records', :locals => {records: @records}
       else
-        "Some went wrong"
+        halt 500, "No view has been configured for the model class `#{@records[0].class}`"
       end
     end
     %>

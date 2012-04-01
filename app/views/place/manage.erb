@@ -10,10 +10,11 @@ content_for :head do
   <script type="application/json" id="json:place_data">
     <%=
     begin
-      if places = @place && @place.ancestors(true).reverse
-        Hash[*places.map { |place| [place.id, place.siblings.naked.all] }.flatten(1)]
+      if @place
+        places = @place.ancestors(true).reverse
+        places.map { |place| place.siblings.naked.all } << @place.children
       else
-        {nil => Tombstone::Place.filter(:parent_id => nil).order(:name).naked.all}
+        [Tombstone::Place.filter(:parent_id => nil).order(:name).naked.all]
       end
     end.to_json
     %>

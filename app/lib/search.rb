@@ -52,8 +52,7 @@ module Tombstone
     # the sort direction (either :asc, or :desc)
     # Returns a dataset corresponding to the Model association with the current class.
     def query(conditions = {}, *order)
-      conditions = conditions.symbolize_keys
-      @conditions = conditions.select { |k,v| @@searchable[k] }
+      @conditions = conditions.symbolize_keys.select { |k,v| @@searchable[k] }
       @order = order.each_slice(2).to_a.select { |field, dir| @@sortable[field] }
       dataset
     end
@@ -127,6 +126,38 @@ module Tombstone
         LEFT JOIN [CONTACT] ON ([CONTACT].[ID] = [ROLE].[RESIDENTIAL_CONTACT_ID]) OR ([CONTACT].[ID] = [ROLE].[MAILING_CONTACT_ID])
         #{conditions_sql}
       "]
+    end
+  end
+  
+  class PlaceSearch < Search
+    MODEL = Place
+    
+    @@searchable = {
+      all: proc { |v|
+        @@searchable.reject{|k,v| k == :all}.map { |field, matcher|
+          part = instance_exec(v, &matcher)
+          "(#{part})" if part
+        }.select{|v| v}.join(' OR ')
+      },
+      name: proc { |v|
+        "[PLACE].[NAME] LIKE #{@db.literal(v)}}"
+      },
+      type: proc { |v|
+        "[PLACE].[TYPE] LIKE #{@db.literal(v)}}"
+      },
+      status: proc { |v|
+        "[PLACE].[STATUS] LIKE #{@db.literal(v)}}"
+      }
+    }
+    @@sortable = {
+      name: '[NAME]',
+      type: '[TYPE]',
+      status: '[STATUS]'
+    }
+    def dataset
+      pk_join = [*MODEL.primary_key].reduce({}) { |memo, k| memo[k] = k; memo }
+      MODEL.select_all(MODEL.table_name).
+        order_by(*@order.map { |field, dir| (dir == :asc) ? field.to_sym.asc : field.to_sym.desc })
     end
   end
 end

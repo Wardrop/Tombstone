@@ -21,17 +21,18 @@
   		<span>Type</span>
   		<select name="type">
         <option value=""></option>
-        <option>cemetery</option>
-        <option>section</option>
-        <option>sub-section</option>
-        <option>row</option>
-        <option>plot</option>
+        <option value="cemetery">Cemetery</option>
+        <option value="section">Section</option>
+        <option value="sub-section">Sub-Section</option>
+        <option value="row">Row</option>
+        <option value="plot">Plot</option>
       </select>
   	</label>
-  	<label>
-  		<span>Available</span>
-  		<input type="checkbox" name="status" value="available" checked="checked" />
-  	</label>
+  	<div class="row">
+  		<span>Status</span>
+  		<label><input type="radio" name="status" value="available" /> Available</label>
+  		<label><input type="radio" name="status" value="unavailable" /> Unavailable</label>
+  	</div>
     <label>
   		<span>Max Interments</span>
   		<input type="text" name="max_interments" style="width: 12%;" />

@@ -9,10 +9,10 @@ module Tombstone
     register Padrino::Mailer
     register Padrino::Helpers
     
-    configure :spec, :production do
+    configure :spec do
       set :log, Logger.new(nil)
     end
-    configure :development do
+    configure :development, :production do
       set :log, Logger.new(STDOUT)
     end
     configure do
@@ -40,9 +40,6 @@ module Tombstone
     end
     
     before do
-      puts 'Before block running...'
-      puts (@before_block_has_run == true) ? 'Before block has already run!' : 'Before block has not already.'
-      @before_block_has_run = true
       if request.path_info != url(:login) && request.path_info != url(:logout) && session[:user_id].nil?
         flash[:banner] = 'error', 'You must login to use this application.'
         referrer = URI.escape(request.fullpath, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
@@ -59,18 +56,17 @@ module Tombstone
       BaseModel.permissions = (@user.role_permissions rescue nil)
 
       if request.content_type && request.content_type.match(%r{^application/json})
-        p request.body.read.empty?
-        self.params = JSON.parse(request.body.read) unless request.body.read.empty?
+        body = request.body.read
+        unless body.empty?
+          params.merge!(JSON.parse(body))
+        end
+        request.body.rewind
       end
     end
     
     get :index do
       @calendar = Calendar.new
       render :index
-    end
-    
-    get :test do
-      raise StandardError, "Yep, it's all bad."
     end
     
     get :login do
@@ -102,11 +98,28 @@ module Tombstone
       redirect url(:login)
     end
 
+    # after do
+    #   p response.status
+    #   # Sets the status code to 500 for proper handling by client-side code.
+    #   if response.status == 200 && response.content_type.index(mime_type :json) == 0
+    #     begin
+    #       parsed = JSON.parse(response.body.read)
+    #       if Hash === parsed && parsed.has_key?('success') && !parsed['success']
+    #         response.status = 500
+    #       end
+    #     rescue JSON::ParserError => e
+    #       
+    #     end
+    #   end
+    # end
+
     error do
-      if response.content_type.index(mime_type :json) == 0
-        halt 500, {success: false, exception: env['sinatra.error'] && env['sinatra.error'].message}.to_json
-      else
-        raise env['sinatra.error'] if env['sinatra.error']
+      if env['sinatra.error']
+        if response.content_type.index(mime_type :json) == 0
+          halt 500, {error: "Server error encountered: #{env['sinatra.error'].message}"}.to_json
+        else
+          raise env['sinatra.error']
+        end
       end
     end
   

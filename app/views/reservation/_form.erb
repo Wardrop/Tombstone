@@ -8,9 +8,8 @@
   <script type="application/json" id="json:place_data">
     <%=
     begin
-      places = @allocation.place && @allocation.place.ancestors(true).reverse
-      if places
-        places.map { |place| place.siblings.naked.all }
+      if @allocation.place
+        @allocation.place.ancestors(true).reverse.map { |place| place.siblings.naked.all }
       else
         [Tombstone::Place.filter(:parent_id => nil).available_only.order(:name).naked.all]
       end

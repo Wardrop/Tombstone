@@ -36,7 +36,9 @@ module Tombstone
     end
 
     def send_notifications()
-
+      # Short curcuit because of block bug with reservations which don't have a 'deceased' role.
+      # Don't have time to fix right now. Intend to refactor at some stage.
+      return
       return if self.notify.nil?
 
       deceased = self.interment.role_by_type('deceased').person
