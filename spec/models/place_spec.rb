@@ -19,8 +19,8 @@ module Tombstone
     
     it "can have childen" do
       section = Place.with_pk(4)
-      section.children.length.should == 2
-      section.children[0].id.should == 5
+      section.children.count.should == 2
+      section.children.first.id.should == 5
       
       plot = Place.with_pk(7)
       plot.children.should be_empty
@@ -83,7 +83,15 @@ module Tombstone
       siblings = plot.siblings.all
       siblings.count.should > 1
       siblings.each { |s| s.parent_id.should == plot.parent_id}
-      siblings.select { |s| s.id == plot.id }.length == 1
+      siblings.select { |s| s.id == plot.id }.should_not be_empty
+    end
+    
+    it "gets siblings excluding self" do
+      plot = Place.with_pk(7)
+      siblings = plot.siblings(false).all
+      siblings.count.should > 1
+      siblings.each { |s| s.parent_id.should == plot.parent_id}
+      siblings.select { |s| s.id == plot.id }.should be_empty
     end
     
   end

@@ -16,6 +16,7 @@ module Tombstone
           
         general, specific = parse_search_string(params['search'], search_class.searchable.keys)
         conditions = (general.blank?) ? specific : {'all' => general}.merge(specific)
+        p conditions
         @records = search_class.new.query(conditions).all
       end
       prepare_form(render('find/index'), {
