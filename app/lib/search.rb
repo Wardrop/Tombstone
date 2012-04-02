@@ -19,12 +19,12 @@ module Tombstone
             end rescue nil
           },
           name: proc { |v|
-            value = @db.literal("% #{v}")
+            value = @db.literal("%#{v}%")
             "(' '+[PERSON].[TITLE]+' '+[PERSON].[GIVEN_NAME]+' '+[PERSON].[SURNAME]) LIKE #{value}" 
           },
           email: proc { |v| "[CONTACT].[EMAIL] LIKE #{@db.literal(v)}" },
           address: proc { |v|
-            value = @db.literal("% #{v} %")
+            value = @db.literal("%#{v}%")
             "(' '+[CONTACT].[STREET_ADDRESS]+', '+[CONTACT].[TOWN]+' '" +
             "+[CONTACT].[STATE]+' '+CAST([CONTACT].[POSTAL_CODE] as nvarchar))+' ' " +
             "LIKE #{value}"
@@ -160,8 +160,7 @@ module Tombstone
         }
       end
     end
-    
-<<<<<<< HEAD
+
     @@searchable = {
       all: proc { |v|
         @@searchable.reject{|k,v| k == :all}.map { |field, matcher|
@@ -184,8 +183,7 @@ module Tombstone
       type: '[TYPE]',
       status: '[STATUS]'
     }
-=======
->>>>>>> 0df136d5cec55cb06148d01462b9d2d74133d006
+
     def dataset
       pk_join = [*MODEL.primary_key].reduce({}) { |memo, k| memo[k] = k; memo }
       MODEL.select_all(MODEL.table_name).
