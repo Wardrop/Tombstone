@@ -140,13 +140,13 @@ module Tombstone
         }.select{|v| v}.join(' OR ')
       },
       name: proc { |v|
-        "[PLACE].[NAME] LIKE #{@db.literal(v)}}"
+        "[PLACE].[NAME] LIKE #{@db.literal(v)}"
       },
       type: proc { |v|
-        "[PLACE].[TYPE] LIKE #{@db.literal(v)}}"
+        "[PLACE].[TYPE] LIKE #{@db.literal(v)}"
       },
       status: proc { |v|
-        "[PLACE].[STATUS] LIKE #{@db.literal(v)}}"
+        "[PLACE].[STATUS] LIKE #{@db.literal(v)}"
       }
     }
     @@sortable = {

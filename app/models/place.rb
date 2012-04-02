@@ -6,14 +6,14 @@ module Tombstone
     one_to_many :children, :class => self, :key => :parent_id
     one_to_many :allocations, :class => :'Tombstone::Allocation', :key => :place_id
     one_to_many :blobs, :class => :'Tombstone::Blob', :key => :place_id
-    
+
     def_dataset_method(:with_child_count) do
       left_join(
         Place.group(:parent_id).select{[count(parent_id).as(child_count), :parent_id___child_parent_id]},
         :child_parent_id => :place__id
       )
     end
-    
+
     def_dataset_method(:available_only) do
       allocation_filter = Allocation.select(:place_id).exclude(status: 'deleted').group(:place_id)
         filter(:place__status => 'available').
@@ -21,13 +21,13 @@ module Tombstone
         filter(allocation__place_id: nil).
         distinct
     end
-    
+
     class << self
       def valid_states
         ['available', 'unavailable']
       end
     end
-    
+
     def validate
       super
       validates_min_length 2, :name
@@ -41,13 +41,13 @@ module Tombstone
         errors.add(:name, "must be unique among siblings") unless siblings.select{ |s| s.name == name }.empty?
       end
     end
-    
+
     def allows_reservation?
       status == 'available' \
       && children_dataset.count == 0 \
       && allocations_dataset.filter(type: 'reservation').exclude(:status => 'deleted').count > 0
     end
-    
+
     def allows_interment?
       status == 'available' \
       && children_dataset.count == 0 \
@@ -57,11 +57,11 @@ module Tombstone
     def has_photos?
       Blob.filter(:place_id => :place_id).and(:enabled => 1).count > 0
     end
-    
+
     def calculated_max_interments
       ancestors(true).reverse.reduce(1){|max, place| (place.max_interments.to_i > 0) ? place.max_interments : max}
     end
-    
+
     def description
       self.ancestors(true, 0).reverse.map{|p| p.name}.join(' - ')
     end
@@ -69,12 +69,16 @@ module Tombstone
     def cemetery
       self.ancestors[-1]
     end
-    
+
     def siblings(include_self = true)
       dataset = self.class.filter(:parent_id => parent_id).order(:id)
-      dataset.exclude(:id => id) unless include_self
+      if include_self
+        dataset
+      else
+        dataset.exclude(:id => id)
+      end
     end
-    
+
     def children
       self.class.filter(:parent_id => id).order(:id)
     end
@@ -105,7 +109,7 @@ module Tombstone
       ", {:id => self.id, :upto => upto}].to_a
       ((include_self) ? array : array[1..-1]).map { |v| Place.call(v) }
     end
-    
+
     def next_available
       column_string = self.class.dataset.columns.map { |v| "[#{v}]"}.join(', ')
       aliased_column_string = self.class.dataset.columns.map { |v| "p.[#{v}]"}.join(', ')
