@@ -6,7 +6,7 @@ module Tombstone
       def searchable
         {
           all: proc { |v|
-            searchable.reject{|k,v| k == :all}.map { |field, matcher|
+            self.class.searchable.reject{|k,v| k == :all}.map { |field, matcher|
               part = instance_exec(v, &matcher)
               "(#{part})" if part
             }.select{|v| v}.join(' OR ')
@@ -76,7 +76,7 @@ module Tombstone
     def dataset
       pk_join = [*MODEL.primary_key].reduce({}) { |memo, k| memo[k] = k; memo }
       MODEL.select_all(MODEL.table_name).
-        join(self.class.searchable_dataset, pk_join).
+        join(searchable_dataset, pk_join).
         left_join(sortable_dataset, pk_join.merge(:role => ['reservee', 'deceased'])).
         order_by(*@order.map { |field, dir| (dir == :asc) ? field.to_sym.asc : field.to_sym.desc })
     end
@@ -142,13 +142,13 @@ module Tombstone
             }.select{|v| v}.join(' OR ')
           },
           name: proc { |v|
-            "[PLACE].[NAME] LIKE #{@db.literal(v)}"
+            "[PLACE].[NAME] LIKE #{@db.literal("%#{v}%")}"
           },
           type: proc { |v|
-            "[PLACE].[TYPE] LIKE #{@db.literal(v)}"
+            "[PLACE].[TYPE] LIKE #{@db.literal("%#{v}%")}"
           },
           status: proc { |v|
-            "[PLACE].[STATUS] LIKE #{@db.literal(v)}"
+            "[PLACE].[STATUS] LIKE #{@db.literal("%#{v}%")}"
           }
         }
       end
@@ -161,33 +161,10 @@ module Tombstone
         }
       end
     end
-
-    @@searchable = {
-      all: proc { |v|
-        @@searchable.reject{|k,v| k == :all}.map { |field, matcher|
-          part = instance_exec(v, &matcher)
-          "(#{part})" if part
-        }.select{|v| v}.join(' OR ')
-      },
-      name: proc { |v|
-        "[PLACE].[NAME] LIKE #{@db.literal(v)}"
-      },
-      type: proc { |v|
-        "[PLACE].[TYPE] LIKE #{@db.literal(v)}"
-      },
-      status: proc { |v|
-        "[PLACE].[STATUS] LIKE #{@db.literal(v)}"
-      }
-    }
-    @@sortable = {
-      name: '[NAME]',
-      type: '[TYPE]',
-      status: '[STATUS]'
-    }
-
+    
     def dataset
       pk_join = [*MODEL.primary_key].reduce({}) { |memo, k| memo[k] = k; memo }
-      MODEL.select_all(MODEL.table_name).where(conditions_sql).
+      MODEL.select_all(MODEL.table_name).where(conditions_sql.to_s).
         order_by(*@order.map { |field, dir| (dir == :asc) ? field.to_sym.asc : field.to_sym.desc })
     end
   end
