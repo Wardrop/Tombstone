@@ -65,11 +65,7 @@ module Tombstone
           condition = instance_exec(value, &self.class.searchable[field])
           "(#{condition})" if condition
         }.select{|v| v}.join(' AND ')
-<<<<<<< HEAD
         (prefix) ? "#{prefix} #{conditions_str}" : conditions_str.to_s
-=======
-        (prefix) ? "#{prefix} #{conditions_str}" : conditions_str
->>>>>>> 8a9bf7239a68436007975a3bd3f1e229ed4c95f7
       end
     end
   end
