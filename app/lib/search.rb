@@ -1,8 +1,7 @@
 
 module Tombstone
   class Search
-    delegate :searchable, :sortable, :to => self
-    
+
     class << self
       def searchable
         {
@@ -51,20 +50,22 @@ module Tombstone
     # the sort direction (either :asc, or :desc)
     # Returns a dataset corresponding to the Model association with the current class.
     def query(conditions = {}, *order)
-      @conditions = conditions.symbolize_keys.select { |k,v| searchable[k] }
-      @order = order.each_slice(2).to_a.select { |field, dir| sortable[field] }
+      @conditions = conditions.symbolize_keys.select { |k,v| self.class.searchable[k] }
+      @order = order.each_slice(2).to_a.select { |field, dir| self.class.sortable[field] }
       dataset
     end
     
   protected
     
-    def conditions_sql
+    def conditions_sql(prefix = nil)
       unless @conditions.empty?
         conditions_str = @conditions.map { |field, value|
-          condition = instance_exec(value, &searchable[field])
+          condition = instance_exec(value, &self.class.searchable[field])
           "(#{condition})" if condition
         }.select{|v| v}.join(' AND ')
-        "WHERE #{conditions_str}" if conditions_str.length > 0
+        if conditions_str.length > 0
+          (prefix) ? "#{prefix} #{conditions_str}" : conditions_str
+        end
       end
     end
   end
@@ -75,7 +76,7 @@ module Tombstone
     def dataset
       pk_join = [*MODEL.primary_key].reduce({}) { |memo, k| memo[k] = k; memo }
       MODEL.select_all(MODEL.table_name).
-        join(searchable_dataset, pk_join).
+        join(self.class.searchable_dataset, pk_join).
         left_join(sortable_dataset, pk_join.merge(:role => ['reservee', 'deceased'])).
         order_by(*@order.map { |field, dir| (dir == :asc) ? field.to_sym.asc : field.to_sym.desc })
     end
@@ -90,7 +91,7 @@ module Tombstone
         LEFT JOIN [ROLE] ON [ROLE].[ID] = [ROLE_ASSOCIATION].[ROLE_ID]
         LEFT JOIN [PERSON] ON [PERSON].[ID] = [ROLE].[PERSON_ID]
         LEFT JOIN [CONTACT] ON ([CONTACT].[ID] = [ROLE].[RESIDENTIAL_CONTACT_ID]) OR ([CONTACT].[ID] = [ROLE].[MAILING_CONTACT_ID])
-        #{conditions_sql}
+        #{conditions_sql("WHERE")}
       "]
     end
     
@@ -123,7 +124,7 @@ module Tombstone
         FROM [PERSON]
         LEFT JOIN [ROLE] ON [ROLE].[PERSON_ID] = [PERSON].[ID]
         LEFT JOIN [CONTACT] ON ([CONTACT].[ID] = [ROLE].[RESIDENTIAL_CONTACT_ID]) OR ([CONTACT].[ID] = [ROLE].[MAILING_CONTACT_ID])
-        #{conditions_sql}
+        #{conditions_sql("WHERE")}
       "]
     end
   end
@@ -135,7 +136,7 @@ module Tombstone
       def searchable
         {
           all: proc { |v|
-            @@searchable.reject{|k,v| k == :all}.map { |field, matcher|
+            self.class.searchable.reject{|k,v| k == :all}.map { |field, matcher|
               part = instance_exec(v, &matcher)
               "(#{part})" if part
             }.select{|v| v}.join(' OR ')
@@ -163,7 +164,7 @@ module Tombstone
     
     def dataset
       pk_join = [*MODEL.primary_key].reduce({}) { |memo, k| memo[k] = k; memo }
-      MODEL.select_all(MODEL.table_name).
+      MODEL.select_all(MODEL.table_name).where(conditions_sql).
         order_by(*@order.map { |field, dir| (dir == :asc) ? field.to_sym.asc : field.to_sym.desc })
     end
   end

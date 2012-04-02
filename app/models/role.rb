@@ -82,6 +82,8 @@ module Tombstone
       errors.add(:type, "must be one of: #{self.class.valid_types.join(', ')}") if !self.class.valid_types.include? type.downcase
       if type == 'reservee' && self.person.roles_by_type('reservee').count > 0
         errors.add(:type, "cannot be reservee if person is already a reservee of another reservation")
+      elsif type == 'deceased' && self.person.roles_by_type('deceased').count > 0
+        errors.add(:type, "cannot be deceased if person is already a deceased of another interment")
       end
     end
   end
