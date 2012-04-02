@@ -1,12 +1,12 @@
 
 module Tombstone
   class Search
-
+    
     class << self
       def searchable
         {
           all: proc { |v|
-            searchable.reject{|k,v| k == :all}.map { |field, matcher|
+            self.class.searchable.reject{|k,v| k == :all}.map { |field, matcher|
               part = instance_exec(v, &matcher)
               "(#{part})" if part
             }.select{|v| v}.join(' OR ')
@@ -58,14 +58,14 @@ module Tombstone
   protected
     
     def conditions_sql(prefix = nil)
-      unless @conditions.empty?
+      if @conditions.empty?
+        ""
+      else
         conditions_str = @conditions.map { |field, value|
           condition = instance_exec(value, &self.class.searchable[field])
           "(#{condition})" if condition
         }.select{|v| v}.join(' AND ')
-        if conditions_str.length > 0
-          (prefix) ? "#{prefix} #{conditions_str}" : conditions_str
-        end
+        (prefix) ? "#{prefix} #{conditions_str}" : conditions_str.to_s
       end
     end
   end
@@ -76,7 +76,7 @@ module Tombstone
     def dataset
       pk_join = [*MODEL.primary_key].reduce({}) { |memo, k| memo[k] = k; memo }
       MODEL.select_all(MODEL.table_name).
-        join(self.class.searchable_dataset, pk_join).
+        join(searchable_dataset, pk_join).
         left_join(sortable_dataset, pk_join.merge(:role => ['reservee', 'deceased'])).
         order_by(*@order.map { |field, dir| (dir == :asc) ? field.to_sym.asc : field.to_sym.desc })
     end
