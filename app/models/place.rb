@@ -67,7 +67,11 @@ module Tombstone
     
     def siblings(include_self = true)
       dataset = self.class.filter(:parent_id => parent_id).order(:id)
-      dataset.exclude(:id => id) unless include_self
+      if include_self
+        dataset
+      else
+        dataset.exclude(:id => id)
+      end
     end
     
     def children

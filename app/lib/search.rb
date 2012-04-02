@@ -1,45 +1,44 @@
 
 module Tombstone
   class Search
-    @@searchable = {
-      all: proc { |v|
-        @@searchable.reject{|k,v| k == :all}.map { |field, matcher|
-          part = instance_exec(v, &matcher)
-          "(#{part})" if part
-        }.select{|v| v}.join(' OR ')
-      },
-      dob: proc { |v|
-        begin
-          date = Date.parse(v)
-          "[PERSON].[DATE_OF_BIRTH] >= #{@db.literal(date)} AND [PERSON].[DATE_OF_BIRTH] < #{@db.literal(date + 1)}"
-        end rescue nil
-      },
-      name: proc { |v|
-        value = @db.literal("% #{v}")
-        "(' '+[PERSON].[TITLE]+' '+[PERSON].[GIVEN_NAME]+' '+[PERSON].[SURNAME]) LIKE #{value}" 
-      },
-      email: proc { |v| "[CONTACT].[EMAIL] LIKE #{@db.literal(v)}" },
-      address: proc { |v|
-        value = @db.literal("% #{v} %")
-        "(' '+[CONTACT].[STREET_ADDRESS]+', '+[CONTACT].[TOWN]+' '" +
-        "+[CONTACT].[STATE]+' '+CAST([CONTACT].[POSTAL_CODE] as nvarchar))+' ' " +
-        "LIKE #{value}"
-      }
-    }
-    @@sortable = {
-      given_name: '[GIVEN_NAME]',
-      surname: '[SURNAME]',
-      created_at: '[CREATED_AT]',
-      modified_at: '[MODIFIED_AT]'
-    }
+    delegate :searchable, :sortable, :to => self
     
     class << self
       def searchable
-        @@searchable
+        {
+          all: proc { |v|
+            searchable.reject{|k,v| k == :all}.map { |field, matcher|
+              part = instance_exec(v, &matcher)
+              "(#{part})" if part
+            }.select{|v| v}.join(' OR ')
+          },
+          dob: proc { |v|
+            begin
+              date = Date.parse(v)
+              "[PERSON].[DATE_OF_BIRTH] >= #{@db.literal(date)} AND [PERSON].[DATE_OF_BIRTH] < #{@db.literal(date + 1)}"
+            end rescue nil
+          },
+          name: proc { |v|
+            value = @db.literal("% #{v}")
+            "(' '+[PERSON].[TITLE]+' '+[PERSON].[GIVEN_NAME]+' '+[PERSON].[SURNAME]) LIKE #{value}" 
+          },
+          email: proc { |v| "[CONTACT].[EMAIL] LIKE #{@db.literal(v)}" },
+          address: proc { |v|
+            value = @db.literal("% #{v} %")
+            "(' '+[CONTACT].[STREET_ADDRESS]+', '+[CONTACT].[TOWN]+' '" +
+            "+[CONTACT].[STATE]+' '+CAST([CONTACT].[POSTAL_CODE] as nvarchar))+' ' " +
+            "LIKE #{value}"
+          }
+        }
       end
       
       def sortable
-        @@sortable
+        {
+          given_name: '[GIVEN_NAME]',
+          surname: '[SURNAME]',
+          created_at: '[CREATED_AT]',
+          modified_at: '[MODIFIED_AT]'
+        }
       end
     end
     
@@ -52,8 +51,8 @@ module Tombstone
     # the sort direction (either :asc, or :desc)
     # Returns a dataset corresponding to the Model association with the current class.
     def query(conditions = {}, *order)
-      @conditions = conditions.symbolize_keys.select { |k,v| @@searchable[k] }
-      @order = order.each_slice(2).to_a.select { |field, dir| @@sortable[field] }
+      @conditions = conditions.symbolize_keys.select { |k,v| searchable[k] }
+      @order = order.each_slice(2).to_a.select { |field, dir| sortable[field] }
       dataset
     end
     
@@ -62,7 +61,7 @@ module Tombstone
     def conditions_sql
       unless @conditions.empty?
         conditions_str = @conditions.map { |field, value|
-          condition = instance_exec(value, &@@searchable[field])
+          condition = instance_exec(value, &searchable[field])
           "(#{condition})" if condition
         }.select{|v| v}.join(' AND ')
         "WHERE #{conditions_str}" if conditions_str.length > 0
@@ -131,29 +130,37 @@ module Tombstone
   
   class PlaceSearch < Search
     MODEL = Place
+
+    class << self
+      def searchable
+        {
+          all: proc { |v|
+            @@searchable.reject{|k,v| k == :all}.map { |field, matcher|
+              part = instance_exec(v, &matcher)
+              "(#{part})" if part
+            }.select{|v| v}.join(' OR ')
+          },
+          name: proc { |v|
+            "[PLACE].[NAME] LIKE #{@db.literal(v)}"
+          },
+          type: proc { |v|
+            "[PLACE].[TYPE] LIKE #{@db.literal(v)}"
+          },
+          status: proc { |v|
+            "[PLACE].[STATUS] LIKE #{@db.literal(v)}"
+          }
+        }
+      end
+      
+      def sortable
+        {
+          name: '[NAME]',
+          type: '[TYPE]',
+          status: '[STATUS]'
+        }
+      end
+    end
     
-    @@searchable = {
-      all: proc { |v|
-        @@searchable.reject{|k,v| k == :all}.map { |field, matcher|
-          part = instance_exec(v, &matcher)
-          "(#{part})" if part
-        }.select{|v| v}.join(' OR ')
-      },
-      name: proc { |v|
-        "[PLACE].[NAME] LIKE #{@db.literal(v)}}"
-      },
-      type: proc { |v|
-        "[PLACE].[TYPE] LIKE #{@db.literal(v)}}"
-      },
-      status: proc { |v|
-        "[PLACE].[STATUS] LIKE #{@db.literal(v)}}"
-      }
-    }
-    @@sortable = {
-      name: '[NAME]',
-      type: '[TYPE]',
-      status: '[STATUS]'
-    }
     def dataset
       pk_join = [*MODEL.primary_key].reduce({}) { |memo, k| memo[k] = k; memo }
       MODEL.select_all(MODEL.table_name).
