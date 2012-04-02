@@ -611,7 +611,6 @@ $( function () {
 		},
 		submit: function (status) {
 			var data = this.formData()
-			console.log(data)
 			data.status = status
 			this.hideErrors()
 			if(this.lastRequest && this.lastRequest.state() == 'pending') {
@@ -622,7 +621,7 @@ $( function () {
 				}
 			}
 			
-			var method = (this.allocationData.id) ? 'update' : 'create'
+			var method = (this.allocationData.id && this.allocationData.type == this.options.type) ? 'update' : 'create'
 			var emulateJSON = Backbone.emulateJSON
 			try {
 			  Backbone.emulateJSON = true

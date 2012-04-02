@@ -90,6 +90,12 @@ module Tombstone
         end
       end
       validates_includes self.class.valid_states, :status
+      
+      deceased = role_by_type('deceased')
+      if deceased
+        Role.filter(person_id: deceased.id).all.select { |r| r.al }
+        errors.add(:deceased, "")
+      end
     end
 
     def before_create

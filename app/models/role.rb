@@ -79,12 +79,8 @@ module Tombstone
       super
       errors.add(:person, "must have an associated person") if !person
       errors.add(:residential_contact, "must have an associated residential contact") if !person
+      validates_includes self.class.valid_types, :type
       errors.add(:type, "must be one of: #{self.class.valid_types.join(', ')}") if !self.class.valid_types.include? type.downcase
-      if type == 'reservee' && self.person.roles_by_type('reservee').count > 0
-        errors.add(:type, "cannot be reservee if person is already a reservee of another reservation")
-      elsif type == 'deceased' && self.person.roles_by_type('deceased').count > 0
-        errors.add(:type, "cannot be deceased if person is already a deceased of another interment")
-      end
     end
   end
 end

@@ -11,7 +11,8 @@ content_for :head do
       new Ts.FormViews.AllocationForm({
         el: $('#interment_form')[0],
         valid_roles: ['deceased', 'applicant', 'next_of_kin'],
-        states: states
+        states: states,
+        type: 'interment'
       })
     })
   </script>
