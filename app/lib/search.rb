@@ -58,14 +58,14 @@ module Tombstone
   protected
     
     def conditions_sql(prefix = nil)
-      unless @conditions.empty?
+      if @conditions.empty?
+        ""
+      else
         conditions_str = @conditions.map { |field, value|
           condition = instance_exec(value, &self.class.searchable[field])
           "(#{condition})" if condition
         }.select{|v| v}.join(' AND ')
-        if conditions_str.length > 0
-          (prefix) ? "#{prefix} #{conditions_str}" : conditions_str
-        end
+        (prefix) ? "#{prefix} #{conditions_str}" : conditions_str
       end
     end
   end
@@ -164,7 +164,7 @@ module Tombstone
     
     def dataset
       pk_join = [*MODEL.primary_key].reduce({}) { |memo, k| memo[k] = k; memo }
-      MODEL.select_all(MODEL.table_name).where(conditions_sql.to_s).
+      MODEL.select_all(MODEL.table_name).where(conditions_sql).
         order_by(*@order.map { |field, dir| (dir == :asc) ? field.to_sym.asc : field.to_sym.desc })
     end
   end
