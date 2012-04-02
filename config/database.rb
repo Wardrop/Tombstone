@@ -20,7 +20,7 @@ Sequel::Model.db = case Padrino.env
       user: 'TRC\tombstone_user',
       password: '10Pippl$ah',
       database: 'Tombstone_Dev',
-      loggers: [Logger.new(STDOUT)]
+      loggers: [Logger.new(nil)]
     })
   when :spec then
     Sequel.connect({

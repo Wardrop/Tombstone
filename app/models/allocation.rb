@@ -179,7 +179,7 @@ module Tombstone
       errors.add(:advice_received_date, "cannot be be in the future") if (advice_received_date.is_a?(Time) && advice_received_date > Date.today)
       errors.add(:interment_date, "must be greater than the current time") unless (interment_date.is_a?(Time) && interment_date >= DateTime.now)
       errors.add(:status, "cannot be '#{status}' for a future interment date") if (interment_date.is_a?(Time) && interment_date > DateTime.now && (['interred', 'completed'].include? status))
-      ##errors.add(:photographs, 'must be added to "complete" this intermnet') if (['interred', 'completed'].include? status) && (self.place.has_photos? == false)
+      ##errors.add(:photographs, 'must be added to "complete" this interment') if (['interred', 'completed'].include? status) && (self.place.has_photos? == false)
     end
 
     def before_create
