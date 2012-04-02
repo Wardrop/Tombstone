@@ -99,10 +99,10 @@ module Tombstone
       if !session[:deleted_photos].to_a.empty?
         Blob.filter(:id => session[:deleted_photos]).delete
       end
-      reset_photos
+      reset_photos_changes
     end
 
-    def reset_photos
+    def reset_photos_changes
       session[:new_photos] = []
       session[:deleted_photos] = []
     end
