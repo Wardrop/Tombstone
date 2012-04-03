@@ -54,9 +54,11 @@ module Tombstone
           end
         end
 
-        if data['status'] == 'provisional'
+        if allocation.status == 'provisional'
           allocation.valid?
-          allocation.errors.select!{ |k,v| k == :place && !v.empty? }
+          p allocation.errors
+          allocation.errors.select!{ |k,v| k == :place }
+          p allocation.errors
           if allocation.errors.empty?
             allocation.save(validate: false)
           else
@@ -65,6 +67,8 @@ module Tombstone
         elsif allocation.errors.empty? && allocation.valid?
           allocation.save
         else
+          p allocation
+          p allocation.errors
           raise Sequel::Rollback
         end
 

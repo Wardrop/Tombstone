@@ -19,7 +19,7 @@ $( function () {
     },
     syncCallbacks: {
       'sync:before': function (method, obj) {
-        this.indicator.css({display: ''}).addClass('loading')
+        this.indicator.css({display: ''}).attr({class: 'indicator loading', title: ''})
         this.hideErrors()
       },
       'sync:always': function (method, obj)  {

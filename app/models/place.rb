@@ -42,13 +42,13 @@ module Tombstone
       end
     end
 
-    def allows_reservation?
+    def allows_reservation?(exclude_allocation = nil)
       status == 'available' \
       && children_dataset.count == 0 \
       && allocations_dataset.filter(type: 'reservation').exclude(:status => 'deleted').count > 0
     end
 
-    def allows_interment?
+    def allows_interment?(exclude_allocation = nil)
       status == 'available' \
       && children_dataset.count == 0 \
       && calculated_max_interments > allocations_dataset.filter(type: 'interment').exclude(:status => 'deleted').count

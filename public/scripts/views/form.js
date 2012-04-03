@@ -29,7 +29,7 @@ $( function () {
     initialize: function () {
       this.group = this.options.group || {}
       this.role_type = this.options.role_type
-			this.role_name = this.options.role_name || this.role_type.split('_').join(' ').titleize()
+			this.role_name = this.options.role_name && this.role_type.split('_').join(' ').titleize()
       _.bindAll(this, 'render', 'addRole', 'changeRole', 'onCompleteCallback')
     },
     render: function () {
@@ -334,6 +334,7 @@ $( function () {
       change: function () { this.selectPlace() }
     },
     initialize: function () {
+      this.options.url || (this.options.url = function (id) { return '/place/'+id+'/children/available' })
       this._super('initialize', arguments)
       this.collection.on('reset', function () {
         this.render()
@@ -349,14 +350,21 @@ $( function () {
   					options: this.options
   			}))
       } else {
-        this.$el.empty()
+        this.$el.detach()
       }
       this.$el.append(this.indicator)
       return this
     },
     renderChildPicker: function (places, options) {
       options = options || {}
-      var parent_id = this.collection.at(0).get('parent_id')
+      var selectedPlace = this.collection.get(this.$(':selected').val())
+      if (places.length == 0 && selectedPlace.get('child_count') > 0) {
+        this.indicator.css({display: ''}).attr({
+          class: 'indicator warning',
+          title: selectedPlace.get('type').demodulize().titleize() +
+            ' does not contain any available places.'
+        })
+      }
       var view = new this.constructor($.extend({}, this.options, options, {collection: places}))
       this.$el.after(view.el)
       setTimeout(function () { view.$('select').focus() })
@@ -381,8 +389,14 @@ $( function () {
     },
     loadChildren: function (parent_id) {
       places = new Ts.Places
-      this.renderChildPicker(places)
-      places.fetch({url: '/place/'+parent_id+'/children'})
+      this.bindToSync(places)
+      places.fetch({
+        url: this.options.url(parent_id),
+        complete: _.bind( function () {
+          this.unbindFromSync(places)
+          this.renderChildPicker(places)
+        }, this)
+      })
       return this
     },
     nextAvailable: function (parent_id) {
@@ -394,9 +408,19 @@ $( function () {
           if (data && Object.keys(data).length > 0) {
             var lastPickerView = null
             for(var i=0; data[i]; i++) {
-              var selected_id = (data[i+1]) ? data[i+1][0].parent_id : data[i][0].id
+              var selected_id = (data[i+1]) ? data[i+1][0].parent_id : null
               lastPickerView = (lastPickerView || this).renderChildPicker(new Ts.Places(data[i]), {selected: selected_id})
             }
+            lastPickerView.collection.all( function (place) {
+              if (place.get('child_count') < 1) {
+                lastPickerView.selectPlace(place.get('id'))
+                return false
+              } else {
+                return true
+              }
+            })
+            
+            lastPickerView.$el.change()
           } else {
             this.indicator.attr({
               class: 'indicator warning',
@@ -419,6 +443,7 @@ $( function () {
       'click .delete': 'selectAction'
     },
     initialize: function () {
+      this.options.url || (this.options.url = function (id) { return '/place/'+id+'/children' })
       this._super('initialize', arguments)
       this.collection.onModelEvents = function () {}
     },

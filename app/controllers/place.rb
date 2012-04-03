@@ -64,7 +64,6 @@ module Tombstone
       end
       self.response.status = 500 if response[:errors] && !response[:errors].empty?
       response.to_json
-      # TODO: Handle the case where a place has associated images.
     end
 
     get :next_available, :map => %r{/place/([0-9]+)/next_available}, :provides => :json do |id|
@@ -88,10 +87,10 @@ module Tombstone
       if filter
         case filter
         when 'available'
-        places = places.available_only
+          places = places.available_only
         when 'all'
         else
-        halt 404
+          halt 404
         end
       end
       places.order(:name).with_child_count.naked.all.to_json

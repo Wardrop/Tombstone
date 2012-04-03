@@ -3,6 +3,7 @@ module Tombstone
 
     get :all, :provides => :json do
       filter_hash = params.reject{ |k,v| !v || v.empty? }.symbolize_keys!
+      p filter_hash
       Person.filter(filter_hash).naked.all.to_json
     end
 

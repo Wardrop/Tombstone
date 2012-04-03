@@ -25,7 +25,7 @@ module Tombstone
       self.class.required_roles.each do |role_type|
         errors.add(role_type.to_sym, "must be added") if roles.select { |r| r.type == role_type}.empty?
       end
-      if not Place === place
+      if not Place === place(true)
         errors.add(:place, 'cannot be empty and must exist')
       elsif place.children.count >= 1
         errors.add(:place, 'must not have any children')
@@ -85,7 +85,7 @@ module Tombstone
     def validate
       super
       if errors[:place].empty?
-        if changed_columns.include?(:place) && !place.allows_reservation?
+        if changed_columns.include?(:place_id) && !place.allows_reservation?
           errors.add(:place, "is unavailable")
         end
       end
@@ -171,8 +171,9 @@ module Tombstone
 
     def validate
       super
+      p changed_columns
       if errors[:place].empty?
-        if changed_columns.include?(:place) && !place.allows_interment?
+        if changed_columns.include?(:place_id) && !place.allows_interment?
           errors.add(:place, "is unavailable")
         end
       end

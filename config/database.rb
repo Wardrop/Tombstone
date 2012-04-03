@@ -32,4 +32,5 @@ Sequel::Model.db = case Padrino.env
     })
 end
 
- 
+# Set the default date from that stupid american MDY to the more sane DMY.
+Sequel::Model.db << 'SET DATEFORMAT DMY'
