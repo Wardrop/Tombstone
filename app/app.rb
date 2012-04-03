@@ -2,7 +2,7 @@
 # Dir.glob(File.join(File.dirname(__FILE__), 'lib/*/**/*.rb')) { |f| require f }
 
 module Tombstone
-  VERSION = 0.7
+  VERSION = '0.7.1'
   
   class App < Padrino::Application
     register Padrino::Rendering
@@ -41,9 +41,13 @@ module Tombstone
     
     before do
       if request.path_info != url(:login) && request.path_info != url(:logout) && session[:user_id].nil?
-        flash[:banner] = 'error', 'You must login to use this application.'
-        referrer = URI.escape(request.fullpath, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
-        redirect("#{url(:login)}?referrer=#{referrer}")
+        if request.accept.include?(mime_type :json)
+          halt 401, 'You must login to use this application.'.to_json
+        else
+          flash[:banner] = 'error', 'You must login to use this application.'
+          referrer = URI.escape(request.fullpath, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+          redirect("#{url(:login)}?referrer=#{referrer}")
+        end
       end
       
       @document = {

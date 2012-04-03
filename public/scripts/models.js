@@ -4,21 +4,33 @@ Ts.Model = Backbone.Model.extend({
   },
   serverValidate: function (callbacks) {
     this.errors = {}
-    $.ajax(this.urlRoot+'/validate', {
-      type: 'GET',
-      dataType: 'json',
-      data: this.toJSON(),
+    Backbone.sync('read', this, {
+      url: this.urlRoot+'/validate',
       success: _.bind( function (data, textStatus, jqXHR) {
-        if(data.valid == true) {
+        if(data.valid) {
           callbacks.valid()
         } else {
           this.errors = data.errors
           callbacks.invalid(data.errors)
         }
-      }, this),
-      error: callbacks.error,
-      complete: callbacks.complete
+      }, this)
     })
+    
+    // $.ajax(this.urlRoot+'/validate', {
+    //   type: 'GET',
+    //   dataType: 'json',
+    //   data: this.toJSON(),
+    //   success: _.bind( function (data, textStatus, jqXHR) {
+    //     if(data.valid == true) {
+    //       callbacks.valid()
+    //     } else {
+    //       this.errors = data.errors
+    //       callbacks.invalid(data.errors)
+    //     }
+    //   }, this),
+    //   error: callbacks.error,
+    //   complete: callbacks.complete
+    // })
   },
   sync: function(method, model, options) {
     options = options || {}

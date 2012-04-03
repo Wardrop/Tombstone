@@ -1375,7 +1375,6 @@
       if (optionsBeforeSend) optionsBeforeSend.apply(this, arguments)
       model.trigger("sync:before", method, model, jqXHR, settings);
     }
-    console.log(Backbone.emulateJSON)
     var ajaxDeferred = $.ajax(_.extend(params, options));
     ajaxDeferred.done( function(data, textStatus, jqXHR) {
       model.trigger("sync:done", method, model, data, textStatus, jqXHR)

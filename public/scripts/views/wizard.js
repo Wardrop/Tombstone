@@ -76,7 +76,7 @@ $( function () {
 		  this._super('initialize', arguments)
 			_.bindAll(this, 'close', 'goBack', 'closeOnBlur')
 			this.model.bind('change:currentPage', this.renderPage, this)
-      this.model.bind('change:isLoading', this.renderLoader, this)
+      //this.model.bind('change:isLoading', this.renderLoader, this)
       this.onComplete = this.options.onComplete || new Function
       this.options.scrollToErrors = false
       $('body').prepend(this.$el.css({display: 'none'}))
@@ -88,7 +88,7 @@ $( function () {
       this.$('.body').prepend(this.indicator)
       this.$('.body').prepend(this.errorBlock)
 			this.renderPage()
-      this.renderLoader()
+      //this.renderLoader()
 			return this
 		},
     renderPage: function () {
@@ -106,9 +106,9 @@ $( function () {
     },
     renderLoader: function () {
       if(this.model.get('isLoading')) {
-        this.$('.indicator').addClass('loading').css('display', '')
+        this.indicator.addClass('loading').css('display', '')
       } else {
-        this.$('.indicator').removeClass('loading').css('display', 'none')
+        this.indicator.removeClass('loading').css('display', 'none')
       }
     },
 		close: function () {
@@ -119,20 +119,6 @@ $( function () {
 				this.close()
       }
 		},
-    ajaxErrorHandler: function (binding, context) {
-			context = (context) ? context : 'backbone'
-			if(context == 'jQuery') {
-				return _.bind( function (jqXHR, textStatus, errorThrown) {
-	        this.showErrors($.parseJSON(jqXHR.responseText).exception)
-	        this.model.set({isLoading: false})
-	      }, binding)
-			} else if (context == 'backbone') {
-				return _.bind( function (collection, jqXHR) {
-	        this.showErrors($.parseJSON(jqXHR.responseText).exception)
-	        this.model.set({isLoading: false})
-	      }, binding)
-			}
-    },
     goBack: function () {
       var backDestination = this.model.get('pageHistory').pop()
       if(backDestination) {
@@ -177,14 +163,24 @@ $( function () {
     initialize: function () {
       this._super('initialize', arguments)
       this.showFindPersonForm()
+      this.bindToSync(this.model.get('role').get('residential_contact'))
+      this.bindToSync(this.model.get('role').get('mailing_contact'))
     },
     showFindPersonForm: function () {
-      this.findPersonModel = new Ts.Person
-      var findPersonForm = new Ts.WizardViews.FindPersonForm({model: this.findPersonModel, wizard: this, action: 'findPeople'})
+      this.bindToSync(this.findPersonModel = new Ts.Person)
+      var findPersonForm = new Ts.WizardViews.FindPersonForm({
+        model: this.findPersonModel,
+        wizard: this,
+        action: 'findPeople'
+      })
       this.model.set({currentPage: findPersonForm})
     },
     showCreatePersonForm: function () {
-      var createPersonForm = new Ts.WizardViews.CreatePersonForm({model: this.findPersonModel, wizard: this, action: 'savePerson'}, 'savePerson')
+      var createPersonForm = new Ts.WizardViews.CreatePersonForm({
+        model: this.findPersonModel,
+        wizard: this,
+        action: 'savePerson'
+      })
       this.model.set({currentPage: createPersonForm})
     },
     showCreateContactForm: function () {
@@ -196,28 +192,27 @@ $( function () {
       this.model.set({currentPage: roleReview})
     },
     findPeople: function (person) {
-      var matches = new Ts.People()
-      var self = this
-      this.model.set({isLoading: true})
-      matches.fetch({
+      this.bindToSync(people = new Ts.People)
+      // this.model.set({isLoading: true})
+      people.fetch({
         success: _.bind( function (collection, response) {
-          var resultsView = new Ts.WizardViews.PersonResults({collection: collection, wizard: this})
-          this.model.set({currentPage: resultsView, isLoading: false})
+          var resultsView = new Ts.WizardViews.PersonResults({
+            collection: collection,
+            wizard: this
+          })
+          this.model.set({currentPage: resultsView/*, isLoading: false*/})
         }, this),
-        error: this.ajaxErrorHandler(this),
         data: person.toJSON()
       })
     },
     findContacts: function (person) {
-      var contacts = new Ts.Contacts()
-      var self = this
-      this.model.set({isLoading: true})
+      this.bindToSync(contacts = new Ts.Contacts)
+      // this.model.set({isLoading: true})
       contacts.fetch({
-        success: function (results) {
-          var resultsView = new Ts.WizardViews.ContactResults({collection: results, wizard: self})
-          self.model.set({currentPage: resultsView, isLoading: false})
-        },
-        error: this.ajaxErrorHandler(this),
+        success: _.bind( function (results) {
+          var resultsView = new Ts.WizardViews.ContactResults({collection: results, wizard: this})
+          this.model.set({currentPage: resultsView/*, isLoading: false*/})
+        }, this),
         data: {person_id: person.get('id')}
       })
     },
@@ -226,12 +221,10 @@ $( function () {
       if(person.get('id')) {
         this.findContacts(person)
       } else {
-        this.model.set({isLoading: true})
+        // this.model.set({isLoading: true})
 				person.serverValidate({
 					valid: _.bind( function () { this.showCreateContactForm() }, this),
-					invalid: _.bind( function (errors) { this.renderPage() }, this),
-					error: this.ajaxErrorHandler(this, 'jQuery'),
-          complete: _.bind(function () { this.model.set({isLoading: false}) }, this)
+					invalid: _.bind( function () { this.renderPage() }, this)
 				})
       }
     },
@@ -240,12 +233,10 @@ $( function () {
         this.model.get('role').set({residential_contact: contact})
         this.showRoleReview()
       } else {
-        this.model.set({isLoading: true})
+        // this.model.set({isLoading: true})
 				contact.serverValidate({
 					valid: _.bind( function () { this.showRoleReview() }, this),
-					invalid: _.bind( function (errors) { this.showCreateContactForm() }, this),
-					error: this.ajaxErrorHandler(this, 'jQuery'),
-          complete: _.bind(function () { this.model.set({isLoading: false}) }, this)
+					invalid: _.bind( function () { this.showCreateContactForm() }, this)
 				})
       }
     },
