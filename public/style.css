@@ -863,13 +863,10 @@ input.with_icon.loading {
 }
 
 iframe {
-  margin-bottom:0px;
-  padding-bottom: 0;
+  overflow: hidden;
   width: 100%;
   scrolling: no;
   frameborder: 0;
-  hspace: 0;
-  vspace: 0;
 }
 
 .photos{

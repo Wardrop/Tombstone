@@ -199,7 +199,10 @@ String.prototype.demodulize = function () {
 })()
 
 function resizeIframe(obj) {
- obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+ var height = obj.contentWindow.document.body.scrollHeight;
+ if (height < 350) { height = 325; }
+ obj.style.height = height + 'px';
  obj.style.width = obj.contentWindow.document.body.scrollWidth + 'px';
+ console.log(obj.contentWindow.document.body.scrollHeight)
 }
 

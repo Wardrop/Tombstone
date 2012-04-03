@@ -85,7 +85,7 @@
     </div>
   </section>
   <% if @allocation.id %>
-    <iframe src="<%= url :"photos_edit", :id => @allocation.place.id %>" onload='javascript:resizeIframe(this);'>Browser not compatible.</iframe>
+    <iframe src="<%= url :"photos_edit", :id => @allocation.place.id %>" frameborder="0" onload="resizeIframe(this)">Browser not compatible.</iframe>
     <input type="hidden" name="id" value="<%= @allocation.id %>" />
   <% end %>
   <input type="hidden" name="_method" value="<%= (Tombstone::Interment === @allocation && @allocation.id) ? 'put' : 'post'  %>" />
