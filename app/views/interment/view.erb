@@ -14,7 +14,7 @@ content_for :head do
             window.location = <%= url(:interment_edit, :id => @allocation.id).to_json %>
           },
           multiple_interment: function () {
-            window.location = <%= url(:interment_new, :place => @allocation.place_id).to_json %>
+            window.location = <%= url(:interment_new, :place_id => @allocation.place_id).to_json %>
           },
           delete: function () {
             if (confirm('Are you sure you want to delete this interment?')) {

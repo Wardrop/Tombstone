@@ -35,9 +35,9 @@ module Tombstone
       @notify << notify
     end
 
-    def send_notifications()
-
-      return if self.notify.nil? or
+    def send_notifications
+      return
+      return if self.notify.nil?
       return unless self.interment.class.required_roles.include? 'deceased'
 
       deceased = self.interment.role_by_type('deceased').person

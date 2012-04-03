@@ -1,7 +1,7 @@
 
 module Tombstone
   class Search
-
+    
     class << self
       def searchable
         {
@@ -65,7 +65,7 @@ module Tombstone
           condition = instance_exec(value, &self.class.searchable[field])
           "(#{condition})" if condition
         }.select{|v| v}.join(' AND ')
-        (prefix) ? "#{prefix} #{conditions_str}" : conditions_str
+        (prefix) ? "#{prefix} #{conditions_str}" : conditions_str.to_s
       end
     end
   end
