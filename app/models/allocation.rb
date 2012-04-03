@@ -183,8 +183,8 @@ module Tombstone
       validates_presence [:advice_received_date, :interment_date]
       validates_includes self.class.valid_interment_types, :interment_type
       errors.add(:advice_received_date, "cannot be be in the future") if (advice_received_date.is_a?(Time) && advice_received_date > Date.today)
-      errors.add(:interment_date, "must be greater than the current time") unless (interment_date.is_a?(Time) && interment_date >= DateTime.now)
-      errors.add(:status, "cannot be '#{status}' for a future interment date") if (interment_date.is_a?(Time) && interment_date > DateTime.now && (['interred', 'completed'].include? status))
+      errors.add(:interment_date, "must be greater than the current time to update to this status '#{status}'") if (interment_date.is_a?(DateTime) && DateTime.now < interment_date) && (['interred', 'completed'].include? status)
+      errors.add(:status, "cannot be '#{status}' for a future interment date") if (interment_date.is_a?(DateTime) && interment_date > DateTime.now && (['interred', 'completed'].include? status))
       ##errors.add(:photographs, 'must be added to "complete" this interment') if (['interred', 'completed'].include? status) && (self.place.has_photos? == false)
     end
 
