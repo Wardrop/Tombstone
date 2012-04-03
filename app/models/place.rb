@@ -42,16 +42,20 @@ module Tombstone
       end
     end
 
-    def allows_reservation?(exclude_allocation = nil)
+    def allows_reservation?(excluded_allocation = nil)
+      allocations = allocations_dataset.filter(type: 'reservation').exclude(:status => 'deleted')
+      allocations = allocations.exclude(excluded_allocation.primary_key_hash) if Allocation === excluded_allocation
       status == 'available' \
       && children_dataset.count == 0 \
-      && allocations_dataset.filter(type: 'reservation').exclude(:status => 'deleted').count > 0
+      && allocations.count == 0
     end
 
-    def allows_interment?(exclude_allocation = nil)
+    def allows_interment?(excluded_allocation = nil)
+      allocations = allocations_dataset.filter(type: 'interment').exclude(:status => 'deleted')
+      allocations = allocations.exclude(excluded_allocation.primary_key_hash) if Allocation === excluded_allocation
       status == 'available' \
       && children_dataset.count == 0 \
-      && calculated_max_interments > allocations_dataset.filter(type: 'interment').exclude(:status => 'deleted').count
+      && calculated_max_interments > allocations.count
     end
 
     def has_photos?

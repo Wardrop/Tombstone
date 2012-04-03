@@ -85,9 +85,7 @@ module Tombstone
     def validate
       super
       if errors[:place].empty?
-        if changed_columns.include?(:place_id) && !place.allows_reservation?
-          errors.add(:place, "is unavailable")
-        end
+        errors.add(:place, "is unavailable") unless place.allows_reservation?(self)
       end
       validates_includes self.class.valid_states, :status
       
@@ -171,11 +169,8 @@ module Tombstone
 
     def validate
       super
-      p changed_columns
       if errors[:place].empty?
-        if changed_columns.include?(:place_id) && !place.allows_interment?
-          errors.add(:place, "is unavailable")
-        end
+        errors.add(:place, "is unavailable") unless place.allows_interment?(self)
       end
       validates_includes self.class.valid_states, :status
       validates_presence :funeral_director

@@ -22,6 +22,10 @@ module Tombstone
       set(self.class.valid_only(hash))
     end
     
+    def primary_key_hash
+      values.select { |k,v| primary_key.include? k }
+    end
+    
     remove_instance_variable(:@dataset)
     
     class << self
