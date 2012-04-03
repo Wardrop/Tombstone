@@ -19,7 +19,7 @@
           </div>
           <div class="footer">
             <span><%= blob[:name] %> - </span>
-            <span><%= blob[:timestamp].strftime("%Y-%m-%d %-I:%M%P") %></span>
+            <span><%= print { blob[:timestamp].strftime("%Y-%m-%d %-I:%M%P") } %></span>
           </div>
         </div>
       <% end %>
