@@ -1,3 +1,5 @@
+Sequel.datetime_class = DateTime
+Sequel::Dataset::TIMESTAMP_FORMAT = "'%Y-%m-%dT%H:%M:%S%N%z'"
 Sequel::Model.plugin :validation_helpers
 Sequel::Model.plugin :json_serializer
 Sequel::Model.raise_on_typecast_failure = false
@@ -16,21 +18,20 @@ Sequel::Model.db = case Padrino.env
   when :development then
     Sequel.connect({
       adapter: 'tinytds',
-      host: 'vm02',
-      user: 'VM02\administrator',
-      password: 'Passw0rd',
+      host: 'trcsql02.trc.local',
+      user: 'TRC\tombstone_user',
+      password: '10Pippl$ah',
       database: 'Tombstone_Dev',
       loggers: [Logger.new(nil)]
     })
   when :spec then
     Sequel.connect({
       adapter: 'tinytds',
-      host: 'vm02',
-      user: 'VM02\administrator',
-      password: 'Passw0rd',
+      host: 'trcsql02.trc.local',
+      user: 'TRC\tombstone_user',
+      password: '10Pippl$ah',
       database: 'Tombstone_Spec'
     })
 end
 
-# Set the default date from that stupid american MDY to the more sane DMY.
 Sequel::Model.db << 'SET DATEFORMAT DMY'

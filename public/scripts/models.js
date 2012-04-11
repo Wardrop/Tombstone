@@ -4,6 +4,7 @@ Ts.Model = Backbone.Model.extend({
   },
   serverValidate: function (callbacks) {
     this.errors = {}
+    console.log(this)
     Backbone.sync('read', this, {
       url: this.urlRoot+'/validate',
       success: _.bind( function (data, textStatus, jqXHR) {
@@ -99,27 +100,6 @@ Ts.Place = Ts.Model.extend({
 Ts.Wizard = Ts.Model.extend({
 	defaults: {
 		title: 'Untitled',
-    role: null,
-		currentPage: null,
-    pageHistory: null,
-    isLoading: false
-	},
-  initialize: function () {
-    if(!this.get('pageHistory')) this.set({pageHistory: []})
-    this.bind('change:currentPage', function () {
-      if(this.previous('currentPage')
-         && this.previous('currentPage') != this.get('pageHistory')
-      ) {
-        this.get('pageHistory').push(this.previous('currentPage'))
-      }
-    }, this)
-  }
-})
-
-Ts.PlaceWizard = Ts.Model.extend({
-	defaults: {
-		title: 'Untitled',
-    place: null,
 		currentPage: null,
     pageHistory: null,
     isLoading: false
@@ -133,4 +113,12 @@ Ts.PlaceWizard = Ts.Model.extend({
       this.get('pageHistory').push(this.previous('currentPage'))
     }
   }
+})
+
+Ts.RoleWizard = Ts.Wizard.extend({
+
+})
+
+Ts.PlaceWizard = Ts.Wizard.extend({
+
 })

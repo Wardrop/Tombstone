@@ -26,13 +26,20 @@ $( function () {
         if (this.indicator.hasClass('loading')) this.indicator.css({display: 'none'})
       },
       'sync:fail': function (method, obj, jqXHR, textStatus, errorThrown) {
+        console.log(this)
         if (textStatus == 'error') {
           var parsed
           try {
             parsed = $.parseJSON(jqXHR.responseText)
           } catch (err) { }
           if (parsed) {
-            (parsed.errors) ? this.showErrors(parsed.errors) : this.showErrors(parsed)
+            if (parsed.errors) {
+              this.showErrors(parsed.errors)
+            } else if (parsed.warnings) {
+              this.showWarnings(parsed.warnings)
+            } else {
+              this.showErrors(parsed)
+            }
           } else {
             this.showErrors("Server error encountered during '"+method+"' operation: "+errorThrown+" \n"+jqXHR.responseText)
           }
@@ -46,9 +53,9 @@ $( function () {
         obj.on(event, this.syncCallbacks[event], this)
       }, this)
     },
-    unbindFromSync: function (obj) {
+    unbindFromSync: function (obj, context) {
       _.each(['sync:before', 'sync:fail', 'sync:always'], function (event) {
-        obj.off(event, this.syncCallbacks[event], this)
+        obj.off(event, this.syncCallbacks[event], (context == undefined) ? this : context)
       }, this)
     },
     getJSON: function (selector) {
@@ -63,7 +70,7 @@ $( function () {
       if (!errors) errors = "Unknown error occured."
       if (this.errorBlock instanceof jQuery
           && this.errorBlock.length > 0
-          && this.errorBlock.inDOM())
+        /* && this.errorBlock.inDOM()*/ )
       {
         this.showErrorBlock(errors)
       } else {
@@ -73,6 +80,18 @@ $( function () {
         }
         alert(errorStr)
       }
+    },
+    showWarnings: function (warnings) {
+			warningOverlay = new Ts.WizardViews.WarningOveray({
+        model: new Ts.Wizard({title: "Warnings"}),
+        class: 'warning',
+        onConfirm: _.bind(function () {
+          this.el.action = this.el.action+'?confirm'
+          this.submit()
+        }, this)
+      })
+      warningOverlay.showWarnings(this.stringifyErrors(warnings))
+      $('body').prepend(warningOverlay.render().el)
     },
     showErrorBlock: function (errors) {
       this.errorBlock.empty()

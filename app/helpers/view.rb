@@ -77,20 +77,19 @@ module Tombstone
         doc.css(values.keys.map { |k| "[name='#{k}']" }.join(", ")).each do |v|
           val = values[v['name']] || values[v['name'].to_sym]
           val = case val
-                  when Time
-                    #v.attributes.select{|v| v.name == 'type'}
-                    if v['type'] == 'date'
-                      val.strftime('%d/%m/%Y')
-                    elsif v['type'] == 'datetime'
-                      val.strftime('%d/%m/%Y %-I:%M%P')
-                    else
-                      ((val.hour + val.min + val.sec) > 0) ? val.strftime('%d/%m/%Y %l:%M%P') : val.strftime('%d/%m/%Y')
-                    end
-                  when nil
-                    ''
-                  else
-                    val.to_s
-                end
+          when Date, Time
+              if v['type'] == 'date'
+                val.strftime('%d/%m/%Y')
+              elsif v['type'] == 'datetime'
+                val.strftime('%d/%m/%Y %-I:%M%P')
+              else
+                ((val.hour + val.min + val.sec) > 0) ? val.strftime('%d/%m/%Y %l:%M%P') : val.strftime('%d/%m/%Y')
+              end
+            when nil
+              ''
+            else
+              val.to_s
+          end
 
           case v.name
             when 'input'

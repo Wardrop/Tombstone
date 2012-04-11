@@ -15,6 +15,10 @@ module Tombstone
         ['danger', 'warning', 'ok']
       end
       
+      def required_roles
+        []
+      end
+      
       def valid_roles
         []
       end
@@ -22,6 +26,7 @@ module Tombstone
 
     def validate
       super
+      p roles
       self.class.required_roles.each do |role_type|
         errors.add(role_type.to_sym, "must be added") if roles.select { |r| r.type == role_type}.empty?
       end
@@ -38,7 +43,7 @@ module Tombstone
     end
     
     def roles_by_type(type)
-      self.roles_dataset.filter(type: type.to_s)
+      self.roles.select { |r| r.type == type.to_s}
     end
 
     def status=(status)
@@ -87,13 +92,13 @@ module Tombstone
       if errors[:place].empty?
         errors.add(:place, "is unavailable") unless place.allows_reservation?(self)
       end
-      validates_includes self.class.valid_states, :status
-      
-      deceased = role_by_type('deceased')
-      if deceased
-        Role.filter(person_id: deceased.id).all.select { |r| r.al }
-        errors.add(:deceased, "")
+      if errors[:reservee].empty?
+        role = role_by_type('reservee')
+        if role.person.roles_by_type('reservee', self.class.exclude(primary_key_hash(true).sql_expr)).count > 0
+          errors.add(:reservee, "cannot be used as the selected person already has a reservation.")
+        end
       end
+      validates_includes self.class.valid_states, :status
     end
 
     def before_create
@@ -129,10 +134,14 @@ module Tombstone
       def valid_interment_types
         ['coffin', 'ashes']
       end
+      
+      def interment_duration
+        60 * 90
+      end
     end
 
     def interment_date_end
-       self.interment_date + (60*90)
+       (interment_date.to_time + self.class.interment_duration).to_datetime
     end
 
     def alert_status
@@ -166,11 +175,37 @@ module Tombstone
       end
       false
     end
+    
+    def check_warnings
+      overlapping = self.class.
+        exclude(primary_key_hash).
+        exclude(status: 'deleted').
+        where("interment_date >= ? AND interment_date <= ?",
+              (interment_date.to_time - self.class.interment_duration).to_datetime,
+              interment_date_end)
+        overlapping.all.any? do |allocation|
+        if allocation.place.cemetery == place.cemetery
+          warnings.add :interment_date, "overlaps with one or more other interments in the same cemetery."
+        end
+      end
+      deceased = self.role_by_type('deceased')
+      if deceased && deceased.person.role_by_type('reservee')
+        deceased.person.role_by_type('reservee').allocations_dataset.exclude(id: id).each do |res|
+          warnings.add :deceased, "has a reservation. Reservation ID is ##{res.id}"
+        end
+      end
+    end
 
     def validate
       super
       if errors[:place].empty?
         errors.add(:place, "is unavailable") unless place.allows_interment?(self)
+      end
+      if errors[:deceased].empty?
+        role = role_by_type('deceased')
+        if role.person.roles_by_type('deceased', self.class.exclude(primary_key_hash(true))).count > 0
+          errors.add(:deceased, "cannot be used as the selected person is already deceased.")
+        end
       end
       validates_includes self.class.valid_states, :status
       validates_presence :funeral_director
@@ -178,9 +213,11 @@ module Tombstone
       validates_min_length 5, :funeral_service_location
       validates_presence [:advice_received_date, :interment_date]
       validates_includes self.class.valid_interment_types, :interment_type
-      errors.add(:advice_received_date, "cannot be be in the future") if (advice_received_date.is_a?(Time) && advice_received_date > Date.today)
-      errors.add(:interment_date, "must be greater than the current time") unless (interment_date.is_a?(Time) && interment_date >= DateTime.now)
-      errors.add(:status, "cannot be '#{status}' for a future interment date") if (interment_date.is_a?(Time) && interment_date > DateTime.now && (['interred', 'completed'].include? status))
+      errors.add(:advice_received_date, "cannot be be in the future") { advice_received_date.to_date <= Date.today }
+      errors.add(:interment_date, "must be greater than the current time") { interment_date >= DateTime.now }
+      if errors[:interment_date].empty? && interment_date > DateTime.now && ['interred', 'completed'].include?(status)
+        errors.add(:status, "cannot be '#{status}' for a future interment date")
+      end
       ##errors.add(:photographs, 'must be added to "complete" this interment') if (['interred', 'completed'].include? status) && (self.place.has_photos? == false)
     end
 

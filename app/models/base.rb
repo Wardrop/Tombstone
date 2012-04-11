@@ -1,29 +1,31 @@
-class Sequel::Model::Errors
-  alias_method :add_one, :add
-  
-  def add(key, *values)
-    values.each{ |val| add_one(key, val) }
-  end
-end
 
 module Tombstone
   class BaseModel < Class.new(Sequel::Model)
     set_restricted_columns :modified_by, :modified_at, :created_by, :created_at
     
+    def warnings
+      @warnings ||= Sequel::Model::Errors.new
+    end
+    
+    def has_warnings?
+      check_warnings
+      !self.warnings.empty?
+    end
+    
+    def check_warnings; end
+    
     def validate
       datetime_columns = db_schema.select { |col, info| info[:type] == :datetime }.map { |k,v| k }
       validates_not_string datetime_columns
-      datetime_columns.each do |field|
-        errors.add(field, "must be a valid date or time") if (self[field] && !self[field].is_a?(Time))
-      end
     end
     
     def set_valid_only(hash)
       set(self.class.valid_only(hash))
     end
     
-    def primary_key_hash
-      values.select { |k,v| primary_key.include? k }
+    def primary_key_hash(aliased = false)
+      keys = values.select { |k,v| primary_key.include? k }
+      (aliased) ? Hash[*keys.map{|k,v| ["#{self.class.table_name}__#{k}".to_sym, v] }.flatten] : keys
     end
     
     remove_instance_variable(:@dataset)

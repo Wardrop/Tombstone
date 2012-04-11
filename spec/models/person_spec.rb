@@ -15,5 +15,10 @@ module Tombstone
       person.roles[1].id.should == 4
     end
     
+    it "can filter associated roles by type" do
+      person = Person.with_pk(1)
+      person.roles_by_type('deceased').count.should == 1
+    end
+    
   end
 end

@@ -2,7 +2,7 @@ $( function () {
   Ts.WizardViews = {}
   Ts.WizardViews.BasePage = Ts.View.extend({
     events: {
-      'click input[type=button]': 'doAction',
+      'click input[type=button][data-action]': 'doAction',
       'keyup': function (e) { if(e.keyCode == 13) this.doAction() }
     },
   	initialize: function () {
@@ -74,17 +74,20 @@ $( function () {
 		},
 		initialize: function () {
 		  this._super('initialize', arguments)
+      this.options.showCloseButton = true
+      this.options.showBackButton = false
+      this.options.scrollToErrors = false
 			_.bindAll(this, 'close', 'goBack', 'closeOnBlur')
 			this.model.bind('change:currentPage', this.renderPage, this)
-      //this.model.bind('change:isLoading', this.renderLoader, this)
       this.onComplete = this.options.onComplete || new Function
-      this.options.scrollToErrors = false
       $('body').prepend(this.$el.css({display: 'none'}))
 		},
 		render: function () {
 			this.$el.css({display: ''})
 			this.$el.children().detach()
       this.$el.append(this.template({data: this.model.toJSON()}))
+      if (this.options.showCloseButton) $('<a class="close" href="javascript:void(0)" title="Close"></a>').appendTo(this.$('.heading'))
+      if (this.options.showBackButton) $('<a class="back" href="javascript:void(0)" title="Go Back"></a>').appendTo(this.$('.heading'))
       this.$('.body').prepend(this.indicator)
       this.$('.body').prepend(this.errorBlock)
 			this.renderPage()
@@ -129,6 +132,31 @@ $( function () {
     }
   })
   
+  Ts.WizardViews.WarningOveray = Ts.WizardViews.Wizard.extend({
+    initialize: function () {
+      this._super('initialize', arguments)
+      this.options.showCloseButton = false
+    },
+    showWarnings: function (warnings) {
+      this.model.set({
+        currentPage: new Ts.WizardViews.WarningConfirmation({wizard: this, warnings: warnings})
+      })
+    },
+    confirm: function () {
+      if (this.options.onConfirm) this.options.onConfirm()
+      this.close()
+    },
+    closeOnBlur: function () { }
+  })
+  
+  Ts.WizardViews.WarningConfirmation = Ts.WizardViews.BasePage.extend({
+		templateId: 'wizard:warning_confirmation_template',
+    render: function () {
+      $(this.el).html(this.template({warnings: this.options.warnings}))
+			return this
+    }
+	})
+  
   
   /*** Place Wizard Views ***/
 
@@ -162,6 +190,7 @@ $( function () {
   Ts.WizardViews.RoleWizard = Ts.WizardViews.Wizard.extend({
     initialize: function () {
       this._super('initialize', arguments)
+      this.options.showBackButton = true
       this.showFindPersonForm()
       this.bindToSync(this.model.get('role').get('residential_contact'))
       this.bindToSync(this.model.get('role').get('mailing_contact'))
@@ -193,7 +222,6 @@ $( function () {
     },
     findPeople: function (person) {
       this.bindToSync(people = new Ts.People)
-      // this.model.set({isLoading: true})
       people.fetch({
         success: _.bind( function (collection, response) {
           var resultsView = new Ts.WizardViews.PersonResults({
@@ -207,11 +235,10 @@ $( function () {
     },
     findContacts: function (person) {
       this.bindToSync(contacts = new Ts.Contacts)
-      // this.model.set({isLoading: true})
       contacts.fetch({
         success: _.bind( function (results) {
           var resultsView = new Ts.WizardViews.ContactResults({collection: results, wizard: this})
-          this.model.set({currentPage: resultsView/*, isLoading: false*/})
+          this.model.set({currentPage: resultsView})
         }, this),
         data: {person_id: person.get('id')}
       })
@@ -221,7 +248,6 @@ $( function () {
       if(person.get('id')) {
         this.findContacts(person)
       } else {
-        // this.model.set({isLoading: true})
 				person.serverValidate({
 					valid: _.bind( function () { this.showCreateContactForm() }, this),
 					invalid: _.bind( function () { this.renderPage() }, this)

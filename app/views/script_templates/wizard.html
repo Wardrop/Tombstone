@@ -1,13 +1,24 @@
 <script type="text/template" id="wizard:wizard_template">
-  <div class="overlay_container">
+  <div class="overlay_container <%= this.options.class %>">
     <div class="heading">
       <h2 class="underline"><%= data.title %></h2>
-      <a class="close" href="javascript:void(0)" title="Close"></a>
-      <a class="back" href="javascript:void(0)" title="Go Back"></a>
     </div>
     <div class="body">
       <div class="page"></div>
     </div>
+  </div>
+</script>
+
+<script type="text/template" id="wizard:warning_confirmation_template">
+  The following warnings were raised when trying to submit the form:
+  <ul class="classic">
+  <% _.each(warnings, function (warning) { %>
+    <li><%= warning %></li>
+  <% }) %>
+  </ul>
+  <div class="v_padded">
+    <input type="button" value="Continue" class="warning" data-action="confirm" />
+    <input type="button" value="Cancel" class="light close" />
   </div>
 </script>
 

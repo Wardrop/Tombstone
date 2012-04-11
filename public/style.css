@@ -10,9 +10,6 @@ body {
 	background: #fafafa;
   line-height: 1.25;
 }
-html {
-  overflow-y: scroll;
-}
 input, select, button, textarea {
   padding: 0.4em;
   font-size: 100%;
@@ -48,8 +45,20 @@ input[type=submit], input[type=button], input[type=reset], a.button {
 a.button:visited {
 	color: white;
 }
-input[type=submit]:hover, input[type=button]:hover, a.button:hover {
+input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover, a.button:hover {
 	background: #5499d6;
+}
+input[type=submit].light, input[type=button].light, input[type=reset].light, a.button.light {
+  background: #626262;
+}
+input[type=submit].light:hover, input[type=button].light:hover, input[type=reset].light:hover, a.button.light:hover {
+  background: #777;
+}
+input[type=submit].warning, input[type=button].warning, input[type=reset].warning, a.button.warning {
+  background: #d98416;
+}
+input[type=submit].warning:hover, input[type=button].warning:hover, input[type=reset].warning:hover, a.button.warning:hover {
+  background: #e5962e;
 }
 
 form {
@@ -81,6 +90,14 @@ h3.underline {
 }
 small {
   color: #666;
+}
+
+ul.classic {
+  margin: 16px 0;
+}
+ul.classic > li {
+  list-style: disc inside;
+  padding-left: 16px;
 }
 
 
@@ -576,6 +593,7 @@ a.row_button:hover {
 	position: relative;
   display: inline-block;
 	padding-right: 2.4em;
+  vertical-align: middle;
 }
 .multibutton.no_dropdown {
   padding-right: 0;
@@ -623,6 +641,8 @@ a.row_button:hover {
 .multibutton > .viewport > ul {
 	display: block;
 	position: relative;
+  list-style: none;
+  margin: 0;
 	z-index: 10;
 }
 .multibutton > .viewport.show > ul {
@@ -640,6 +660,7 @@ a.row_button:hover {
 	text-align: left;
 	background: #2980cc;
 	border-radius: 5px 0 0 5px;
+  padding: 0;
 }
 .multibutton.no_dropdown > .viewport > ul > li {
   border-radius: 5px; 
@@ -734,6 +755,12 @@ a.row_button:hover {
 	background: #2980cc;
 	color: white;
 	padding: 3px 0 12px 0;
+}
+.overlay_container.warning {
+	border: 8px solid #d98416;
+}
+.overlay_container.warning > .heading {
+	background: #d98416;
 }
 .overlay_container > .heading > h2 {
 	width: 100%;
@@ -863,13 +890,10 @@ input.with_icon.loading {
 }
 
 iframe {
-  margin-bottom:0px;
+  margin-bottom: 0;
   padding-bottom: 0;
   width: 100%;
-  scrolling: no;
-  frameborder: 0;
-  hspace: 0;
-  vspace: 0;
+  overflow-x: auto;
 }
 
 .photos{

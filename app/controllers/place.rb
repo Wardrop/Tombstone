@@ -16,7 +16,7 @@ module Tombstone
     end
     
     get :index, :with => :id, :provides => :json do
-      Place.with_pk(params[:id]).values.to_json
+      json_response Place.with_pk(params[:id]).values
     end
      
     # Valid ranges: Row [A-Z], Plot [1-49]a, Row [A-ZZ], Plot[001-150]
@@ -33,8 +33,7 @@ module Tombstone
           place.errors.add(:name, parsed)
         end
       end
-      self.response.status = 500 unless place.errors.empty?
-      {errors: place.errors}.to_json
+      json_response(errors: place.errors)
     end
 
     put :index, :with => :id, :provides => :json do
@@ -46,7 +45,7 @@ module Tombstone
         place.save
       end
       self.response.status = 500 unless place.errors.empty?
-      {errors: place.errors}.to_json
+      json_response(errors: place.errors)
     end
 
     delete :index, :with => :id, :provides => :json do
@@ -62,22 +61,24 @@ module Tombstone
           response[:errors] = "An unknown error occured while deleting place with ID ##{params[:id]}."
         end
       end
-      self.response.status = 500 if response[:errors] && !response[:errors].empty?
-      response.to_json
+      json_response response
     end
 
     get :next_available, :map => %r{/place/([0-9]+)/next_available}, :provides => :json do |id|
       place = Place.with_pk(id)
       halt 404, "Place with ID ##{id} does not exist." unless place
       next_available = place.next_available
-      if next_available
-        ancestors = next_available.ancestors(true, id).reverse
-        ancestors.map { |place|
-        place.siblings.with_child_count.available_only.naked.all
-        }.to_json
-      else
-        nil.to_json
+      response = begin
+        if next_available
+          ancestors = next_available.ancestors(true, id).reverse
+          ancestors.map do |place|
+            place.siblings.with_child_count.available_only.naked.all
+          end
+        else
+          nil
+        end
       end
+      json_response response
     end
 
     get :children, :map => %r{/place/([0-9]+)/children(/[^/]+)?}, :provides => :json do |id, filter|
@@ -93,7 +94,7 @@ module Tombstone
           halt 404
         end
       end
-      places.order(:name).with_child_count.naked.all.to_json
+      json_response places.order(:name).with_child_count.naked.all
     end
 
     # get :children, :with => [:parent_id, :option], :provides => :json do
@@ -111,7 +112,7 @@ module Tombstone
       chain = place.ancestors(!!params['include_self']).reduce([]) do |memo, anc|
         memo << Place.filter(:parent_id => anc.parent_id).naked.all
       end
-      chain.to_json
+      json_response chain
     end
 
   end

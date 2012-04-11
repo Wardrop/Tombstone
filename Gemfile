@@ -1,6 +1,6 @@
 source :rubygems
 
-gem "activesupport"
+gem "activesupport", :require => ['active_support', 'active_support/time']
 gem 'rack', ">= 1.4.1"
 gem 'rake'
 gem 'padrino'

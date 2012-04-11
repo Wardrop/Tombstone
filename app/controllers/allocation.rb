@@ -26,22 +26,25 @@ module Tombstone
 
     post :index, :provides => :json do
       allocation = model_class.new
-      response = {errors: allocation.errors, redirectTo: nil}
+      response = {errors: allocation.errors, warnings: [], redirectTo: nil}
       place_id = (!params['place'].is_a?(Array) || params['place'].reject { |v| v.empty? }.empty?) ? nil : params['place'][-1]
       save_allocation(allocation, params)
       if allocation.errors.empty?
-        Notification.new(allocation, true)
-        response[:redirectTo] = url(:"#{controller}_view", :id => allocation.id)
-        flash[:banner] = ['success', "#{controller.capitalize} was created successfully."]
+        if allocation.warnings.empty?
+          Notification.new(allocation, true)
+          response[:redirectTo] = url(:"#{controller}_view", :id => allocation.id)
+          flash[:banner] = ['success', "#{controller.capitalize} was created successfully."]
+        else
+          response[:warnings] = allocation.warnings
+        end
       end
-      self.response.status = 500 unless response[:errors].empty?
-      response.to_json
+      json_response(response)
     end
 
     put :index, :with => :id, :provides => :json do
       allocation = model_class.with_pk(params[:id].to_i)
       notification = Notification.new(allocation)
-      response = {errors: allocation.errors, redirectTo: nil}
+      response = {errors: allocation.errors, warnings: [], redirectTo: nil}
       if allocation.nil?
         response[:errors] = "Could not amend #{controller} ##{params[:id]} as it does not exist."
       else
@@ -55,12 +58,15 @@ module Tombstone
       end
       
       if allocation.errors.empty?
-        notification.send_notifications
-        response[:redirectTo] = url(:"#{controller}_view", :id => allocation.id)
-        flash[:banner] = ['success', "#{controller.capitalize} was amended successfully."]
+        if allocation.warnings.empty?
+          notification.send_notifications
+          response[:redirectTo] = url(:"#{controller}_view", :id => allocation.id)
+          flash[:banner] = ['success', "#{controller.capitalize} was amended successfully."]
+        else
+          response[:warnings] = allocation.warnings
+        end
       end
-      self.response.status = 500 unless response[:errors].empty?
-      response.to_json
+      json_response(response)
     end
     
     delete :index, :with => :id do

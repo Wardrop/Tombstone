@@ -56,19 +56,23 @@ module Tombstone
 
         if allocation.status == 'provisional'
           allocation.valid?
-          p allocation.errors
           allocation.errors.select!{ |k,v| k == :place }
-          p allocation.errors
           if allocation.errors.empty?
-            allocation.save(validate: false)
+            if !request.GET.has_key?('confirm') && allocation.has_warnings?
+              raise Sequel::Rollback
+            else
+              allocation.save(validate: false)
+            end
           else
             raise Sequel::Rollback
           end
         elsif allocation.errors.empty? && allocation.valid?
-          allocation.save
+          if !request.GET.has_key?('confirm') && allocation.has_warnings?
+            raise Sequel::Rollback
+          else
+            allocation.save
+          end
         else
-          p allocation
-          p allocation.errors
           raise Sequel::Rollback
         end
 
@@ -109,6 +113,15 @@ module Tombstone
     def reset_photos_changes
       session[:new_photos] = []
       session[:deleted_photos] = []
+    end
+    
+    def json_response(obj)
+      if Hash === obj
+        obj[:errors] = nil if obj[:errors] && obj[:errors].empty?
+        obj[:warnings] = nil if obj[:warnings] && obj[:warnings].empty?
+        self.response.status = 500 if obj[:errors] || obj[:warnings] 
+      end
+      obj.to_json
     end
     
     # Takes a plot name with optional range. Returns an array of generated names if range exists and is valid, otherwise

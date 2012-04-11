@@ -60,7 +60,7 @@ $( function () {
     },
     addRole: function () {
       this.use = null
-      wizard = new Ts.Wizard({title: "Add "+this.role_name, role: new Ts.Role({type: this.role_type})})
+      wizard = new Ts.RoleWizard({title: "Add "+this.role_name, role: new Ts.Role({type: this.role_type})})
 			wizardView = new Ts.WizardViews.RoleWizard({
         model: wizard,
         onComplete: this.onCompleteCallback
@@ -543,9 +543,6 @@ $( function () {
   })
   
   Ts.FormViews.AllocationForm = Ts.View.extend({
-		events: {
-			'submit' : 'onSubmit'
-		},
 		initialize: function () {
 		  this._super('initialize', arguments)
 			this.firstSection = $(this.el).children('section').first()
@@ -555,9 +552,6 @@ $( function () {
 			  this.eventReceiver = _.clone(Backbone.Events)
 			)
 			this.render()
-		},
-		onSubmit: function () {
-			return false
 		},
 		render: function () {
 			this.renderRoles()

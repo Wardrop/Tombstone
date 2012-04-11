@@ -10,7 +10,7 @@ content_for :head do
       permitted_states.forEach(function (s) { if (state_map[s]) states[s] = state_map[s] })
       new Ts.FormViews.AllocationForm({
         el: $('#interment_form')[0],
-        valid_roles: ['deceased', 'applicant', 'next_of_kin'],
+        valid_roles: <%= Tombstone::Interment.valid_roles.to_json %>,
         states: states,
         type: 'interment'
       })

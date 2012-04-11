@@ -8,7 +8,7 @@ module Tombstone
     get :events, :provides => :json do
       start_date_time = Time.at(params['start'].to_i).to_datetime unless params['start'].nil?
       end_date_time = Time.at(params['end'].to_i).to_datetime unless params['end'].nil?
-      Calendar.new.events(start_date_time, end_date_time).to_json
+      json_response Calendar.new.events(start_date_time, end_date_time)
     end
 
     get :ics do

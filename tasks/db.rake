@@ -45,7 +45,6 @@ namespace :db do
     db[:allocation].insert(type: 'interment', place_id: 15, status: 'deleted', funeral_director_id: 1, interment_date: (DateTime.now + 10), interment_type: 'ashes', burial_requirements: 'To be provided')
     db[:allocation].insert(type: 'reservation', place_id: 15, status: 'deleted')
     
-    
     db[:role_association] << {role_id: 1, allocation_id: 2, allocation_type: 'reservation'}
     db[:role_association] << {role_id: 3, allocation_id: 2, allocation_type: 'reservation'}
     db[:role_association] << {role_id: 2, allocation_id: 2, allocation_type: 'interment'}
