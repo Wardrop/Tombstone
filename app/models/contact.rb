@@ -25,8 +25,10 @@ module Tombstone
       if !email.blank? && !email.match(/.+@.+/)
         errors.add(:email, "must be valid, if given")
       end
-      validates_min_length 6, :primary_phone
-      errors.add(:primary_phone, "contains invalid characters.") if primary_phone && !primary_phone.match(/^[ 0-9\.\-+()x]*$/)
+      unless primary_phone.blank?
+        validates_min_length 6, :primary_phone
+        errors.add(:primary_phone, "contains invalid characters.") if primary_phone && !primary_phone.match(/^[ 0-9\.\-+()x]*$/)
+      end
       unless secondary_phone.blank?
         validates_min_length 6, :secondary_phone
         errors.add(:secondary_phone, "contains invalid characters.") if secondary_phone && !secondary_phone.match(/^[ 0-9\.\-+()x]*$/)
