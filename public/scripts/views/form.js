@@ -584,7 +584,7 @@ $( function () {
 			this.multibutton = new Ts.FormViews.Multibutton(_.extend({
 				actions: {
 					'default': _.bind(function (el) {
-						this.submit(el.attr("name"))
+						this.submit()
 					}, this)
 				}
 			}, this.options.multibutton))
@@ -594,9 +594,8 @@ $( function () {
 			})
 			$(this.el).append(section.render().el)
 		},
-		submit: function (status) {
+		submit: function () {
 			var data = this.formData()
-			data.status = status
 			this.hideErrors()
 			if(this.lastRequest && this.lastRequest.state() == 'pending') {
 				if (confirm('The last submit operation has not yet completed. Would you like to abort the last submit operation?')) {

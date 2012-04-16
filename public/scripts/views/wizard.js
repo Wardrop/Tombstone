@@ -132,7 +132,7 @@ $( function () {
     }
   })
   
-  Ts.WizardViews.WarningOveray = Ts.WizardViews.Wizard.extend({
+  Ts.WizardViews.WarningOverlay = Ts.WizardViews.Wizard.extend({
     initialize: function () {
       this._super('initialize', arguments)
       this.options.showCloseButton = false

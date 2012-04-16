@@ -85,7 +85,7 @@ $( function () {
       }
     },
     showWarnings: function (warnings) {
-			warningOverlay = new Ts.WizardViews.WarningOveray({
+			warningOverlay = new Ts.WizardViews.WarningOverlay({
         model: new Ts.Wizard({title: "Warnings"}),
         'class': 'warning',
         onConfirm: _.bind(function () {
