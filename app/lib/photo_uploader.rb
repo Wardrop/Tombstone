@@ -6,6 +6,12 @@ module Tombstone
 
     storage :file
     process :set_content_type
+    
+    class << self
+      def dimensions
+        {thumbnail: [256,160], preview: [800,500]}
+      end
+    end
 
     def store_dir
       "uploads/place/#{model.place_id}/photos"

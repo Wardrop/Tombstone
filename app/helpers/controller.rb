@@ -102,10 +102,10 @@ module Tombstone
 
     def update_photos
       if !session[:new_photos].to_a.empty?
-        Blob.filter(:id => session[:new_photos]).update(:enabled => 1)
+        Photo.filter(:id => session[:new_photos]).update(:enabled => 1)
       end
       if !session[:deleted_photos].to_a.empty?
-        Blob.filter(:id => session[:deleted_photos]).delete
+        Photo.filter(:id => session[:deleted_photos]).delete
       end
       reset_photos_changes
     end

@@ -13,14 +13,12 @@ module Tombstone
         else
           true
         end
-
-        unpermitted = [
-          permissions.can_approve? ? nil : 'approved',
-          permissions.can_inter? ? nil : 'interred',
-          permissions.can_complete? ? nil : 'completed',
-          can_delete ? nil : 'deleted'
-        ].delete_if{ |v| v.nil? }
-        p unpermitted
+        
+        unpermitted = []
+        unpermitted << 'approved' unless permissions.can_approve?
+        unpermitted << 'interred' unless permissions.can_inter?
+        unpermitted << 'completed' unless permissions.can_complete?
+        unpermitted << 'deleted' unless can_delete
         self.class.valid_states.reject { |v| unpermitted.include? v }
       end
       

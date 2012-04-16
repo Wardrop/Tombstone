@@ -69,6 +69,23 @@ module Tombstone
       json_response(response)
     end
     
+    put :status, :map => "#{controller}/:id/status", :provides => :json do
+      allocation = model_class.with_pk(params[:id].to_i)
+      response = {errors: allocation.errors, redirectTo: url("#{controller}_view".to_sym, :id => params[:id])}
+      if allocation.nil?
+        response[:errors] = "Could not edit status of #{controller} ##{params[:id]} as it does not exist."
+      else
+        allocation.set({status: params['status']})
+        p params['status']
+        p allocation.status
+        if allocation.status == 'deleted' || allocation.valid?
+          allocation.save(validate: false)
+          flash[:banner] = ['success', "Status of #{controller.capitalize} ##{params[:id]} was updated successfully."]
+        end
+      end
+      json_response(response)
+    end
+    
     delete :index, :with => :id do
       allocation = model_class.with_pk(params[:id].to_i)
       if allocation.nil?

@@ -7,32 +7,19 @@ end
 content_for :head do
 %>
   <script type="text/javascript">
-  $( function () {
-      var multibutton = new Ts.FormViews.Multibutton({
-        values: {edit: 'Edit', delete: 'Delete', inter: 'Inter', print: 'Print'},
-        actions: {
-          edit: function () {
-            window.location = <%= url(:reservation_edit, :id => @allocation.id).to_json %>
-          },
-          delete: function () {
-            if (confirm('Are you sure you want to delete this reservation?')) {
-              $('<form method="post" />').append($('<input type="hidden" name="_method" value="delete" />')).submit()
-            }
-          },
-          inter: function () {
-            window.location = <%= url(:interment_new_from_reservation, :id => @allocation.id).to_json %>
-          },
-          print: function () {
-            window.print()
-          },
-          default: function () {
-            alert('This function is not currently implemented.')
-          }
-        }
-      })
-			var section = new Ts.FormViews.Section({title: 'Actions', body: multibutton.render().el})
-			$('#reservation_view').append($(section.render().el).addClass('noprint'))
+    $( function () {
+      (new Ts.FormViews.AllocationView({el: $('#reservation_view')[0]})).render().el
     })
+  </script>
+  <script type="application/json" id="json:allocation_data">
+    <%=
+    @allocation.to_json(include: {roles: {include: [:person, :residential_contact, :mailing_contact]}, place: {}, transactions: {}})
+    %>
+  </script>
+  <script type="application/json" id="json:permitted_states">
+    <%=
+    @allocation.permitted_states.to_json
+    %>
   </script>
 <%
 end
@@ -41,7 +28,7 @@ end
   <% @allocation.roles.each do |role| %>
     <section>
       <h2 class="underline"><%= role.type.demodulize.titleize %></h2>
-      <div id="<%= role.type %>_section" class="section padded" name="reservee">
+      <div id="<%= role.type %>_section" class="padded" name="reservee">
         <%= partial 'shared/role_view', :locals => {role: role} %>
       </div>
     </section>
@@ -49,7 +36,7 @@ end
   <% if @allocation.place %>
     <section>
       <h2 class="underline">Location</h2>
-      <div id="places_section" class="section padded" name="place">
+      <div id="places_section" class="padded" name="place">
       <% @allocation.place.ancestors.reverse.push(@allocation.place).each do |place| %>
         <div class="row">
           <span><%= place.type.demodulize.titleize %></span>
@@ -61,7 +48,7 @@ end
   <% end %>
   <section>
     <h2 class="underline">Other Details</h2>
-    <div class="section padded">
+    <div class="padded">
       <label>
         <span>Receipt No's</span>
         <div><%= print { @allocation.transactions.map{ |t| t.receipt_no }.join(', ') } %></div>
@@ -80,5 +67,4 @@ end
       </label>
     </div>
   </section>
-  <!--iframe src="<%= url :"photos_view", :id => @allocation.place.id %>" onload='javascript:resizeIframe(this);'>Browser not compatible.</iframe-->
 </div>

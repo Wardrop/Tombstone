@@ -1,5 +1,5 @@
 <script type="text/template" id="wizard:wizard_template">
-  <div class="overlay_container <%= this.options.class %>">
+  <div class="overlay_container <%= this.options['class'] %>">
     <div class="heading">
       <h2 class="underline"><%= data.title %></h2>
     </div>
@@ -23,7 +23,7 @@
 </script>
 
 <script type="text/template" id="wizard:place_form_template">
-  <div class="section padded">
+  <div class="padded">
   	<label>
   		<span>Name</span>
   		<input type="text" name="name" style="width: 75%;" />
@@ -68,7 +68,7 @@
 </script>
 
 <script type="text/template" id="wizard:create_contact_form_template">
-  <div class="section padded">
+  <div class="padded">
   	<label>
   		<span>Street Address</span>
   		<input type="text" name="street_address" style="width: 75%;" />
@@ -114,7 +114,7 @@
 </script>
 
 <script type="text/template" id="wizard:person_form_template">
-  <div class="section padded">
+  <div class="padded">
     <label>
   		<span>Title</span>
       <select type="text" name="title">

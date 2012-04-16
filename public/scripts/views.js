@@ -8,6 +8,9 @@ $( function () {
       if (this.options.bindToSync == undefined) {
         this.options.bindToSync = true
       }
+      this.bindToSync(
+			  this.eventReceiver = _.extend({}, Backbone.Events)
+			)
       this.options.scrollToErrors = this.options.scrollToErrors || true
       this.indicator = this.options.indicator || $('<div class="indicator" style="display: none;" />')
       this.errorBlock = this.options.errorBlock || $('<ul class="error_block" style="display: none;" />')
@@ -19,7 +22,7 @@ $( function () {
     },
     syncCallbacks: {
       'sync:before': function (method, obj) {
-        this.indicator.css({display: ''}).attr({class: 'indicator loading', title: ''})
+        this.indicator.css({display: ''}).attr({'class': 'indicator loading', title: ''})
         this.hideErrors()
       },
       'sync:always': function (method, obj)  {
@@ -84,7 +87,7 @@ $( function () {
     showWarnings: function (warnings) {
 			warningOverlay = new Ts.WizardViews.WarningOveray({
         model: new Ts.Wizard({title: "Warnings"}),
-        class: 'warning',
+        'class': 'warning',
         onConfirm: _.bind(function () {
           this.el.action = this.el.action+'?confirm'
           this.submit()

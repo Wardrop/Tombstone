@@ -1,31 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <link rel="stylesheet" href="<%= url "/reset.css" %>"/>
-  <link rel="stylesheet" href="<%= url "/style.css" %>"/>
-</head>
-<body>
-<section>
-  <h2 class="underline">Photographs</h2>
-
-  <div class="section">
-    <div class="photos">
-      <% @blobs.each do |blob| %>
-        <div class="imageSingle" title="Click to view photo">
-          <div class="image">
-            <a href="<%= blob.file.url %>" title="<%= blob[:name] %> - <%= blob[:timestamp].strftime("%Y-%m-%d %-I:%M%P") %>" target="_parent">
-              <img src="<%= blob.file.thumbnail.url %>"/>
-            </a>
-          </div>
-          <div class="footer">
-            <span><%= blob[:name] %> - </span>
-            <span><%= blob[:timestamp].strftime("%Y-%m-%d %-I:%M%P") %></span>
-          </div>
-        </div>
-      <% end %>
+<% photos.each do |photo| %>
+  <div class="image_container">
+    <img src="<%= photo.file.thumbnail.url %>"
+      width="<%= Tombstone::PhotoUploader.dimensions[:thumbnail][0] %>"
+      height="<%= Tombstone::PhotoUploader.dimensions[:thumbnail][1] %>" />
+    <div class="info">
+      <span><%= photo.name %></span>
+      <%= print('') { "<span>#{photo.timestamp.strftime('%Y-%m-%d %-I:%M%P')}</span>" } %></span>
     </div>
   </div>
-</section>
-</div>
-</body>
-</html>
+<% end %>

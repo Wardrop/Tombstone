@@ -7,7 +7,9 @@ content_for :head do
       new Ts.FormViews.AllocationForm({
         el: $('#reservation_form')[0],
         valid_roles: ['reservee', 'applicant', 'next_of_kin'],
-        states: {active: 'Submit'},
+        multibutton: {
+          items: [{name: 'active', value: 'Submit'}]
+        },
         type: 'reservation'
       })
     })

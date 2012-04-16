@@ -20,7 +20,7 @@
 <form id="reservation_form" class="rowed wide" action="<%= (@allocation.id) ? "/reservation/#{@allocation.id}" : "/reservation" %>">
   <section>
     <h2 class="underline">Other Details</h2>
-    <div class="section padded">
+    <div class="padded">
       <div class="row">
         <span class="align_top">Receipt No's</span>
         <div class="multiinput_control">
@@ -43,7 +43,6 @@
     </div>
   </section>
   <% if @allocation.id %>
-    <!--iframe src="<%= url :"photos_edit", :id => @allocation.place.id %>" onload='javascript:resizeIframe(this);'>Browser not compatible.</iframe-->
     <input type="hidden" name="id" value="<%= @allocation.id %>" />
   <% end %>
   <input type="hidden" name="_method" value="<%= (@allocation.id) ? 'put' : 'post'  %>" />

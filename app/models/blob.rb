@@ -1,38 +1,29 @@
 module Tombstone
+  
   class Blob < BaseModel
-
-    set_primary_key [:id, :place_id]
-    unrestrict_primary_key
+    set_primary_key :id
     many_to_one :place, :key => [:place_id], :class => :'Tombstone::Place'
 
     mount_uploader :file, PhotoUploader
 
-    def write_file_identifier
-      self[:content_type] = file.file.content_type
-      self[:name] = self.file.filename
-      self[:size] = self.file.size
-      self[:file] = self.file.filename
-      self[:enabled] = 'FALSE'
-      self[:timestamp] = get_exif_date_time(self.file.get_exif("DateTimeOriginal"))
-
-      ##extract_geolocation
-
-      #2010:07:05 11:57:37
-      #puts self.file.get_exif("GPSLatitude")
-      #puts self.file.get_exif("GPSLongitude")
-      #puts self.file.get_exif("GPSLatitudeRef")
-      #puts self.file.get_exif("GPSLongitudeRef")
-      ## GPSLatitude  GPSLongitude GPSLatitudeRef  GPSLongitudeRef
-    end
-
-    def get_exif_date_time(date_time)
-      DateTime.strptime(date_time +  DateTime.now.strftime("%Z"), "%Y:%m:%d %H:%M:%S %Z")
+    # def write_file_identifier
+    #   self.content_type = file.content_type
+    #   self.name = file.filename
+    #   self.size = file.size
+    #   self.file = file.filename
+    #   self.enabled = 'FALSE'
+    #   self.timestamp = get_exif_date_time(self.file.get_exif("DateTimeOriginal"))
+    # end
+  end
+  
+  class Photo < Blob
+    set_dataset dataset.filter(:content_type.like 'image/%')
+    
+    def get_exif_date_time(datetime)
+      DateTime.strptime(datetime +  DateTime.now.strftime("%Z"), "%Y:%m:%d %H:%M:%S %Z") rescue nil
     end
 
     def extract_geolocation
-
-      ##img = Magick::Image.read(self.file)[0] rescue nil
-
       return unless img
       img_lat = img.get_exif_by_entry('GPSLatitude')[0][1].split(', ') rescue nil
       img_lng = img.get_exif_by_entry('GPSLongitude')[0][1].split(', ') rescue nil
@@ -50,7 +41,6 @@ module Tombstone
 
       puts latitude
       puts longitude
-
     end
 
     def to_frac(strng)
@@ -58,8 +48,8 @@ module Tombstone
       denominator ||= 1
       numerator/denominator
     end
-
   end
+  
 end
 
 

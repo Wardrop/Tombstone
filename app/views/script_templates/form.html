@@ -1,8 +1,8 @@
 <script type="text/template" id="form:multibutton_template">
   <div class="viewport">
     <ul>
-      <% _.each(values, function (value, key) { %>
-      	<li><input type="button" name="<%= key %>" value="<%= value %>" /></li>
+    <% _.each(items, function (item) { %>
+      	<li class="<%= item.className || '' %>"><input type="button" name="<%= item.name %>" value="<%= item.value %>" data-action="<%= item.action || item.name %>" /></li>
       <% }) %>
     </ul>
   </div>
@@ -12,8 +12,19 @@
 <script type="text/template" id="form:multilink_template">
   <div class="viewport">
     <ul>
+      <% _.each(items, function (item) { %>
+      	<li class="<%= item.className || '' %>"><a href="<%= item.href %>" class="button"><%= item.title %></a></li>
+      <% }) %>
+    </ul>
+  </div>
+  <span class="dropdown_button"></span>
+</script>
+
+<script type="text/template" id="form:photos_template">
+  <div class="viewport">
+    <ul>
       <% _.each(values, function (value, key) { %>
-      	<li><a href="<%= key %>" class="button"><%= value %></a></li>
+      	<li><input type="button" name="<%= key %>" value="<%= value %>" /></li>
       <% }) %>
     </ul>
   </div>
@@ -42,5 +53,5 @@
 
 <script type="text/template" id="form:section_template">
   <h2 class="underline"><%= title %></h2>
-  <div class="section padded" name="<%= name %>"></div>
+  <div class="padded" name="<%= name %>"></div>
 </script>

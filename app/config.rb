@@ -14,8 +14,8 @@
 
     Deceased: <%= deceased.title %> <%= deceased.given_name %> <%= deceased.surname %>
     Cemetery: <%= place.description %>
-    Type: <%= interment.interment_type.capitalize %>
-    At: <%= interment.interment_date.strftime('%A %d %B %Y') %>
+    Type: <%= print { interment.interment_type.capitalize } %>
+    At: <%= print { buinterment.interment_date } %>
     
     For more details <%= interment_site_url %>"
     },

@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="<%= url "/print.css" %>" />
   <link rel="stylesheet" href="<%= url "/scripts/vendor/jquery-ui/cupertino/jquery-ui-1.8.18.custom.css" %>" />
   <link rel="stylesheet" href="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.css' %>" />
+  <script type="text/javascript" src="<%= url '/scripts/vendor/shims/es5-shim.min.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/vendor/shims/html5shiv-printshiv.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/date-en-AU.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-1.7.1.min.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery.livequery.js' %>"></script>
@@ -26,13 +28,13 @@
   <script type="text/javascript">
     $( function () {
       <%
-      actions = {url(:logout) => 'Logout'}
-      actions[url('/place')] = 'Manage Places' if @user && @user.role_permissions.can_manage_cemeteries?
+      actions = [{title: 'Logout', href: url(:logout)}]
+      actions << {title: 'Manage Places', href: url('/place')} if @user && @user.role_permissions.can_manage_cemeteries?
       %>
       var logged_in = <%= (!!session[:user_id]).to_json %>
       var multilink = new Ts.FormViews.Multilink({
         'class': 'small light',
-        values: <%= actions.to_json %>
+        items: <%= actions.to_json %>
       })
       if (logged_in) {
         $('#banner_info').append($('<div style="margin-top: 1em;" />').append(multilink.render().el))
@@ -66,5 +68,14 @@
     <% end %>
     <%= yield %>
   </div>
+  <script>
+    // Used to add odd/even styling to list_rows children by adding an even class for all even elements.
+    $('.list_rows > div:odd').livequery( function () {
+      $(this).addClass('even')
+    })
+    $('.list_rows > div:even').livequery( function () {
+      $(this).removeClass('even')
+    })
+  </script>
 </body>
 </html>

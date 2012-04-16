@@ -35,8 +35,22 @@ module Tombstone
       @notify << notify
     end
 
+    def print(fallback = 'none', &block)
+      value = block.call rescue nil
+      if value.blank?
+        fallback
+      else
+        case value
+          when Time
+            ((value.hour + value.min + value.sec) > 0) ? value.strftime('%d/%m/%Y %l:%M%P') : value.strftime('%d/%m/%Y')
+          else
+            value
+        end
+      end
+    end
+
     def send_notifications
-      return
+
       return if self.notify.nil?
       return unless self.interment.class.required_roles.include? 'deceased'
 

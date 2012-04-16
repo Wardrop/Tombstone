@@ -136,12 +136,12 @@ module Tombstone
       end
       
       def interment_duration
-        60 * 90
+        90.minutes
       end
     end
 
     def interment_date_end
-       (interment_date.to_time + self.class.interment_duration).to_datetime
+       interment_date + self.class.interment_duration
     end
 
     def alert_status
@@ -177,6 +177,7 @@ module Tombstone
     end
     
     def check_warnings
+      # Cemetry date/time overlap.
       overlapping = self.class.
         exclude(primary_key_hash).
         exclude(status: 'deleted').
@@ -188,12 +189,16 @@ module Tombstone
           warnings.add :interment_date, "overlaps with one or more other interments in the same cemetery."
         end
       end
+      
+      # Reservation for deceased.
       deceased = self.role_by_type('deceased')
       if deceased && deceased.person.role_by_type('reservee')
         deceased.person.role_by_type('reservee').allocations_dataset.exclude(id: id).each do |res|
           warnings.add :deceased, "has a reservation. Reservation ID is ##{res.id}"
         end
       end
+      
+      warnings.add(:interment_date, "is in the past. before the current date/time") { interment_date >= DateTime.now }
     end
 
     def validate
@@ -214,11 +219,9 @@ module Tombstone
       validates_presence [:advice_received_date, :interment_date]
       validates_includes self.class.valid_interment_types, :interment_type
       errors.add(:advice_received_date, "cannot be be in the future") { advice_received_date.to_date <= Date.today }
-      errors.add(:interment_date, "must be greater than the current time") { interment_date >= DateTime.now }
       if errors[:interment_date].empty? && interment_date > DateTime.now && ['interred', 'completed'].include?(status)
         errors.add(:status, "cannot be '#{status}' for a future interment date")
       end
-      ##errors.add(:photographs, 'must be added to "complete" this interment') if (['interred', 'completed'].include? status) && (self.place.has_photos? == false)
     end
 
     def before_create

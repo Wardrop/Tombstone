@@ -20,7 +20,7 @@ content_for :head do %>
 <div>
   <section id="search_defintion">
     <h2 class="underline">Find</h2>
-    <form class="inline_layout h_padded" method="GET" action".">
+    <form class="inline_layout spaced h_padded" method="GET" action".">
       <label style="width: 68%">
         <input type="text" name="search" placeholder="Search terms..." style="width: 100%"
           title="Valid search fields: <%= Tombstone::Search.searchable.keys.join(', ') %>" />
@@ -33,7 +33,7 @@ content_for :head do %>
         </select>
       </label>
       <label style="text-align: right; width: 12%">
-        <input type="submit" class="action_button" value="Search" />
+        <input type="submit" class="action_button" value="Search" style="width: 100%;" />
       </label>
     </form>
   </section>

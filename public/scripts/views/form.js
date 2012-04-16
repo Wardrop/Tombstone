@@ -1,5 +1,3 @@
-window.indicators = []
-
 $( function () {
   Ts.FormViews.Section = Ts.View.extend({
     tagName: 'section',
@@ -37,18 +35,21 @@ $( function () {
       if (this.model) {
         this.$el.html(this.template({model: (this.model) ? this.model.recursiveToJSON() : null}))
       } else {
-        values = {add: 'Add'}
-        actions = {add: this.addRole}
+        var items = [{name: 'add', value: 'Add'}]
+        var actions = {add: this.addRole}
         _.each(this.group, function (roleBlock) {
           if(roleBlock != this) {
-            values['use_'+roleBlock.role_type] = 'Use '+roleBlock.role_name.demodulize().titleize()
+            items.push({
+              name: 'use_'+roleBlock.role_type,
+              value: 'Use '+roleBlock.role_name.demodulize().titleize()
+            })
             actions['use_'+roleBlock.role_type] = _.bind( function () {
               this.useRole(roleBlock)
             }, this)
           }
         }, this)
         var multibutton = new Ts.FormViews.Multibutton({
-          values: values,
+          items: items,
           actions: actions
         })
         this.$el.append(multibutton.render().el)
@@ -104,7 +105,7 @@ $( function () {
     templateId: 'form:multibutton_template',
     events: {
       'click span.dropdown_button' : 'toggleList',
-      'click li' : 'onSelectButton'
+      'click li' : 'onSelectItem'
     },
     initialize: function () {
       _.bindAll(this, 'hideList', 'showList', 'keydownHideEvent')
@@ -119,14 +120,14 @@ $( function () {
         var height = viewport.find('li').outerHeight() || 34
         viewport.css({height: height});
       }, this))
-      if (Object.keys(this.options.values).length <= 1) {
+      if (this.options.items.length <= 1) {
         this.$el.addClass('no_dropdown')
       } else {
         this.$el.removeClass('no_dropdown')
       }
-      this.$el.addClass(this.options.class)
+      this.$el.addClass(this.options['class'])
       this.$('li:first').addClass('selected')
-      if (this.options.selected) this.selectButton(this.options.selected)
+      if (this.options.selected) this.selectItem($(this.options.selected, this.$('li')).first().parent())
       this.hideList()
       
   		return this
@@ -164,27 +165,30 @@ $( function () {
       var height = viewport.find('li').outerHeight()
       if (height > 0) viewport.css({height: height})
     },
-    selectButton: function(selectedItem) {
+    selectItem: function(selectedItem) {
       var list = this.$('.viewport > ul')
       if (selectedItem.constructor == String) {
         selected = list.find('li > [name='+selectedItem+']').parent()
       } else {
         selected = $(selectedItem)
       }
-      list.css({top: -selected.position().top})
+      setTimeout(function () {
+        list.css({top: -selected.position().top})
+      })
 		  list.children('li').removeClass('selected')
 		  selected.addClass('selected')
 		},
-    onSelectButton: function (e) {
-			var target = e.currentTarget
-      var button = $(target).children()
-			var selectedName = button.attr('name')
-      this.selectButton(selectedName)
-			if (this.options.actions && this.options.actions[selectedName]) {
-				var result = this.options.actions[selectedName](button)
-			} else if (this.options.actions && this.options.actions['default']) {
-				var result = this.options.actions['default'](button)
-			}
+    onSelectItem: function (e) {
+			var listItem = e.currentTarget
+      var button = $(listItem).children()
+      this.selectItem(listItem)
+			if (this.options.actions) {
+        if (this.options.actions[button.data('action')]) {
+				  var result = this.options.actions[button.data('action')](button)
+			  } else if (this.options.actions['default']) {
+				  var result = this.options.actions['default'](button)
+			  }
+      }
       this.hideList()
 			return (result == true) ? true : false
     },
@@ -197,107 +201,9 @@ $( function () {
     templateId: 'form:multilink_template',
     events: {
       'click span.dropdown_button' : 'toggleList',
-      'click li': function (e) { this.selectButton(e.currentTarget) }
+      'click li': function (e) { this.selectItem(e.currentTarget) }
     }
   })
-  
-  // Ts.FormViews.PlacePicker = Ts.View.extend({
-  //   tagName: 'label',
-  //   className: 'placepicker',
-  //   templateId: 'form:place_picker_template',
-  //   events: {
-  //     'change': 'selectPlace'
-  //   },
-  //   initialize: function () {
-  //     _.bindAll(this, 'selectPlace')
-  //   },
-  //   render: function () {
-  //     this.$el.html(this.template({
-  //       type: this.collection.first().get('type'),
-  //       places: this.collection.toJSON(),
-  //       selected: this.options.selected,
-  //       disabled: this.options.disabled
-  //      }))
-  //     return this
-  //   },
-  //   renderPlaces: function (places, options) {
-  //     options = options || {}
-  //     var view = new Ts.FormViews.PlacePicker($.extend({}, this.options, options, {collection: places}))
-  //     this.$el.parent().append(view.render().el)
-  //     setTimeout("view.$('select').focus()")
-  //     return this
-  //   },
-  //   selectPlace: function (e) {
-  //     var target = $(e.target)
-  //     var placeId = target.children(':selected').attr('value')
-  //     this.$el.nextAll().remove()
-  //     if(placeId) {
-  //       if(target.data('placeType') == 'section') {
-  //         this.nextAvailable(placeId)
-  //       } else {
-  //         this.load(placeId)
-  //       }
-  //     }
-  //     return this
-  //   },
-  //   load: function (parent_id) {
-  //     this.lastRequest && this.lastRequest.abort()
-  //     this.$el.append('<div class="indicator loading" />')
-  //     this.lastRequest = $.ajax('/place/children/'+parent_id, {
-  //        type: 'GET',
-  //        dataType: 'json',
-  //       success: _.bind(function (data, textStatus, jqXHR) {
-  //         var places = new Ts.Places(data) 
-  //         if(places.length > 0) {
-  //           this.renderPlaces(places)
-  //           this.$('.indicator').remove()
-  //         } else if (this.collection.get(parent_id).get('child_count') > 0) {
-  //           this.$('.indicator').attr({
-  //             class: 'indicator warning',
-  //             title: this.collection.get(parent_id).get('type').demodulize().titleize() + ' is not available.'
-  //           })
-  //         } else {
-  //           this.$('.indicator').remove()
-  //         }
-  //       }, this),
-  //       error: function (jqXHR, textStatus, errorThrown) {
-  //         // TODO
-  //         this.$('.indicator').remove()
-  //         if(textStatus != 'abort') alert('Some went wrong!')
-  //       }
-  //     })
-  //     return this
-  //   },
-  //   nextAvailable: function (parent_id) {
-  //     this.lastRequest && this.lastRequest.abort()
-  //     this.$('.indicator').remove()
-  //     this.$el.append('<div class="indicator loading" />')
-  //     this.lastRequest = $.ajax('/place/next_available/'+parent_id, {
-  //       type: 'GET',
-  //        dataType: 'json',
-  //       success: _.bind(function (data, textStatus, jqXHR) {
-  //         if (data && Object.keys(data).length > 0) {
-  //           _.each(data, function (places, selected_id) {
-  //             this.renderPlaces(new Ts.Places(places), {selected: selected_id})
-  //           }, this)
-  //           this.$('.indicator').remove()
-  //         } else {
-  //           this.$('.indicator').attr({
-  //             class: 'indicator warning',
-  //             title: this.collection.get(parent_id).get('type').demodulize().titleize() +
-  //               ' does not contain any available places.'
-  //           })
-  //         }
-  //       }, this),
-  //       error: function (jqXHR, textStatus, errorThrown) {
-  //         // TODO
-  //         if(textStatus != 'abort') alert(jqXHR.responseText)
-  //         this.$('.indicator').remove()
-  //       }
-  //     })
-  //     return this
-  //   }
-  // })
   
   Ts.FormViews.PlaceForm = Ts.View.extend({
     initialize: function () {
@@ -360,7 +266,7 @@ $( function () {
       var selectedPlace = this.collection.get(this.$(':selected').val())
       if (places.length == 0 && selectedPlace.get('child_count') > 0) {
         this.indicator.css({display: ''}).attr({
-          class: 'indicator warning',
+          'class': 'indicator warning',
           title: selectedPlace.get('type').demodulize().titleize() +
             ' does not contain any available places.'
         })
@@ -423,7 +329,7 @@ $( function () {
             lastPickerView.$el.change()
           } else {
             this.indicator.attr({
-              class: 'indicator warning',
+              'class': 'indicator warning',
               title: this.collection.get(parent_id).get('type').demodulize().titleize() +
                 ' does not contain any available places.'
             })
@@ -478,7 +384,7 @@ $( function () {
       if ($(e.target).hasClass('add_child')) this.add_child()
       if ($(e.target).hasClass('add')) this.add()
       if ($(e.target).hasClass('edit')) this.edit()
-      if ($(e.target).hasClass('delete')) this.delete()
+      if ($(e.target).hasClass('delete')) this['delete']()
     },
     add_child: function () {
       this.prepareWizard()
@@ -505,7 +411,7 @@ $( function () {
       this.wizardView.model.set('title', 'Edit Place')
       this.wizardView.showPlaceForm()
     },
-    delete: function () {
+    'delete': function () {
       var place = this.collection.get(this.$(':selected').val())
       this.bindToSync(place)
       place.destroy({
@@ -542,15 +448,76 @@ $( function () {
     }
   })
   
+  Ts.FormViews.AllocationView = Ts.View.extend({
+    stateMap: {provisional: 'Provision', pending: 'Pend', approved: 'Approve',
+               interred: 'Inter', completed: 'Complete', deleted: 'Delete'},
+    initialize: function () {
+      this._super('initialize', arguments)
+      this.allocationData = $('#json\\:allocation_data').parseJSON() || {}
+      this.permittedStates = $('#json\\:permitted_states').parseJSON() || {}
+      this.errorBlock.prependTo(this.el)
+    },
+    render: function () {
+      var items = _(this.permittedStates).without(['provisional', 'deleted']).map(function (state) {
+        return {name: state, value: this.stateMap[state] || state.titleize(), action: 'updateStatus'}
+      }, this)
+      items.push({name: 'edit', value: 'Edit', className: (items.length > 0 ? 'with_top_divider' : '')},
+        {name: 'delete', value: 'Delete'},
+        {name: 'print', value: 'Print'}
+      )
+      if (this.allocationData.type == 'interment') items.push({name: 'multiple_interment', value: 'Multiple Interment'})
+      
+      var multibutton = new Ts.FormViews.Multibutton({
+        selected: '[name=edit]',
+        items: items,
+        actions: {
+          edit: _.bind(function () {
+            window.location = '/'+this.allocationData.type+'/'+this.allocationData.id+'/edit'
+          }, this),
+          multiple_interment: _.bind(function () {
+            window.location = '/'+this.allocationData.type+'/'+this.allocationData.id+'?place_id='+this.allocationData.place_id
+          }, this),
+          'delete': function () {
+            if (confirm('Are you sure you want to delete this interment?')) {
+              $('<form method="post" />').append($('<input type="hidden" name="_method" value="delete" />')).submit()
+            }
+          },
+          print: function () {
+            window.print()
+          },
+          updateStatus: _.bind( function (button) {
+            console.log('updating status')
+            var status = $(button).attr('name')
+            Backbone.sync('update', this.eventReceiver, {
+              url: '/'+this.allocationData.type+'/'+this.allocationData.id+'/status',
+              data: {status: status},
+              success: _.bind( function (data, textStatus, jqXHR) {
+      					this.indicator.css({display: ''}).attr('class', 'indicator success')
+      					window.location = data.redirectTo
+      				}, this)
+            })
+          }, this),
+          'default': function () {
+            alert('This function is not currently implemented.')
+          }
+        }
+      })
+          
+			var section = new Ts.FormViews.Section({
+				title: 'Actions',
+				body: [multibutton.render().el, this.indicator]
+			})
+			$(this.el).append(section.render().el)
+      return this
+		}
+  })
+  
   Ts.FormViews.AllocationForm = Ts.View.extend({
 		initialize: function () {
 		  this._super('initialize', arguments)
 			this.firstSection = $(this.el).children('section').first()
 			this.placeData = $('#json\\:place_data').parseJSON() || {}
 			this.allocationData = $('#json\\:allocation_data').parseJSON() || {}
-			this.bindToSync(
-			  this.eventReceiver = _.clone(Backbone.Events)
-			)
 			this.render()
 		},
 		render: function () {
@@ -614,14 +581,13 @@ $( function () {
 			return this
 		},
 		renderActions: function () {
-			this.multibutton = new Ts.FormViews.Multibutton({
-				values: this.options.states,
+			this.multibutton = new Ts.FormViews.Multibutton(_.extend({
 				actions: {
-					default: _.bind(function (el) {
+					'default': _.bind(function (el) {
 						this.submit(el.attr("name"))
 					}, this)
 				}
-			})
+			}, this.options.multibutton))
 			var section = new Ts.FormViews.Section({
 				title: 'Actions',
 				body: [this.multibutton.render().el, this.indicator]
@@ -639,7 +605,6 @@ $( function () {
 					return false
 				}
 			}
-			
 			var method = (this.allocationData.id && this.allocationData.type == this.options.type) ? 'update' : 'create'
 			var emulateJSON = Backbone.emulateJSON
 			try {
@@ -648,7 +613,7 @@ $( function () {
           url: this.el.action,
           data: data,
           success: _.bind( function (data, textStatus, jqXHR) {
-  					this.indicator.attr('class', 'indicator success')
+  					this.indicator.css({display: ''}).attr('class', 'indicator success')
   					window.location = data.redirectTo
   				}, this)
         })
