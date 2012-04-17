@@ -57,13 +57,13 @@ namespace :db do
     db[:funeral_director] << {:name => "Guilfoyles Mareeba", :residential_contact_id => 6, :mailing_contact_id => 6}
     db[:funeral_director] << {:name => "Guilfoyles Atherton", :residential_contact_id => 7}
     
-    db[:user] << {id: 'tomw', role: 'supervisor'}
-    db[:user] << {id: 'tatej', role: 'supervisor'}
-    db[:user] << {id: 'danielg', role: 'supervisor'}
-    db[:user] << {id: 'marar', role: 'supervisor'}
-    db[:user] << {id: 'adrians', role: 'supervisor'}
-    db[:user] << {id: 'megank', role: 'supervisor'}
-    db[:user] << {id: 'amandar', role: 'supervisor'}
+    db[:user] << {id: 'tomw', role: 'coordinator'}
+    db[:user] << {id: 'tatej', role: 'coordinator'}
+    db[:user] << {id: 'danielg', role: 'coordinator'}
+    db[:user] << {id: 'marar', role: 'coordinator'}
+    db[:user] << {id: 'adrians', role: 'coordinator'}
+    db[:user] << {id: 'megank', role: 'coordinator'}
+    db[:user] << {id: 'amandar', role: 'coordinator'}
     db[:user] << {id: 'ttu', role: 'operator'}
         
     db[:place] << {name: 'Atherton Cemetery', type: 'cemetery', status: 'available'}

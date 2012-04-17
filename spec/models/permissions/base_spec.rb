@@ -19,9 +19,9 @@ module Tombstone
     end
     
     it "can take a permissions object" do
-      supervisor = Permissions.new(:supervisor)
-      BaseModel.permissions = supervisor
-      BaseModel.permissions.should == supervisor
+      coordinator = Permissions.new(:coordinator)
+      BaseModel.permissions = coordinator
+      BaseModel.permissions.should == coordinator
       BaseModel.permissions = nil
       BaseModel.permissions.role.should == :default
     end

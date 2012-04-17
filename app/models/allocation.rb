@@ -26,7 +26,6 @@ module Tombstone
 
     def validate
       super
-      p roles
       self.class.required_roles.each do |role_type|
         errors.add(role_type.to_sym, "must be added") if roles.select { |r| r.type == role_type}.empty?
       end
@@ -198,7 +197,7 @@ module Tombstone
         end
       end
       
-      warnings.add(:interment_date, "is in the past. before the current date/time") { interment_date >= DateTime.now }
+      warnings.add(:interment_date, "is in the past.") { interment_date >= DateTime.now }
     end
 
     def validate

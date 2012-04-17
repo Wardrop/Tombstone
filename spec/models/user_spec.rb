@@ -9,7 +9,7 @@ module Tombstone
     it "provides a Permissions object based on user role" do
       u = User.new
       u.role_permissions.should be_a(Tombstone::Permissions)
-      User['tomw'].role_permissions.role.should == :supervisor
+      User['tomw'].role_permissions.role.should == :coordinator
     end
     
     it "authenticates users" do
@@ -37,7 +37,7 @@ module Tombstone
         u.set(role: 'operator').save
         rp = u.role_permissions
         u.role_permissions.can_delete_photos?.should == false
-        u.set(role: 'supervisor').save
+        u.set(role: 'coordinator').save
         u.role_permissions.can_delete_photos?.should == true
         u.role_permissions.should be_equal(rp)
       ensure

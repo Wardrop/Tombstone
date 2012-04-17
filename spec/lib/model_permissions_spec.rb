@@ -13,12 +13,12 @@ module Tombstone
       end
       
       it "can set and get permissions" do
-        perms = Tombstone::Permissions.new(:supervisor)
+        perms = Tombstone::Permissions.new(:coordinator)
         SpecialPerson.permissions(perms).permissions.should equal(perms)
       end
       
       it "should clone the dataset when permissions are set" do
-        perms = Tombstone::Permissions.new(:supervisor)
+        perms = Tombstone::Permissions.new(:coordinator)
         SpecialPerson.permissions(perms)
         SpecialPerson.permissions.should_not equal(perms)
       end
@@ -38,7 +38,7 @@ module Tombstone
       end
       
       it "inherits permissions from parent dataset" do
-        perms = Tombstone::Permissions.new(:supervisor)
+        perms = Tombstone::Permissions.new(:coordinator)
         SpecialPerson.permissions(perms).first.permissions.should equal(perms)
       end
     end

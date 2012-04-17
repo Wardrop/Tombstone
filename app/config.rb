@@ -48,7 +48,7 @@
       :can_delete_photos => false,
       :can_manage_cemeteries => false
     },
-    :supervisor => {
+    :coordinator => {
       :can_create => true,
       :can_edit => true,
       :can_delete => true,

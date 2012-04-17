@@ -5,7 +5,7 @@ module Tombstone
   describe Permissions do
     map = {
       :operator => {:can_approve => true, :can_create_burials => false, :invalid_option => true},
-      :supervisor => {:can_approve => true, :can_create_burials => true, :can_delete_photos => true}
+      :coordinator => {:can_approve => true, :can_create_burials => true, :can_delete_photos => true}
     }
     
     context "class" do
@@ -32,7 +32,7 @@ module Tombstone
       
       it "takes an optional role name on instantiation" do
         Permissions.new(:operator).role.should == :operator
-        Permissions.new('supervisor').role.should == :supervisor
+        Permissions.new('coordinator').role.should == :coordinator
       end
       
       it "generates permission methods for all valid options" do
@@ -77,7 +77,7 @@ module Tombstone
       it "allows the role to be changed" do
         perms = Permissions.new(:operator)
         perms.can_create_burials?.should == false
-        perms.role = :supervisor
+        perms.role = :coordinator
         perms.can_create_burials?.should == true
       end
       
