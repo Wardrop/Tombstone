@@ -92,6 +92,12 @@ end
         <span>Status</span>
         <div><%= print { @allocation.status.demodulize.titleize } %></div>
       </label>
+      <label>
+        <span>Reservation</span>
+        <div>
+          <%= print { "<a href='#{url(:reservation_view, @allocation.reservation.id)}'>View Reservation</a>" } %>
+        </div>
+      </label>
     </div>
   </section>
   <section>

@@ -67,7 +67,13 @@ module Tombstone
 
   class Reservation < Allocation
     set_dataset dataset.filter(:type => 'reservation')
-
+    one_to_one :interment, :primary_key => :id, :key => :id, :class => 'Tombstone::Interment', :conditions => {status: 'deleted'}.sql_negate
+    
+    # def initialize
+    #   super
+    #   self.status ||= 'approved'
+    # end
+    
     class << self
       def with_pk(id)
         self.first(:id => id)
@@ -82,7 +88,7 @@ module Tombstone
       end
 
       def valid_states
-        ['active', 'deleted']
+        ['approved', 'deleted']
       end
     end
 
@@ -108,7 +114,8 @@ module Tombstone
 
   class Interment < Allocation
     set_dataset dataset.filter(:type => 'interment')
-
+    one_to_one :reservation, :primary_key => :id, :key => :id, :class => 'Tombstone::Reservation', :conditions => {status: 'deleted'}.sql_negate
+    
     class << self
       def with_pk(id)
         self.first(:id => id)

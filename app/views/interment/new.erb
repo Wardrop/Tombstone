@@ -8,7 +8,10 @@ content_for :head do
           el: $('#interment_form')[0],
           valid_roles: <%= Tombstone::Interment.valid_roles.to_json %>,
           multibutton: {
-            items: [{name: 'provisional', value: 'Save'}, {name: 'pending', value: 'Submit'}],
+            items: [
+              {name: 'provisional', value: 'Save', action: 'submitWithStatus'},
+              {name: 'pending', value: 'Submit', action: 'submitWithStatus'}
+            ],
             selected: '[name=pending]'
           },
           type: 'interment'

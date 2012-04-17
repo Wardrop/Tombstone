@@ -461,11 +461,14 @@ $( function () {
       var items = _(this.permittedStates).without(['provisional', 'deleted']).map(function (state) {
         return {name: state, value: this.stateMap[state] || state.titleize(), action: 'updateStatus'}
       }, this)
-      items.push({name: 'edit', value: 'Edit', className: (items.length > 0 ? 'with_top_divider' : '')},
+      items[items.length - 1].className = 'with_bottom_divider'
+      if (this.allocationData.type == 'interment') items.push({name: 'multiple_interment', value: 'Multiple Interment'})
+      if (this.allocationData.type == 'reservation') items.push({name: 'inter', value: 'Inter'})
+      items.push(
+        {name: 'edit', value: 'Edit'},
         {name: 'delete', value: 'Delete'},
         {name: 'print', value: 'Print'}
       )
-      if (this.allocationData.type == 'interment') items.push({name: 'multiple_interment', value: 'Multiple Interment'})
       
       var multibutton = new Ts.FormViews.Multibutton({
         selected: '[name=edit]',
@@ -474,8 +477,11 @@ $( function () {
           edit: _.bind(function () {
             window.location = '/'+this.allocationData.type+'/'+this.allocationData.id+'/edit'
           }, this),
+          inter: _.bind(function () {
+            window.location = '/interment/'+this.allocationData.id+'/new'
+          }, this),
           multiple_interment: _.bind(function () {
-            window.location = '/'+this.allocationData.type+'/'+this.allocationData.id+'?place_id='+this.allocationData.place_id
+            window.location = '/interment/'+this.allocationData.id+'?place_id='+this.allocationData.place_id
           }, this),
           'delete': function () {
             if (confirm('Are you sure you want to delete this interment?')) {
@@ -583,6 +589,9 @@ $( function () {
 		renderActions: function () {
 			this.multibutton = new Ts.FormViews.Multibutton(_.extend({
 				actions: {
+          'submitWithStatus': _.bind(function (el) {
+						this.submit({status: $(el).attr('name')})
+					}, this),
 					'default': _.bind(function (el) {
 						this.submit()
 					}, this)
@@ -594,8 +603,8 @@ $( function () {
 			})
 			$(this.el).append(section.render().el)
 		},
-		submit: function () {
-			var data = this.formData()
+		submit: function (data) {
+			var data = _.extend(this.formData(), data)
 			this.hideErrors()
 			if(this.lastRequest && this.lastRequest.state() == 'pending') {
 				if (confirm('The last submit operation has not yet completed. Would you like to abort the last submit operation?')) {

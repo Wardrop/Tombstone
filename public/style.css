@@ -681,6 +681,9 @@ a.row_button:hover {
 .multibutton > .viewport > ul > li.with_top_divider {
   border-top: 1px solid #62a4de;
 }
+.multibutton > .viewport > ul > li.with_bottom_divider {
+  border-bottom: 1px solid #62a4de;
+}
 .multibutton.no_dropdown > .viewport > ul > li {
   border-radius: 5px; 
 }

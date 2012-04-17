@@ -65,6 +65,12 @@ end
         <span>Status</span>
         <div><%= print { @allocation.status.demodulize.titleize } %></div>
       </label>
+      <label>
+        <span>Interment</span>
+        <div>
+          <%= print { "<a href='#{url(:interment_view, @allocation.interment.id)}'>View Interment</a>" } %>
+        </div>
+      </label>
     </div>
   </section>
 </div>
