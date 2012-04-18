@@ -158,6 +158,8 @@ ul.classic > li {
 }
 #navigation_bar {
 	width: 100%;
+  white-space: nowrap;
+  font-size: 0;
 	word-spacing: -1em;
 	color: white;
 	font-weight: normal;
