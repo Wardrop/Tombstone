@@ -7,7 +7,7 @@ module Tombstone
     end
     
     get :validate, :provides => :json do
-      contact = Contact.new(params)
+      contact = Contact.new.set_valid_only(params)
       json_response(valid: contact.valid?, errors: contact.errors)
     end
     

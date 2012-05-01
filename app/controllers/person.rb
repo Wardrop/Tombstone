@@ -3,7 +3,7 @@ module Tombstone
 
     get :all, :provides => :json do
       filter_hash = params.reject{ |k,v| !v || v.empty? }.symbolize_keys!
-      json_response Person.filter(filter_hash).naked.all
+      json_response Person.filter(filter_hash)
     end
 
     get :contacts, :provides => :json do
@@ -14,12 +14,12 @@ module Tombstone
     end
     
     get :validate, :provides => :json do
-      person = Person.new(params.select { |k,v| Person.columns.include?(k.to_sym) && !v.blank? })
+      person = Person.new.set_valid_only(params)
       json_response(valid: person.valid?, errors: person.errors)
     end
     
     get :index, :with => :id, :provides => :json do
-      json_response Person.filter(:id => params[:id]).naked.all
+      json_response Person.filter(:id => params[:id])
     end
     
   end

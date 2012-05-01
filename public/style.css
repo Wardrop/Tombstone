@@ -47,6 +47,12 @@ input[type=submit], input[type=button], input[type=reset], a.button {
 a.button:visited {
 	color: white;
 }
+
+input[type=submit].disabled, input[type=button].disabled, input[type=reset].disabled, a.button.disabled,
+input[type=submit].disabled:hover, input[type=button].disabled:hover, input[type=reset].disabled:hover, a.button.disabled:hover {
+  color: white;
+  background: #bbb;
+}
 input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover, a.button:hover {
 	background: #5499d6;
 }
@@ -261,6 +267,21 @@ h1 .heading_float, h2 .heading_float, h3 .heading_float {
 	padding: 0 12px;
 }
 
+.details {
+  display: block;
+  padding: 0 14px 4px;
+  font-size: 11px;
+  overflow: auto; /* Required for clearing the container for floating children */
+}
+.details > .left {
+  float: left;
+  width: 50%;
+}
+.details > .right {
+  float: right;
+  width: 50%;
+}
+
 section {
 	margin-top: 34px;
 }
@@ -314,17 +335,6 @@ section:first-child {
 }
 .list_rows > div > .details {
   display: none;
-  padding: 0 14px 4px;
-  font-size: 11px;
-  overflow: auto; /* Required for clearing the container for floating children */
-}
-.list_rows > div > .details > .left {
-  float: left;
-  width: 50%;
-}
-.list_rows > div > .details > .right {
-  float: right;
-  width: 50%;
 }
 .list_rows > div.expanded > .details {
   display: block;
@@ -771,13 +781,21 @@ a.row_button:hover {
   overflow-y: auto;
   overflow-x: hidden;
 }
+.overlay_container.role_wizard {
+  margin-left: -450px;
+	width: 900px;
+}
 .overlay_container > .heading {
 	position: relative;
 	text-align: left;
-	box-sizing: border-box;
 	background: #2980cc;
 	color: white;
 	padding: 3px 0 12px 0;
+}
+.overlay_container > .footer {
+	text-align: right;
+	border-top: 1px solid #bbb;
+	padding: 8px 12px;
 }
 .overlay_container.warning {
 	border: 8px solid #d98416;
@@ -813,15 +831,26 @@ a.row_button:hover {
 }
 
 .overlay_container > .body {
+  display: table;
   position: relative;
 	height: auto;
 	width: 100%;
 	box-sizing: border-box;
 }
+.overlay_container > .body .pane {
+  position: relative;
+  display: table-cell;
+  height: 100%;
+  border-left: 1px solid #bbb;
+  vertical-align: top;
+}
+.overlay_container > .body .pane:first-child {
+  border: none;
+}
 .overlay_container > .body h3 {
 	margin-top: 0;
 }
-.overlay_container > .body > .indicator {
+.overlay_container > .body .indicator {
   position: absolute;
   z-index: 10;
   top: 0;
@@ -833,8 +862,47 @@ a.row_button:hover {
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
   background-color: rgba(242,242,242,0.7);
 }
-.overlay_container > .body > .page {
-  padding: 3%; 
+.overlay_container > .body .menu.pane {
+  border: none;
+}
+.overlay_container > .body .menu.pane li {
+  border-bottom: 1px solid #bbb;
+  position: relative;
+  cursor: pointer;
+}
+.overlay_container > .body .menu.pane li.selected {
+  background: #e0f1ff;
+}
+.overlay_container > .body .menu.pane li.disabled {
+  color: #999;
+  cursor: auto;
+}
+.overlay_container > .body .menu.pane h3 {
+  font-size: 110%;
+  margin: 0;
+  padding: 8px;
+}
+.overlay_container > .body .menu.pane .delete {
+  position: absolute;
+  display: block;
+  float: right;
+  width: 24px;
+  height: 100%;
+  right: 0;
+  top: 0;
+  margin: 0 2px;
+  cursor: pointer;
+  background: url('images/delete_20.png') no-repeat center center;
+}
+.overlay_container > .body .menu.pane .delete:hover {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
+  opacity: 0.75;
+}
+.overlay_container > .body .menu.pane .disabled .delete {
+  display: none;
+}
+.overlay_container > .body .menu.pane .details {
+  padding-bottom: 8px;
 }
 .field_error {
   outline: 1px solid #c00;

@@ -72,17 +72,10 @@ $( function () {
       this.use = roleBlock.role_type
     },
     changeRole: function () {
-      // clonedModel = new Ts.Role({
-      //   type: this.role_type,
-      //   person: this.model.get("person").clone(),
-      //   residential_contact: this.model.get("residential_contact").clone(),
-      //   mailing_contact: this.model.get("mailing_contact").clone()
-      // })
-      // clonedModel.get("person").set({id: null})
       wizard = new Ts.Wizard({title: "Change "+this.role_name, role: this.model})
 			wizardView = new Ts.WizardViews.RoleWizard({
         model: wizard,
-        onComplete: this.render
+        onComplete: this.onCompleteCallback
       })
       $('body').prepend(wizardView.render().el)
     },
@@ -548,6 +541,8 @@ $( function () {
 						residential_contact: new Ts.Contact(roleData[type].residential_contact),
 						mailing_contact: new Ts.Contact(roleData[type].mailing_contact)
 					})
+          role.get('person').valid(true)
+          role.get('residential_contact').valid(true)
 				}
 				var roleBlock = new Ts.FormViews.RoleBlock({role_name: type, role_type: type, group: this.roleBlocks, model: role})
 				this.roleBlocks[type] = roleBlock

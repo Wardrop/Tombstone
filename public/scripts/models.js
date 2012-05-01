@@ -1,37 +1,36 @@
 Ts.Model = Backbone.Model.extend({
   initialize: function () {
     this.errors = {}
+    this._valid = false
+    this.on('change', function () { this.valid(false) })
   },
   serverValidate: function (callbacks) {
     this.errors = {}
-    console.log(this)
     Backbone.sync('read', this, {
       url: this.urlRoot+'/validate',
       success: _.bind( function (data, textStatus, jqXHR) {
         if(data.valid) {
+          this.valid(true)
           callbacks.valid()
         } else {
-          this.errors = data.errors
-          callbacks.invalid(data.errors)
+          this.valid(false)
+          callbacks.invalid()
         }
+      }, this),
+      error: _.bind( function (jqXHR, textStatus, errorThrown) {
+        this.valid(false)
+        callbacks.invalid()
       }, this)
     })
-    
-    // $.ajax(this.urlRoot+'/validate', {
-    //   type: 'GET',
-    //   dataType: 'json',
-    //   data: this.toJSON(),
-    //   success: _.bind( function (data, textStatus, jqXHR) {
-    //     if(data.valid == true) {
-    //       callbacks.valid()
-    //     } else {
-    //       this.errors = data.errors
-    //       callbacks.invalid(data.errors)
-    //     }
-    //   }, this),
-    //   error: callbacks.error,
-    //   complete: callbacks.complete
-    // })
+  },
+  hasRequired: function () {
+    var hasRequired = true
+    if(this.required) {
+      this.required.forEach( function (field) {
+        if (!this.get(field)) hasRequired = false
+      }, this)
+    }
+    return hasRequired
   },
   sync: function(method, model, options) {
     options = options || {}
@@ -39,6 +38,22 @@ Ts.Model = Backbone.Model.extend({
       options.url = model.url + '/' + model.get('id')
     }
     Backbone.sync(method, model, options);
+  },
+  valid: function (value) {
+    if (value == undefined) {
+      return this._valid
+    } else {
+      this.trigger('validityChange', this)
+      return this._valid = !!value
+    }
+  },
+  // Consider an object with all falsey values as empty.
+  isEmpty: function () {
+    var hasTrue = false 
+    _.each(this.attributes, function (value, key) {
+      if(!hasTrue) hasTrue = !!value
+    })
+    return !hasTrue
   }
 })
 
@@ -53,6 +68,7 @@ Ts.Person = Ts.Model.extend({
 		date_of_birth: null,
 		date_of_death: null
 	},
+  required: ['title', 'surname', 'given_name', 'gender', 'date_of_birth'],
   urlRoot: '/person'
 })
 
@@ -67,6 +83,7 @@ Ts.Contact = Ts.Model.extend({
 		primary_phone: null,
 		secondary_phone: null
 	},
+  required: ['street_address', 'town', 'state', 'postal_code'],
 	urlRoot: '/contact'
 })
 
@@ -81,7 +98,14 @@ Ts.Role = Ts.Model.extend({
   initialize: function () {
     if(!this.get('person')) this.set({person: new Ts.Person})
     if(!this.get('residential_contact')) this.set({residential_contact: new Ts.Contact})
-    if(!this.get('mailing_contact')) this.set({mailing_contact: new Ts.Contact})
+  },
+  valid: function () {
+    return !!(
+      this.get('person').valid() &&
+      this.get('residential_contact') &&
+      this.get('residential_contact').valid() &&
+      (!this.get('mailing_contact') || this.get('mailing_contact').isEmpty() || this.get('mailing_contact').valid())
+    )
   }
 })
 

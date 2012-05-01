@@ -29,7 +29,6 @@ $( function () {
         if (this.indicator.hasClass('loading')) this.indicator.css({display: 'none'})
       },
       'sync:fail': function (method, obj, jqXHR, textStatus, errorThrown) {
-        console.log(this)
         if (textStatus == 'error') {
           var parsed
           try {
@@ -83,6 +82,11 @@ $( function () {
         }
         alert(errorStr)
       }
+      if (errors.constructor == Object) {
+        _.each(errors, function (value, field) {
+          if (value.length > 0) this.$('[name='+field+']').addClass('field_error')
+        })
+      }
     },
     showWarnings: function (warnings) {
 			warningOverlay = new Ts.WizardViews.WarningOverlay({
@@ -104,9 +108,6 @@ $( function () {
         this.stringifyErrors(errors).forEach( function (error) {
           this.errorBlock.append($('<li />').text(error))
         }, this)
-        _.each(errors, function (value, field) {
-          if (value.length > 0) this.$('[name='+field+']').addClass('field_error')
-        })
       }
       
       this.errorBlock.css({display: 'none'}).slideDown(300)

@@ -21,10 +21,20 @@ module Tombstone
         allocation.save(validate: false)
 
         roles_data = data.select { |k,v| allocation.class.valid_roles.include?(k) && !v.nil? && Hash === v }
-        roles_data.reject{|k,v| v['use'] }.each do |key, role_data|
+        roles_data.reject{ |k,v| v['use'] }.each do |key, role_data|
           role_errors = Sequel::Model::Errors.new
           begin
-            allocation.add_role(Role.create_from(role_data, role_errors))
+            if role_data['id']
+              role = Role.with_pk(role_data['id'])
+              if role
+                role_errors = role.errors
+                role.set_valid_only(role_data).save
+              else
+                role_errors.add(:id, "does not exist")
+              end
+            else
+              allocation.add_role(Role.create_from(role_data, role_errors))
+            end
           rescue Sequel::Rollback => e
             allocation.errors.add(key.to_sym, role_errors)
           end
