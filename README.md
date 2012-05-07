@@ -33,6 +33,8 @@ result in a "broken pipe" error or something similar.
 
 Other Notes
 -----------
-Because of how the permissions model has been implemented, this application is not thread safe. Simultaneous processes
-are fine, but a single multithreaded process can cause permission inconsistancies. Rack::Lock is therefore being used
-to ensure thread safety, but this effectively prevents any potential performance gain by multithreading.
+Because of how the permissions model has been implemented, this application is not thread safe; it was a trade-off that
+was made to allow for a simpler permissions model. Simultaneous processes are fine, but a single multithreaded process
+can cause permission inconsistancies. Rack::Lock is therefore being used to ensure thread safety, but this effectively
+prevents any potential performance gain by multithreading. This should not be a performance bottleneck though, as the
+only advantage of multi-threading over multi-process is that it uses less memory.
