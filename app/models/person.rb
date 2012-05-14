@@ -24,7 +24,7 @@ module Tombstone
     end
     
     def name
-      "#{title} #{given_name} #{middle_initials} #{surname}"
+      "#{title} #{given_name} #{middle_name} #{surname}"
     end
     
     def validate

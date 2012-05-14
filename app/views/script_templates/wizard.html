@@ -195,7 +195,7 @@
 
 <script type="text/template" id="wizard:person_block_template">
   <% var dob = Date.parse(person.date_of_birth) %>
-  <span><strong><%= person.title %> <%= person.given_name %> <%= person.surname %></strong></span>
+  <span><strong><%= person.title %> <%= person.given_name %> <%= person.middle_name %> <%= person.surname %></strong></span>
   DOB: <%= (dob && dob.toString('dd/MM/yyyy')) || '<small>none</small>' %>, Gender: <%= person.gender %>
 </script>
 
@@ -209,7 +209,7 @@
   <div class="rowed display wide">
     <div class="row">
       <span>Name</span>
-      <div><%= person.title %> <%= person.given_name %> <%= person.surname %></div>
+      <div><%= person.title %> <%= person.given_name %> <%= person.middle_name %> <%= person.surname %></div>
     </div>
     <div class="row">
       <span>Gender</span>

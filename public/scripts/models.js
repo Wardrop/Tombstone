@@ -63,7 +63,7 @@ Ts.Person = Ts.Model.extend({
 		title: null,
 		surname: null,
 		given_name: null,
-		middle_initials: null,
+		middle_name: null,
 		gender: null,
 		date_of_birth: null,
 		date_of_death: null
@@ -97,6 +97,7 @@ Ts.Role = Ts.Model.extend({
 	},
   initialize: function () {
     if(!this.get('person')) this.set({person: new Ts.Person})
+    if(!this.get('residential_contact')) this.set({residential_contact: new Ts.Contact})
   },
   valid: function () {
     return !!(

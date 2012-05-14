@@ -21,9 +21,9 @@ namespace :db do
   task :populate do
     db.execute("EXEC sp_MSForEachTable 'TRUNCATE TABLE ?'")
     
-    db[:person] << {title: 'Mr', surname: 'Fickle', given_name: 'Roger', middle_initials: 'D', gender: 'male', date_of_birth: DateTime.parse('09/03/1934'), date_of_death: nil}
-    db[:person] << {title: 'Mr', surname: 'Bunson', given_name: 'Sam', middle_initials: 'F', gender: 'male', date_of_birth: DateTime.parse('27/11/1971'), date_of_death: nil}
-    db[:person] << {title: 'Mr', surname: 'Rojenstien', given_name: 'Phillip', middle_initials: 'R', gender: 'male', date_of_birth: DateTime.parse('26/01/1988'), date_of_death: nil}
+    db[:person] << {title: 'Mr', surname: 'Fickle', given_name: 'Roger', middle_name: 'D', gender: 'male', date_of_birth: DateTime.parse('09/03/1934'), date_of_death: nil}
+    db[:person] << {title: 'Mr', surname: 'Bunson', given_name: 'Sam', middle_name: 'F', gender: 'male', date_of_birth: DateTime.parse('27/11/1971'), date_of_death: nil}
+    db[:person] << {title: 'Mr', surname: 'Rojenstien', given_name: 'Phillip', middle_name: 'R', gender: 'male', date_of_birth: DateTime.parse('26/01/1988'), date_of_death: nil}
     
     db[:contact] << {email: 'manager@bigbiz.com', street_address: '56 Hughey Cl', town: 'Mareeba', state: 'Queensland', postal_code: 4880, primary_phone: '(07) 4092 6735', secondary_phone: '0422 454 829'}
     db[:contact] << {email: 'littlesamurai@myfantasy.com', street_address: '65 Rankin St', town: 'Mareeba', state: 'Queensland', postal_code: 4880, primary_phone: '(07) 4095 4116', secondary_phone: nil}
