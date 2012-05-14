@@ -457,7 +457,7 @@ $( function () {
     render: function () {
       this.$el.html(this.template())
       $('body').append(this.uploadForm)
-      this.$('[type=file]').after(this.indicator)
+      this.$('[type=file]').after(this.indicator.addClass('loading'))
       this.$el.prepend(this.errorBlock)
       setTimeout( _.bind( function () {
         this.$('iframe').load(_.bind(this.onLoad, this))
@@ -468,10 +468,10 @@ $( function () {
     fileChanged: function (e) {
       var fileInput = this.$(e.target)
       var originalParent = fileInput.parent()
+      this.indicator.css({display: ''})
       $(fileInput).appendTo(this.uploadForm)
       this.uploadForm.submit()
       $(fileInput).prependTo(originalParent)
-      this.indicator.css({display: ''})
     },
     onLoad: function () {
       this.indicator.css({display: 'none'})
@@ -481,7 +481,7 @@ $( function () {
       }
       this.render()
     },
-    delete: function (e) {
+    'delete': function (e) {
       e.stopPropagation()
       e.preventDefault()
       if(confirm('Are you sure you want to delete this photo?')) {
