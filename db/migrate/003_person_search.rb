@@ -1,7 +1,8 @@
 Sequel.migration do
   up do
+    self.run "SET ANSI_NULLS ON"
     self.run "IF OBJECT_ID('PersonSearch') IS NOT NULL DROP PROC PersonSearch"
-    self.run <<-SQL
+    self.run "
       CREATE PROCEDURE PersonSearch
       	@GivenNameTerm VarChar(50) = NULL,
         @MiddleNameTerm VarChar(50) = NULL,
@@ -43,7 +44,7 @@ Sequel.migration do
       	WHERE Scores.Score > 0 AND (PERSON.GENDER = @GenderTerm OR PERSON.GENDER IS NULL OR @GenderTerm IS NULL)
       	ORDER BY Score DESC
       END
-    SQL
+    "
   end
   
   down do

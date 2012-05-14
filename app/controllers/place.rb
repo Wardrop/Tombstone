@@ -72,7 +72,13 @@ module Tombstone
         if next_available
           ancestors = next_available.ancestors(true, id).reverse
           ancestors.map do |place|
-            place.siblings.with_child_count.available_only.naked.all
+            place.siblings.with_child_count.available_only.select_append('
+              CASE
+              	WHEN (isNumeric([place].[name]) = 1)
+              	  THEN CAST([place].[name] as integer)
+              	ELSE
+              	  2147483647
+              	END as natural_order'.lit).order(:natural_order.asc).naked.all
           end
         else
           nil
