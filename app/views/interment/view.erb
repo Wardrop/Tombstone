@@ -102,8 +102,7 @@ end
   </section>
   <section>
     <h2 class="underline">Photographs</h2>
-    <div>
-      <div class="photos">
+      <div>
         <%=
         if @allocation.place.photos.count > 0
           partial 'photos/view', :locals => {photos: @allocation.place.photos}
