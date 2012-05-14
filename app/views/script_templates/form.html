@@ -70,11 +70,11 @@
     </div>
     <div class="row">
       <span>Gender</span>
-      <div><%= model.get('person').get('gender').demodulize().titleize() %></div>
+      <div><%= (model.get('person').get('gender')) ? model.get('person').get('gender').demodulize().titleize() : '<small>none</small>' %></div>
     </div>
     <div class="row">
       <span>Date of Birth</span>
-      <div><%= model.get('person').get('date_of_birth') %></div>
+      <div><%= model.get('person').get('date_of_birth') || '<small>none</small>'  %></div>
     </div>
     <div class="row">
       <span class="align_top">Residential Contact</span>
