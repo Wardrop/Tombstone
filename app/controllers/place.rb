@@ -37,7 +37,6 @@ module Tombstone
     end
 
     put :index, :with => :id, :provides => :json do
-      p params
       place = Place.with_pk(params[:id])
       halt 404, "Place with ID ##{params[:id]} does not exist." unless place
       place.set_valid_only(params)
@@ -72,13 +71,7 @@ module Tombstone
         if next_available
           ancestors = next_available.ancestors(true, id).reverse
           ancestors.map do |place|
-            place.siblings.with_child_count.available_only.select_append('
-              CASE
-              	WHEN (isNumeric([place].[name]) = 1)
-              	  THEN CAST([place].[name] as integer)
-              	ELSE
-              	  2147483647
-              	END as natural_order'.lit).order(:natural_order.asc).naked.all
+            place.siblings.with_child_count.available_only.with_natural_order.naked.all
           end
         else
           nil
@@ -100,7 +93,7 @@ module Tombstone
           halt 404
         end
       end
-      json_response places.order(:name).with_child_count.naked.all
+      json_response places.order(:name).with_child_count.with_natural_order.naked.all
     end
 
     # get :children, :with => [:parent_id, :option], :provides => :json do
@@ -116,7 +109,7 @@ module Tombstone
       place = Place.with_pk(params[:id])
       halt 404, "Place with ID ##{params[:id]} does not exist." unless place
       chain = place.ancestors(!!params['include_self']).reduce([]) do |memo, anc|
-        memo << Place.filter(:parent_id => anc.parent_id).naked.all
+        memo << Place.filter(:parent_id => anc.parent_id).with_natural_order.naked.all
       end
       json_response chain
     end

@@ -19,7 +19,6 @@ module Tombstone
           gender: proc { |v| "@GenderTerm = #{db.literal(v)}" }
         }
         params = terms.select{ |k,v| param_map[k] }.map{ |k,v| param_map[k].call(v) }
-        p "EXEC PersonSearch #{params.join(',')}"
         self.db["EXEC PersonSearch #{params.join(',')}"].to_a
       end
     end

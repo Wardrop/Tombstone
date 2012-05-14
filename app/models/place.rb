@@ -1,4 +1,3 @@
-
 module Tombstone
   class Place < BaseModel
     set_primary_key :id
@@ -12,6 +11,16 @@ module Tombstone
         Place.group(:parent_id).select{[count(parent_id).as(child_count), :parent_id___child_parent_id]},
         :child_parent_id => :place__id
       )
+    end
+        
+    def_dataset_method(:with_natural_order) do
+      select_append("
+        CASE
+        	WHEN (isNumeric([place].[name]) = 1)
+        	  THEN CAST([place].[name] as integer)
+        	ELSE
+        	  2147483647
+        	END as [NATURAL_ORDER]".lit).order(:NATURAL_ORDER.asc)
     end
 
     def_dataset_method(:available_only) do
