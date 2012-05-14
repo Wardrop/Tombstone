@@ -1,3 +1,13 @@
+<% content_for :head do %>
+  <script type="application/json" id="json:allocation_data">
+    $( function () {
+      $('.image_container .delete').click( function () {
+        $.ajax
+        return false;
+      })
+    })
+  </script>
+<% end %>
 <% photos.each do |photo| %>
   <div class="image_container">
     <img src="<%= photo.file.thumbnail.url %>"

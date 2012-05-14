@@ -111,21 +111,21 @@ module Tombstone
     end
 
     def update_photos
-      if !session[:new_photos].to_a.empty?
-        Photo.filter(:id => session[:new_photos]).update(:enabled => 1)
+      unless session['new_photos'].empty?
+        Photo.filter(:id => session['new_photos']).update(:enabled => 1)
       end
-      if !session[:deleted_photos].to_a.empty?
-        Photo.filter(:id => session[:deleted_photos]).delete
+      unless session['deleted_photos'].empty?
+        Photo.filter(:id => session['deleted_photos']).delete
       end
       reset_photos_changes
     end
 
     def reset_photos_changes
-      session[:new_photos] = []
-      session[:deleted_photos] = []
+      session['new_photos'] = []
+      session['deleted_photos'] = []
     end
     
-    def json_response(obj)
+    def json_response(obj = {})
       if Hash === obj
         obj[:errors] = nil if obj[:errors] && obj[:errors].empty?
         obj[:warnings] = nil if obj[:warnings] && obj[:warnings].empty?

@@ -13,26 +13,26 @@
 <div class="row">
   <span class="align_top">Residential Contact</span>
   <div>
-    <%=
-    rc = role.residential_contact
-    "#{rc.street_address}<br />
-    #{rc.town}, #{rc.state} #{rc.postal_code}<br />
-    #{rc.primary_phone} #{(rc.secondary_phone.blank?) ? '' : ', '+rc.secondary_phone}<br />
-    #{rc.email}"
-    %>
+  <%=
+  (rc = role.residential_contact) ?
+  "<div>#{rc.street_address}</div>
+  <div>#{rc.town}, #{rc.state} #{rc.postal_code}</div>
+  <div>#{rc.primary_phone} #{(rc.secondary_phone.blank?) ? '' : ', '+rc.secondary_phone}</div>
+  <div>#{rc.email}</div>" :
+  '<small>none</small>'
+  %>
   </div>
 </div>
 <div class="row">
   <span class="align_top">Mailing Contact</span>
   <div>
   <%=
-  mc = role.mailing_contact
-  print {
-    "#{mc.street_address}<br />
-    #{mc.town}, #{mc.state} #{mc.postal_code}<br />
-    #{mc.primary_phone} #{(mc.secondary_phone.blank?) ? '' : ', '+mc.secondary_phone}<br />
-    #{mc.email}"
-  }
+  (mc = role.mailing_contact) ?
+  "<div>#{mc.street_address}</div>
+  <div>#{mc.town}, #{mc.state} #{mc.postal_code}</div>
+  <div>#{mc.primary_phone} #{(mc.secondary_phone.blank?) ? '' : ', '+mc.secondary_phone}</div>
+  <div>#{mc.email}</div>" :
+  '<small>none</small>'
   %>
   </div>
 </div>

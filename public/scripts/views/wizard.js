@@ -2,8 +2,7 @@ $( function () {
   Ts.WizardViews = {}
   Ts.WizardViews.BasePage = Ts.View.extend({
     events: {
-      'click input[type=button][data-action]': 'doAction',
-      'keyup': function (e) { if(e.keyCode == 13) this.doAction() }
+      'click input[type=button][data-action]': 'doAction'
     },
   	initialize: function () {
   	  this._super('initialize', arguments)
@@ -135,6 +134,7 @@ $( function () {
     initialize: function () {
       this._super('initialize', arguments)
       this.options.showCloseButton = false
+      this.options.className = 'warning'
     },
     showWarnings: function (warnings) {
       this.model.set({
@@ -150,6 +150,7 @@ $( function () {
   
   Ts.WizardViews.WarningConfirmation = Ts.WizardViews.BasePage.extend({
 		templateId: 'wizard:warning_confirmation_template',
+    className: 'padded',
     render: function () {
       $(this.el).html(this.template({warnings: this.options.warnings}))
 			return this
@@ -188,7 +189,7 @@ $( function () {
   
   Ts.WizardViews.RoleWizard = Ts.WizardViews.Wizard.extend({
     templateId: 'wizard:role_wizard_template',
-    events: _.extend(Ts.WizardViews.Wizard.prototype.events, {
+    events: _.extend({}, Ts.WizardViews.Wizard.prototype.events, {
 			'click ul.menu > li:not(.disabled)' : function (e) { this.selectMenuItem(e.currentTarget)},
       'click ul.menu > li:not(.disabled) .delete' : function (e) {
         e.stopPropagation()
@@ -257,7 +258,7 @@ $( function () {
     deleteModel: function (key) {
       var target = this.$('ul.menu > li[data-model='+key+']')
       var self = this
-      this.selectMenuItem(this.$('ul.menu > li[data-model='+key+']').prev())
+      this.selectMenuItem(target.is(':first-child') ? target : target.prev())
       target.add(target.nextAll()).each( function () {
         self.model.get('role').set($(this).data('model'), null)
       })
@@ -269,29 +270,23 @@ $( function () {
       this[$(el).data('action')]()
     },
     showPersonPage: function () {
-      if (!this.pages['person']) {
-        this.pages['person'] = new Ts.WizardViews.PersonPage({wizard: this})
-      }
+      this.pages['person'] = new Ts.WizardViews.PersonPage({wizard: this})
       this.model.set({currentPage: this.pages['person']})
     },
     showResidentialContactPage: function () {
-      if (!this.pages['residential_contact']) {
-        this.pages['residential_contact'] = new Ts.WizardViews.ContactPage({wizard: this, contact_type: 'residential'})
-      }
+      this.pages['residential_contact'] = new Ts.WizardViews.ContactPage({wizard: this, contact_type: 'residential'})
       this.model.set({currentPage: this.pages['residential_contact']})
     },
     showMailingContactPage: function () {
-      if (!this.pages['mailing_contact']) {
-        this.pages['mailing_contact'] = new Ts.WizardViews.ContactPage({wizard: this, contact_type: 'mailing'})
-      }
+      this.pages['mailing_contact'] = new Ts.WizardViews.ContactPage({wizard: this, contact_type: 'mailing'})
       this.model.set({currentPage: this.pages['mailing_contact']})
     },
     saveRole: function () {
       if (this.model.get('role').get('mailing_contact') && this.model.get('role').get('mailing_contact').isEmpty()) {
-        this.model.get('role').set('mailing_contact', null)
+        this.model.get('role').set('mailing_contact', null, {silent: true})
       }
       this.close()
-      this.options.onComplete(this.model.get('role'))
+      this.options.onComplete(this.model.get('role'))      
     }
 	})
   
@@ -328,8 +323,10 @@ $( function () {
       _($(e.target).parents('form').serializeJSON()).each( function (v,k) {
         if (v) formValues[k] = v
       })
-      if (formValues.surname) {
+      formValues.surname 
+      if (formValues.given_name || formValues.middle_name || formValues.surname || formValues.date_of_birth || formValues.date_of_death) {
         this.people.fetch({
+          url: '/person/search',
           data: formValues,
           success: function (collection) {
           }
@@ -437,7 +434,13 @@ $( function () {
       this._super('initialize', arguments)
       this.model.on('change', this.checkValidity, this)
     },
+    render: function () {
+      this._super('render', arguments)
+      // this.$("[name=state]").combobox()
+      return this
+    },
     checkValidity: function () {
+      console.log('checking contact validity')
       if (this.model.hasRequired()) {
         this.model.serverValidate({
 					valid: _.bind( function () { this.model.valid(true) }, this),

@@ -2,6 +2,7 @@ $( function () {
   Ts.FormViews.Section = Ts.View.extend({
     tagName: 'section',
     templateId: 'form:section_template',
+    divClass: 'padded',
     initialize: function () {
       this.body = []
       if (this.options.body) {
@@ -33,7 +34,7 @@ $( function () {
     render: function () {
       this.$el.empty()
       if (this.model) {
-        this.$el.html(this.template({model: (this.model) ? this.model.recursiveToJSON() : null}))
+        this.$el.html(this.template({model: this.model}))
       } else {
         var items = [{name: 'add', value: 'Add'}]
         var actions = {add: this.addRole}
@@ -440,6 +441,66 @@ $( function () {
       })
     }
   })
+      
+  Ts.FormViews.PhotosEditor = Ts.View.extend({
+    templateId: 'form:photo_editor_template',
+    events: {
+      'change [type=file]': 'fileChanged',
+      'click .delete': 'delete'
+    },
+    initialize: function () {
+      this._super('initialize', arguments)
+      this.place_id = this.options.place_id
+      this.photos = this.options.photos || []
+      this.uploadForm = $('<form action="/photos/'+this.place_id+'" method="post" target="photo_form_frame" enctype="multipart/form-data"></form>')
+    },
+    render: function () {
+      this.$el.html(this.template())
+      $('body').append(this.uploadForm)
+      this.$('[type=file]').after(this.indicator)
+      this.$el.prepend(this.errorBlock)
+      setTimeout( _.bind( function () {
+        this.$('iframe').load(_.bind(this.onLoad, this))
+      }, this), 50)
+      this.delegateEvents()
+      return this
+    },
+    fileChanged: function (e) {
+      var fileInput = this.$(e.target)
+      var originalParent = fileInput.parent()
+      $(fileInput).appendTo(this.uploadForm)
+      this.uploadForm.submit()
+      $(fileInput).prependTo(originalParent)
+      this.indicator.css({display: ''})
+    },
+    onLoad: function () {
+      alert('onload!')
+      this.indicator.css({display: 'none'})
+      var result = $.parseJSON(this.$('iframe').contents().text())
+      if (result) {
+        this.photos.push(result)
+      }
+      this.render()
+    },
+    delete: function (e) {
+      e.stopPropagation()
+      e.preventDefault()
+      if(confirm('Are you sure you want to delete this photo?')) {
+        Backbone.sync('delete', this.eventReceiver, {
+          url: e.target.href,
+          data: {},
+          success: _.bind(function () {
+            _.each(this.photos, function (photo, idx) {
+              if (photo.id == $(e.target).data('id')) {
+                this.photos.splice(idx, 1)
+              }
+            }, this)
+            this.render()
+          }, this)
+        })
+      }
+    }
+  })
   
   Ts.FormViews.AllocationView = Ts.View.extend({
     stateMap: {provisional: 'Provision', pending: 'Pend', approved: 'Approve',
@@ -456,7 +517,7 @@ $( function () {
       }, this)
       items[items.length - 1].className = 'with_bottom_divider'
       if (this.allocationData.type == 'interment') items.push({name: 'multiple_interment', value: 'Multiple Interment'})
-      if (this.allocationData.type == 'reservation') items.push({name: 'inter', value: 'Inter'})
+      if (this.allocationData.type == 'reservation' && this.allocationData.status != 'deleted') items.push({name: 'inter', value: 'Inter'})
       items.push(
         {name: 'edit', value: 'Edit'},
         {name: 'delete', value: 'Delete'},
@@ -474,7 +535,7 @@ $( function () {
             window.location = '/interment/'+this.allocationData.id+'/new'
           }, this),
           multiple_interment: _.bind(function () {
-            window.location = '/interment/'+this.allocationData.id+'?place_id='+this.allocationData.place_id
+            window.location = '/interment/?place_id='+this.allocationData.place_id
           }, this),
           'delete': function () {
             if (confirm('Are you sure you want to delete this interment?')) {
@@ -522,6 +583,9 @@ $( function () {
 		render: function () {
 			this.renderRoles()
 			this.renderPlaces()
+      if (this.allocationData.type == 'interment' && this.allocationData.id) {
+        this.renderPhotoEditor()
+      }
 			this.renderActions()
 			this.errorBlock.prependTo(this.$el)
 			return this
@@ -536,13 +600,14 @@ $( function () {
 				var role;
 				if (roleData[type]) {
 					role = new Ts.Role({
-						type: type,
-						person: new Ts.Person(roleData[type].person),
-						residential_contact: new Ts.Contact(roleData[type].residential_contact),
-						mailing_contact: new Ts.Contact(roleData[type].mailing_contact)
-					})
+            type: type,
+            person: new Ts.Person(roleData[type].person),
+            residential_contact: new Ts.Contact(roleData[type].residential_contact),
+            mailing_contact: roleData[type].mailing_contact && new Ts.Contact(roleData[type].mailing_contact)
+          })
           role.get('person').valid(true)
           role.get('residential_contact').valid(true)
+          if (role.get('mailing_contact')) role.get('mailing_contact').valid(true)
 				}
 				var roleBlock = new Ts.FormViews.RoleBlock({role_name: type, role_type: type, group: this.roleBlocks, model: role})
 				this.roleBlocks[type] = roleBlock
@@ -575,12 +640,19 @@ $( function () {
         }
 			} else {
 				var collection = new Ts.Places(this.placeData[0])
-				var placeView = new Ts.FormViews.PlacePicker({collection: collection, nextAvailableFrom: 'section',})
+				var placeView = new Ts.FormViews.PlacePicker({collection: collection, nextAvailableFrom: 'section'})
 				section.body.push(placeView.render().el)
 			}
 			this.firstSection.before(section.render().el)
 			return this
 		},
+    renderPhotoEditor: function () {
+      var section = new Ts.FormViews.Section({title: 'Location', name: 'place'})
+      var photosEditor = new Ts.FormViews.PhotosEditor({photos: this.allocationData.photos, place_id: this.allocationData.place_id})
+      section.body.push(photosEditor.render().el)
+      section.divClass = 'v_padded'
+      this.$el.append(section.render().el)
+    },
 		renderActions: function () {
 			this.multibutton = new Ts.FormViews.Multibutton(_.extend({
 				actions: {

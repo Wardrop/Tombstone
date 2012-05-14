@@ -10,7 +10,7 @@
     <h2>Tasks</h2>
     <div class="list_rows">
       <%
-      @calendar.retrieve_outstanding_tasks.all.each do |interment|
+      @calendar.outstanding_tasks.all.each do |interment|
         deceased_role = interment.role_by_type('deceased')
         %>
         <div class="padded">
@@ -28,7 +28,7 @@
     <div class="list_rows">
       <%
       grouped = Hash.new { |h,k| h[k] = [] }
-      @calendar.retrieve_upcoming_interments(DateTime.now, (Date.today + 7)).all.each do |interment|
+      @calendar.upcoming_interments(DateTime.now, (Date.today + 7)).all.each do |interment|
         grouped[interment.interment_date.to_date] << interment
       end
       grouped.each do |date, interments| %>

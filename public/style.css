@@ -368,7 +368,6 @@ section:first-child {
 	position: relative;
 	background: #dfecf7;
 	border-radius: 5px;
-	color: #666;
 	padding: 12px;
 	margin: 6px 0;
 }
@@ -492,6 +491,7 @@ a.row_button:hover {
   width: 100%;
   word-spacing: -1em;
   font-size: 0;
+  white-space: nowrap;
 }
 .inline_layout  > * {
   display: inline-block !important;
@@ -995,9 +995,12 @@ iframe {
   width:100%;
   background-color:#FFFFFF;
   padding-left: 0px;
+  word-spacing: -1em;
+  font-size: 1px;
 }
 
 .photos > .image_container {
+  font-size: 13px;
   position: relative;
   display: inline-block;
   margin: 5px 8px;
@@ -1006,6 +1009,10 @@ iframe {
 }
 .photos > .image_container img {
   display: block;
+}
+.photos > .image_container a > img:hover {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+  opacity: 0.9;
 }
 .photos > .image_container .info {
   display: none;

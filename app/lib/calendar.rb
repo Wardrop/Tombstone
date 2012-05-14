@@ -23,7 +23,7 @@ module Tombstone
 
     def events(start_date_time, end_date_time)
       events = []
-      self.retrieve_upcoming_interments(start_date_time, end_date_time).all.each { |interment|
+      self.upcoming_interments(start_date_time, end_date_time).all.each { |interment|
         events << {
             :id => interment.id,
             :start => interment.interment_date.iso8601,
@@ -35,11 +35,12 @@ module Tombstone
       events
     end
 
-    def retrieve_upcoming_interments(start_date_time, end_date_time)
+    def upcoming_interments(start_date_time, end_date_time)
+      p Interment.filter(:interment_date => start_date_time..end_date_time).order(:interment_date).sql
       Interment.filter(:interment_date => start_date_time..end_date_time).order(:interment_date)
     end
 
-    def retrieve_outstanding_tasks
+    def outstanding_tasks
       Interment.filter(:status => Interment.awaiting_action_states ).order(:interment_date)
     end
 

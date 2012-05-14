@@ -23,8 +23,17 @@ module Tombstone
             if person.nil?
               errors.add(:person, "with ID ##{hash['person']['id']} does not exist")
               raise Sequel::Rollback
+            else
+              person.set_valid_only(hash['person'])
+              if person.valid?
+                person.save
+              else
+                errors.add(:person, person.errors)
+                raise Sequel::Rollback
+              end
             end
           else
+            p hash['person']
             person = Person.new(hash['person'])
             if person.valid?
               person.save
@@ -35,7 +44,7 @@ module Tombstone
           end
           
           contacts = {:residential_contact => hash['residential_contact']}
-          unless hash['mailing_contact'] || hash['mailing_contact'].empty?
+          if hash['mailing_contact'] && !hash['mailing_contact'].empty?
              contacts[:mailing_contact] = hash['mailing_contact']
           end
           contacts.each do |type, data|
@@ -44,6 +53,15 @@ module Tombstone
               if contact.nil?
                 errors.add(type, "with ID ##{data['id']} does not exist")
                 raise Sequel::Rollback
+              else
+                contact.set_valid_only(data)
+                p contact
+                if contact.valid?
+                  contact.save
+                else
+                  errors.add(type, contact.errors)
+                  raise Sequel::Rollback
+                end
               end
             else
               contact = Contact.new(data)

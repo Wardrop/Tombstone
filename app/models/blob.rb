@@ -5,22 +5,30 @@ module Tombstone
     many_to_one :place, :key => [:place_id], :class => :'Tombstone::Place'
 
     mount_uploader :file, PhotoUploader
-
-    # def write_file_identifier
-    #   self.content_type = file.content_type
-    #   self.name = file.filename
-    #   self.size = file.size
-    #   self.file = file.filename
-    #   self.enabled = 'FALSE'
-    #   self.timestamp = get_exif_date_time(self.file.get_exif("DateTimeOriginal"))
-    # end
   end
   
   class Photo < Blob
     set_dataset dataset.filter(:content_type.like 'image/%')
     
-    def get_exif_date_time(datetime)
-      DateTime.strptime(datetime +  DateTime.now.strftime("%Z"), "%Y:%m:%d %H:%M:%S %Z") rescue nil
+    def before_save
+      super
+      self.set(
+        name: file.file.filename,
+        content_type: file.file.content_type,
+        size: file.file.size,
+        timestamp: (DateTime.strptime(file.get_exif("DateTimeOriginal"), '%Y:%m:%d %H:%M:%S') rescue nil)
+      )
+    end
+    
+    def thumbnail
+      file.thumbnail.url
+    end
+    
+    def thumbnail_dimensions
+      {
+        width: Tombstone::PhotoUploader.dimensions[:thumbnail][0],
+        height: Tombstone::PhotoUploader.dimensions[:thumbnail][1]
+      }
     end
 
     def extract_geolocation

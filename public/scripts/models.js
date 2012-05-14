@@ -97,7 +97,6 @@ Ts.Role = Ts.Model.extend({
 	},
   initialize: function () {
     if(!this.get('person')) this.set({person: new Ts.Person})
-    if(!this.get('residential_contact')) this.set({residential_contact: new Ts.Contact})
   },
   valid: function () {
     return !!(

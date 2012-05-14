@@ -8,6 +8,20 @@ module Tombstone
       def valid_titles
         ['Mr', 'Ms', 'Mrs', 'Miss', 'Sir', 'Lady', 'Doctor', 'Director', 'Executor', 'Manager']
       end
+      
+      def search(terms)
+        param_map = {
+          given_name: proc { |v| "@GivenNameTerm = "+db.literal("%#{v}%") },
+          middle_name: proc { |v| "@MiddleNameTerm = "+db.literal("%#{v}%") },
+          surname: proc { |v| "@SurnameTerm = "+db.literal("%#{v}%") },
+          date_of_birth: proc { |v| "@DOBTerm = #{db.literal(v)}" },
+          date_of_death: proc { |v| "@DODTerm = #{db.literal(v)}" }, 
+          gender: proc { |v| "@GenderTerm = #{db.literal(v)}" }
+        }
+        params = terms.select{ |k,v| param_map[k] }.map{ |k,v| param_map[k].call(v) }
+        p "EXEC PersonSearch #{params.join(',')}"
+        self.db["EXEC PersonSearch #{params.join(',')}"].to_a
+      end
     end
     
     def name

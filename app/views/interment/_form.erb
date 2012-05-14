@@ -1,36 +1,7 @@
-<% content_for :head do %>
-  <script type="text/javascript">
-    $( function () {
-      var place_id = ($('#json\\:allocation_data').parseJSON() || {}).place_id
-      var fileInput = $('#file_input')
-      var formFrame = $('<iframe name="photo_form_frame" style="display: none;" />')
-      var form = $('<form action="/photos/'+place_id+'" method="post" target="photo_form_frame" enctype="multipart/form-data" />')
-      var intermentForm = $('#interment_form')
-      var indicator = $('<div class="indicator loading" style="display: none;" />')
-      fileInput.after(indicator)
-      intermentForm.after(formFrame).after(form)
-      fileInput.change( function () {
-        var originalParent = $(this).parent()
-        $(this).appendTo(form)
-        form.submit()
-        $(this).prependTo(originalParent)
-        indicator.css({display: ''})
-      })
-      formFrame.load( function () {
-        fileInput.val('')
-        indicator.css({display: 'none'})
-        $.ajax('/photos/'+place_id+'/edit', {
-          success: function (html) {
-            $('.photos').html(html)
-          }
-        })
-      })
-    })
-  </script>
-  
+<% content_for :head do %>  
   <script type="application/json" id="json:allocation_data">
     <%=
-    @allocation.to_json(include: {roles: {include: [:person, :residential_contact, :mailing_contact]}, place: {}, transactions: {}})
+    @allocation.to_json(include: {roles: {include: [:person, :residential_contact, :mailing_contact]}, place: {}, transactions: {}, photos: {:include => [:thumbnail, :thumbnail_dimensions]}})
     %>
   </script>
   
@@ -87,6 +58,7 @@
     	<label>
         <span>Interment Date &amp; Time</span>
         <input type="datetime" name="interment_date" placeholder="e.g. <%= Time.now.strftime('%d/%m/%Y %-I:%M%P') %>"
+        <% p @allocation.interment_date %>
         <% if @allocation.interment_date %>
             value="<%= @allocation.interment_date.strftime('%d/%m/%Y %-I:%M%P')%>"
         <% end %>
@@ -114,15 +86,6 @@
     </div>
   </section>
   <% if @allocation.id %>
-    <section>
-      <h2 class="underline">Photographs</h2>
-      <div>
-        <input type="file" name="file" id="file_input" />
-        <div class="photos">
-          <%= partial 'photos/edit', :locals => {photos: @allocation.place.photos} %>
-        </div>
-      </div>
-    </section>
     <input type="hidden" name="id" value="<%= @allocation.id %>" />
   <% end %>
   <input type="hidden" name="_method" value="<%= (Tombstone::Interment === @allocation && @allocation.id) ? 'put' : 'post'  %>" />

@@ -1,8 +1,10 @@
 <% photos.each do |photo| %>
   <div class="image_container">
-    <img src="<%= photo.file.thumbnail.url %>"
-      width="<%= Tombstone::PhotoUploader.dimensions[:thumbnail][0] %>"
-      height="<%= Tombstone::PhotoUploader.dimensions[:thumbnail][1] %>" />
+    <a href="<%= photo.file %>" target="_blank">
+      <img src="<%= photo.file.thumbnail.url %>"
+        width="<%= Tombstone::PhotoUploader.dimensions[:thumbnail][0] %>"
+        height="<%= Tombstone::PhotoUploader.dimensions[:thumbnail][1] %>" />
+    </a>
     <div class="info">
       <span><%= photo.name %></span>
       <%= print('') { "<span>#{photo.timestamp.strftime('%Y-%m-%d %-I:%M%P')}</span>" } %></span>

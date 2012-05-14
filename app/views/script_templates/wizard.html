@@ -17,7 +17,7 @@
     <div class="body">
       <ul class="menu pane" style="width: 25%">
         <li data-action="showPersonPage" data-model="person">
-          <div><h3>1. Person</h3></div>
+          <div><h3>1. Person</h3><span class="delete"></div>
         </li>
         <li data-action="showResidentialContactPage" data-model="residential_contact">
           <div><h3>2. Residential Contact</h3><span class="delete"></span></div>
@@ -123,7 +123,7 @@
   	</label>
     <label>
   		<span>Post Code</span>
-  		<input type="text" name="postal_code" style="width: 25%;" />
+  		<input type="text" name="postal_code" style="width: 33%;" />
   	</label>
     <label>
   		<span>Email</span>
@@ -168,6 +168,10 @@
   		<span>Given Name</span>
   		<input type="text" name="given_name" style="width: 100%;" />
   	</label>
+    <label>
+  		<span>Middle Name</span>
+  		<input type="text" name="middle_name" style="width: 100%;" />
+  	</label>
   	<label>
   		<span>Surname</span>
   		<input type="text" name="surname" style="width: 100%;" />
@@ -190,8 +194,9 @@
 </script>
 
 <script type="text/template" id="wizard:person_block_template">
+  <% var dob = Date.parse(person.date_of_birth) %>
   <span><strong><%= person.title %> <%= person.given_name %> <%= person.surname %></strong></span>
-  DOB: <%= Date.parse(person.date_of_birth).toString('dd/MM/yyyy') %>, Gender: <%= person.gender %>
+  DOB: <%= (dob && dob.toString('dd/MM/yyyy')) || '<small>none</small>' %>, Gender: <%= person.gender %>
 </script>
 
 <script type="text/template" id="wizard:person_results_template">
