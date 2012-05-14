@@ -111,10 +111,10 @@ module Tombstone
     end
 
     def update_photos
-      unless session['new_photos'].empty?
+      unless !session['new_photos'] || session['new_photos'].empty?
         Photo.filter(:id => session['new_photos']).update(:enabled => 1)
       end
-      unless session['deleted_photos'].empty?
+      unless !session['deleted_photos'] || session['deleted_photos'].empty?
         Photo.filter(:id => session['deleted_photos']).delete
       end
       reset_photos_changes
