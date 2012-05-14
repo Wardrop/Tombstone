@@ -474,7 +474,6 @@ $( function () {
       this.indicator.css({display: ''})
     },
     onLoad: function () {
-      alert('onload!')
       this.indicator.css({display: 'none'})
       var result = $.parseJSON(this.$('iframe').contents().text())
       if (result) {
