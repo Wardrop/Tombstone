@@ -52,19 +52,29 @@ $( function () {
       this.model.set(hash)
     },
     modelChanged: function () {
-      this.populateForm()
+      this.populateForm(this.model.changedAttributes())
     },
     populateForm: function (hash) {
-      this.el.reset()
-      _.each(this.model.attributes, function (value, key) {
+      var match;
+      _.each(hash, function (value, key) {
         var field = this.$('[name='+key+']')
         if(field.attr('type') == 'date' && value) {
-          value = Date.parse(value).toString('dd/MM/yyyy') // We need to reverse the date format due to JavaScript americanised parser.
+          if (match = value.match(/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{2,4})/)) {
+            console.log(match)
+            value = moment(new Date(match[3], match[2]-1, match[1])).format('DD/MM/YYYY')
+          } else {
+            value = moment(value).format('DD/MM/YYYY') 
+          }
         }
         if(field.attr('type') == 'radio') {
-          field.filter('[value='+(value && value.toLowerCase())+']').click()
+          item = field.filter('[value='+(value && value.toLowerCase())+']')
+          if (!item.is(':checked')) {
+            item.click()
+          }
         } else {
-          field.fieldValue(value)
+          if (value != field.val()) {
+            field.fieldValue(value)
+          }
         }
       }, this)
     }
@@ -72,7 +82,7 @@ $( function () {
   
   Ts.WizardViews.Wizard = Ts.View.extend({
     className: 'overlay_background',
-		templateId: 'wizard:wizard_template',
+		templateId: 'form:legacy_pane',
 		events: {
 			'click .close' : 'close',
       'click .back' : 'goBack',
@@ -323,7 +333,6 @@ $( function () {
       _($(e.target).parents('form').serializeJSON()).each( function (v,k) {
         if (v) formValues[k] = v
       })
-      formValues.surname 
       if (formValues.given_name || formValues.middle_name || formValues.surname || formValues.date_of_birth || formValues.date_of_death) {
         this.people.fetch({
           url: '/person/search',
@@ -440,7 +449,6 @@ $( function () {
       return this
     },
     checkValidity: function () {
-      console.log('checking contact validity')
       if (this.model.hasRequired()) {
         this.model.serverValidate({
 					valid: _.bind( function () { this.model.valid(true) }, this),

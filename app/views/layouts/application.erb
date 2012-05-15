@@ -3,6 +3,7 @@
 <html>
 <head>
   <title><%= @document[:title] %></title>
+
   <link rel="stylesheet" href="<%= url "/reset.css" %>" />
   <link rel="stylesheet" href="<%= url "/scripts/vendor/jquery-ui/cupertino/jquery-ui-1.8.20.custom.css" %>" />
   <link rel="stylesheet" href="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.css' %>" />
@@ -10,11 +11,12 @@
   <link rel="stylesheet" href="<%= url "/print.css" %>" />
   <script type="text/javascript" src="<%= url '/scripts/vendor/shims/es5-shim.min.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/shims/html5shiv-printshiv.js' %>"></script>
-  <script type="text/javascript" src="<%= url '/scripts/vendor/date-en-AU.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/vendor/moment.min.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/vendor/moment.en-gb.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-1.7.1.min.js' %>"></script>
-  <script type="text/javascript" src="<%= url '/scripts/vendor/jquery.preloader.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery.livequery.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-1.8.20.custom.min.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery.ui.datepicker-en-AU.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-combobox.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/underscore.js' %>"></script>

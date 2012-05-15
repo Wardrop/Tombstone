@@ -3,12 +3,15 @@ module Tombstone
 
     get :all, :provides => :json do
       filter_hash = params.reject{ |k,v| !v || v.empty? }.symbolize_keys!
+      Person.datetime_columns
       json_response Person.filter(filter_hash)
     end
     
     get :search, :provides => :json do
-      filter_hash = params.reject{ |k,v| !v || v.empty? }.symbolize_keys!
-      json_response Person.search(filter_hash)
+      filtered_hash = params.reject{ |k,v| !v || v.empty? }.symbolize_keys!
+      p filtered_hash
+      filtered_hash = Person.prepare_values(filtered_hash)
+      json_response Person.search(filtered_hash)
     end
 
     get :contacts, :provides => :json do

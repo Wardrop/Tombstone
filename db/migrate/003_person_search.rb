@@ -1,8 +1,8 @@
 Sequel.migration do
   up do
-    self.run "SET ANSI_NULLS ON"
-    self.run "IF OBJECT_ID('PersonSearch') IS NOT NULL DROP PROC PersonSearch"
-    self.run "
+    self << "SET ANSI_NULLS ON"
+    self << "IF OBJECT_ID('PersonSearch') IS NOT NULL DROP PROC PersonSearch"
+    self << "
       CREATE PROCEDURE PersonSearch
       	@GivenNameTerm VarChar(50) = NULL,
         @MiddleNameTerm VarChar(50) = NULL,
@@ -48,6 +48,6 @@ Sequel.migration do
   end
   
   down do
-    self.run "IF OBJECT_ID('PersonSearch') IS NOT NULL DROP PROC PersonSearch"
+    self <<  "IF OBJECT_ID('PersonSearch') IS NOT NULL DROP PROC PersonSearch"
   end
 end

@@ -15,8 +15,7 @@ module Tombstone
     def check_warnings; end
     
     def validate
-      datetime_columns = db_schema.select { |col, info| info[:type] == :datetime }.map { |k,v| k }
-      validates_not_string datetime_columns
+      validates_not_string self.class.datetime_columns
     end
     
     def set_valid_only(hash)
@@ -31,6 +30,10 @@ module Tombstone
     remove_instance_variable(:@dataset)
     
     class << self
+      def datetime_columns
+        db_schema.select { |col, info| info[:type] == :datetime }.map { |k,v| k }
+      end
+      
       def valid_only(hash)
         restricted = restricted_columns +
                      (restrict_primary_key? ? [*primary_key] : [])
@@ -38,6 +41,14 @@ module Tombstone
           k = k.to_sym
           db_schema[k] && !restricted.include?(k)
         }
+      end
+      
+      def prepare_values(hash)
+        valid = valid_only(hash)
+        datetime_columns.each do |k|
+          valid[k] = Sequel.datetime_class.parse(valid[k]) if valid[k]
+        end
+        valid
       end
       
       def implicit_table_name

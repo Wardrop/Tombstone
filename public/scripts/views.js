@@ -64,7 +64,6 @@ $( function () {
       try {
         return $(selector).parseJSON() || {}
       } catch (err) {
-        console.log('Contents of '+selector+ ' could not be parsed as JSON')
         return {}
       }
     },

@@ -1,5 +1,5 @@
 Sequel.datetime_class = DateTime
-TinyTds::Client.default_query_options[:timezone] = :utc
+# TinyTds::Client.default_query_options[:timezone] = :utc
 Sequel::Dataset::TIMESTAMP_FORMAT = "'%Y-%m-%dT%H:%M:%S%N%z'"
 Sequel::Model.plugin :validation_helpers
 Sequel::Model.plugin :json_serializer
@@ -36,3 +36,4 @@ Sequel::Model.db = case Padrino.env
 end
 
 Sequel::Model.db << 'SET DATEFORMAT DMY'
+Sequel::Model.db << 'SET ANSI_NULLS ON'

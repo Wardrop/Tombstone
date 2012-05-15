@@ -9,7 +9,7 @@
         <div class="info">
           <span><%= photo.name %></span>
           <% if (photo.timestamp) { %>
-            <%= '<span>'+Date.parse(photo.timestamp).toString('yyyy-MM-dd HH:mm')+'</span>' %>
+            <%= '<span>'+moment(photo.timestamp).format('YYYY-MM-DD HH:mm')+'</span>' %>
           <% } %>
         </div>
         <a href="/photos/<%= photo.place_id+'/'+ photo.id %>" class="delete" title="Delete photo" data-id="<%= photo.id %>"></a>
@@ -28,6 +28,21 @@
     </ul>
   </div>
   <span class="dropdown_button"></span>
+</script>
+
+<script type="text/template" id="form:legacy_pane">
+  <div class="bar"><span>Legacy Data (#<%= allocation.id %>)</span></div>
+  <div class="show">
+    <div class="title">Legacy Data (#<%= allocation.id %>)<a href="#" class="close" title="Close"></a></div>
+    <div class="rowed wide view" style="margin: 12px">
+      <% _.each(allocation.legacy, function (row) { %>
+        <div class="row">
+          <span><%= row.name %></span>
+          <div><%= row.value %></div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
 </script>
 
 <script type="text/template" id="form:multilink_template">
@@ -74,7 +89,7 @@
     </div>
     <div class="row">
       <span>Date of Birth</span>
-      <div><%= model.get('person').get('date_of_birth') || '<small>none</small>'  %></div>
+      <div><%= model.get('person').get('date_of_birth') ? moment(model.get('person').get('date_of_birth')).format('DD/MM/YYYY') : '<small>none</small>'  %></div>
     </div>
     <div class="row">
       <span class="align_top">Residential Contact</span>

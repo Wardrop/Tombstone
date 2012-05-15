@@ -115,7 +115,7 @@ module Tombstone
         Photo.filter(:id => session['new_photos']).update(:enabled => 1)
       end
       unless !session['deleted_photos'] || session['deleted_photos'].empty?
-        Photo.filter(:id => session['deleted_photos']).delete
+        Photo.filter(:id => session['deleted_photos']).destroy
       end
       reset_photos_changes
     end

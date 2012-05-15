@@ -8,7 +8,8 @@ module Tombstone
   end
   
   class Photo < Blob
-    set_dataset dataset.filter(:content_type.like 'image/%')
+    set_dataset dataset.filter(:content_type.like 'image/%').order(:id.asc)
+    set_primary_key :id
     
     def before_save
       super

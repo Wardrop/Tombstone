@@ -6,7 +6,6 @@
 
 /*** Calendar ***/
 
-.wc-container{border-left:1px solid #BBCCFF;}
 .wc-container * {
   -moz-box-sizing: content-box;
   box-sizing: content-box;
@@ -23,7 +22,11 @@
 .wc-header .wc-today  {font-weight: bold;}
 
 .wc-hour-end, .wc-hour-header{color:#666666;border-color:#ccc}
-.wc-title {color:#000000;}
+.wc-title {
+  color: white;
+  font-weight: normal;
+  font-size: 140%;
+}
 .wc-business-hours{background:#F6F9FC;}
 .wc-business-hours .wc-time-header-cell{font-weight:bold;}
 .wc-business-hours .wc-am-pm {font-size:1em;}
@@ -43,3 +46,22 @@
 .wc-cal-event.interred{background-color: #f9fae1;}
 .wc-cal-event.approved{background-color: #ebf3fa;}
 .wc-cal-event.completed{background-color: #f3faeb;}
+
+.ui-combobox {
+  position: relative;
+  display: inline-block;
+}
+.ui-combobox .ui-button {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin-left: -1px;
+  padding: 0;
+  /* adjust styles for IE 6/7 */
+  *height: 1.7em;
+  *top: 0.1em;
+}
+.ui-combobox .ui-autocomplete-input {
+  margin: 0;
+  padding: 0.3em;
+}

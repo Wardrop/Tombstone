@@ -194,9 +194,9 @@
 </script>
 
 <script type="text/template" id="wizard:person_block_template">
-  <% var dob = Date.parse(person.date_of_birth) %>
+  <% var dob = moment(person.date_of_birth) %>
   <span><strong><%= person.title %> <%= person.given_name %> <%= person.middle_name %> <%= person.surname %></strong></span>
-  DOB: <%= (dob && dob.toString('dd/MM/yyyy')) || '<small>none</small>' %>, Gender: <%= person.gender %>
+  DOB: <%= (dob && dob.format('DD/MM/YYYY')) || '<small>none</small>' %>, Gender: <%= person.gender %>
 </script>
 
 <script type="text/template" id="wizard:person_results_template">
@@ -217,7 +217,7 @@
     </div>
     <div class="row">
       <span>Date of Birth</span>
-      <div><%= Date.parse(person.date_of_birth).toString('dd/MM/yyyy') %></div>
+      <div><%= moment(person.date_of_birth).format('DD/MM/YYYY') %></div>
     </div>
     <div class="row">
       <span class="align_top">Residential Contact</span>

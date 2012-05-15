@@ -18,6 +18,33 @@ $( function () {
       return this
     }
   })
+  
+  Ts.LegacyPane = Ts.View.extend({
+    templateId: 'form:legacy_pane',
+    attributes: {
+      id: 'legacy_pane'
+    },
+    events: {
+      'click .close' : 'hide',
+      'click .bar' : 'show'
+    },
+    render: function () {
+      this.$el.html(this.template({allocation: this.options.allocation}))
+      this.$el.css({right: -500})
+      return this
+    },
+    show: function () {
+      this.$el.animate({right: 0}, 500)
+      this.$('.bar').animate({'margin-left': 0, width: 'hide'}, 500)
+      $('body').animate({'margin-right': 500}, 500)
+    },
+    hide: function () {
+      this.$el.animate({right: -500}, 500)
+      this.$('.bar').animate({'margin-left': 40, width: 'show'}, 500)
+      $('body').animate({'margin-right': 0}, 500)
+    }
+  })
+  
   Ts.FormViews.RoleBlock = Ts.View.extend({
     templateId: 'form:role_block_template',
     events: {
@@ -545,7 +572,6 @@ $( function () {
             window.print()
           },
           updateStatus: _.bind( function (button) {
-            console.log('updating status')
             var status = $(button).attr('name')
             Backbone.sync('update', this.eventReceiver, {
               url: '/'+this.allocationData.type+'/'+this.allocationData.id+'/status',
