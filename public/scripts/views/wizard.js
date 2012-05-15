@@ -56,6 +56,7 @@ $( function () {
     },
     populateForm: function (hash) {
       var match;
+      var self = this;
       _.each(hash, function (value, key) {
         var field = this.$('[name='+key+']')
         if(field.attr('type') == 'date' && value) {
@@ -66,7 +67,7 @@ $( function () {
           }
         }
         if(field.attr('type') == 'radio') {
-          item = field.filter('[value='+(value && value.toLowerCase())+']')
+          var item = field.filter('[value='+(value && value.toLowerCase())+']')
           if (!item.is(':checked')) {
             item.click()
           }
