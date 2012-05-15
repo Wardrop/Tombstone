@@ -60,7 +60,6 @@ $( function () {
         var field = this.$('[name='+key+']')
         if(field.attr('type') == 'date' && value) {
           if (match = value.match(/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{2,4})/)) {
-            console.log(match)
             value = moment(new Date(match[3], match[2]-1, match[1])).format('DD/MM/YYYY')
           } else {
             value = moment(value).format('DD/MM/YYYY') 
