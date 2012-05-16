@@ -126,6 +126,7 @@ module Tombstone
     end
     
     def json_response(obj = {})
+      cache_control :'no-cache'
       if Hash === obj
         obj[:errors] = nil if obj[:errors] && obj[:errors].empty?
         obj[:warnings] = nil if obj[:warnings] && obj[:warnings].empty?

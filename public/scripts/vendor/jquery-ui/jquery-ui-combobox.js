@@ -10,6 +10,8 @@
           .addClass( "ui-combobox" )
           .insertAfter( select );
 
+      select.change( function () { console.log('Changed!') })
+          
       input = $( "<input>" )
         .appendTo( wrapper )
         .val( value )
@@ -61,7 +63,7 @@
           }
         })
         .addClass( "ui-widget ui-widget-content ui-corner-left" );
-
+      
       input.data( "autocomplete" )._renderItem = function( ul, item ) {
         return $( "<li></li>" )
           .data( "item.autocomplete", item )

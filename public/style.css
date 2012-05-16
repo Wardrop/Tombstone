@@ -16,6 +16,9 @@ input, select, button, textarea {
   padding: 0.4em;
   font-size: 100%;
 }
+select {
+  padding: 0.2em;
+}
 input, select, button {
   height: 28px;
 }
@@ -252,7 +255,7 @@ ul.classic > li {
   position: absolute;
   font-size: 140%;
   padding: 12px 16px;
-  background: #e0872d;
+  background: #e58a2e;
   color: white;  
   top: 0;
   right: 0px;
@@ -261,12 +264,35 @@ ul.classic > li {
 #legacy_pane .bar {
   font-size: 140%;
   color: white;
-  background: #e0872d;
-  
-  -webkit-transform: rotate(-90deg);
   position: absolute;
   display: block;
+  width: 40px;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  margin-left: -40px;
+  background: #e58a2e url(images/legacy_data.png) no-repeat center center;
+  cursor: pointer;
 }
+#legacy_pane .bar:hover {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)" !important;
+  opacity: 0.9 !important;
+}
+/*
+#legacy_pane .bar > span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  margin-left: -200px;
+  margin-top: -12px;
+  display: block;
+  text-align: center;
+  -webkit-transform: rotate(-90deg);
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";
+  white-space: nowrap;
+}
+*/
 #legacy_pane a.close {
   position: absolute;
   top: 0px;

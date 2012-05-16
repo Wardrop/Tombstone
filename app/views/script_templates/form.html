@@ -31,13 +31,13 @@
 </script>
 
 <script type="text/template" id="form:legacy_pane">
-  <div class="bar"><span>Legacy Data (#<%= allocation.id %>)</span></div>
+  <div class="bar"></div>
   <div class="show">
     <div class="title">Legacy Data (#<%= allocation.id %>)<a href="#" class="close" title="Close"></a></div>
     <div class="rowed wide view" style="margin: 12px">
-      <% _.each(allocation.legacy, function (row) { %>
+      <% _.each(allocation.legacy_fields, function (row) { %>
         <div class="row">
-          <span><%= row.name %></span>
+          <span><%= row.key %></span>
           <div><%= row.value %></div>
         </div>
       <% }) %>

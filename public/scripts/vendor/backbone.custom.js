@@ -1346,7 +1346,6 @@
       } else {
         params.data = model.toJSON()
       }
-      
     }
 
     // For older servers, emulate JSON by encoding the request into an HTML-form.

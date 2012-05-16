@@ -1,7 +1,13 @@
 <% content_for :head do %>  
   <script type="application/json" id="json:allocation_data">
     <%=
-    @allocation.to_json(include: {roles: {include: [:person, :residential_contact, :mailing_contact]}, place: {}, transactions: {}, photos: {:include => [:thumbnail, :thumbnail_dimensions]}})
+    @allocation.to_json( include: {
+      roles: { include: [:person, :residential_contact, :mailing_contact] },
+      place: {},
+      transactions: {},
+      photos: {:include => [:thumbnail, :thumbnail_dimensions]},
+      legacy_fields: {}
+    })
     %>
   </script>
   

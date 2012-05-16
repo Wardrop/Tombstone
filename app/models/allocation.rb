@@ -10,6 +10,7 @@ module Tombstone
     many_to_one :funeral_director, {:key => :funeral_director_id, :class => :'Tombstone::FuneralDirector'}
     one_to_many :transactions, {:key => [:allocation_id, :allocation_type] }
     one_to_many :photos, :key => :place_id, :primary_key => :place_id, :class => :'Tombstone::Photo'
+    one_to_many :legacy_fields, :key => :allocation_id, :primary_key => :id, :class => :'Tombstone::LegacyField'
 
     class << self
       def valid_alert_statuses

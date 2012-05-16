@@ -35,12 +35,12 @@ $( function () {
     },
     show: function () {
       this.$el.animate({right: 0}, 500)
-      this.$('.bar').animate({'margin-left': 0, width: 'hide'}, 500)
+      this.$('.bar').animate({left: 40, width: 'hide', opacity: 0}, 500)
       $('body').animate({'margin-right': 500}, 500)
     },
     hide: function () {
       this.$el.animate({right: -500}, 500)
-      this.$('.bar').animate({'margin-left': 40, width: 'show'}, 500)
+      this.$('.bar').animate({left: 0, width: 'show', opacity: 1}, 500)
       $('body').animate({'margin-right': 0}, 500)
     }
   })
@@ -593,8 +593,14 @@ $( function () {
 				body: [multibutton.render().el, this.indicator]
 			})
 			$(this.el).append(section.render().el)
+      this.renderLegacyPane()
       return this
-		}
+		},
+    renderLegacyPane: function () {
+      if (this.allocationData.legacy_fields.length == 0) return;
+      this.legacy || (this.legacy = new Ts.LegacyPane({allocation: this.allocationData}))
+      $('body').append(this.legacy.render().el)
+    },
   })
   
   Ts.FormViews.AllocationForm = Ts.View.extend({
@@ -612,6 +618,7 @@ $( function () {
         this.renderPhotoEditor()
       }
 			this.renderActions()
+      this.renderLegacyPane()
 			this.errorBlock.prependTo(this.$el)
 			return this
 		},
@@ -695,6 +702,12 @@ $( function () {
 			})
 			$(this.el).append(section.render().el)
 		},
+    renderLegacyPane: function () {
+      if (this.allocationData.legacy_fields.length == 0) return;
+      console.log(this.allocationData)
+      this.legacy || (this.legacy = new Ts.LegacyPane({allocation: this.allocationData}))
+      $('body').append(this.legacy.render().el)
+    },
 		submit: function (data) {
 			var data = _.extend(this.formData(), data)
 			this.hideErrors()

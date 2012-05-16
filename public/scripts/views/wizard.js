@@ -47,7 +47,7 @@ $( function () {
       if(target.is('[type=checkbox]')) {
         hash[name] = target.is(':checked') ? target.val() : null
       } else {
-        hash[name] = target.val()
+        hash[name] = target.val().constructor == Array ? target.val()[0] : target.val()
       }
       this.model.set(hash)
     },
@@ -82,7 +82,7 @@ $( function () {
   
   Ts.WizardViews.Wizard = Ts.View.extend({
     className: 'overlay_background',
-		templateId: 'form:legacy_pane',
+		templateId: 'wizard:wizard_template',
 		events: {
 			'click .close' : 'close',
       'click .back' : 'goBack',
