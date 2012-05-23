@@ -332,7 +332,7 @@ $( function () {
     },
     findPeople: function () {
       var formValues = {}
-      _(this.wizard.model.get('role').get('person').toJSON()).each( function (v,k) {
+      _(this.$('form').serializeJSON()).each( function (v,k) {
         if (v) formValues[k] = v
       })
       if (formValues.given_name || formValues.middle_name || formValues.surname || formValues.date_of_birth || formValues.date_of_death) {
