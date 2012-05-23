@@ -539,10 +539,11 @@ $( function () {
     initialize: function () {
       this._super('initialize', arguments)
       this.allocationData = $('#json\\:allocation_data').parseJSON() || {}
-      this.permittedStates = $('#json\\:permitted_states').parseJSON() || {}
+      this.permittedStates = $('#json\\:permitted_states').parseJSON() || []
       this.errorBlock.prependTo(this.el)
     },
     render: function () {
+      console.log(this.permittedStates)
       var items = _(this.permittedStates.reverse()).without(['provisional', 'deleted', this.allocationData.status]).map(function (state) {
         return {name: state, value: this.stateMap[state] || state.titleize(), action: 'updateStatus'}
       }, this)
@@ -572,7 +573,7 @@ $( function () {
           }, this),
           'delete': _.bind(function () {
             if (confirm('Are you sure you want to delete this '+this.allocationData.type+'?')) {
-              $('<form method="post" />').append($('<input type="hidden" name="_method" value="delete" />')).submit()
+              $('<form method="post" />').append($('<input type="hidden" name="_method" value="delete" />')).appendTo('body').submit()
             }
           }, this),
           print: function () {
