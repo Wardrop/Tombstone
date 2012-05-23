@@ -3,23 +3,29 @@ module Tombstone
     
     module Allocation
       def permitted_states
-        can_delete = case self.status
-        when 'approved'
-          permissions.can_delete_approved?
-        when 'interred'
-          permissions.can_delete_interred?
-        when 'completed'
-          permissions.can_delete_completed?
+        if ['completed', 'deleted'].include? status
+          []
         else
-          true
+          can_delete = case self.status
+          when 'approved'
+            permissions.can_delete_approved?
+          when 'interred'
+            permissions.can_delete_interred?
+          when 'completed'
+            permissions.can_delete_completed?
+          else
+            true
+          end
+          
+          unpermitted = []
+          unpermitted << 'approved' unless permissions.can_approve?
+          unpermitted << 'interred' unless permissions.can_inter?
+          unpermitted << 'completed' unless permissions.can_complete?
+          unpermitted << 'deleted' unless can_delete
+          permitted = self.class.valid_states.reject { |v| unpermitted.include? v }
+          p permitted
+          permitted.select! { |v| status_allowed(v) }
         end
-        
-        unpermitted = []
-        unpermitted << 'approved' unless permissions.can_approve?
-        unpermitted << 'interred' unless permissions.can_inter?
-        unpermitted << 'completed' unless permissions.can_complete?
-        unpermitted << 'deleted' unless can_delete
-        self.class.valid_states.reject { |v| unpermitted.include? v }
       end
       
       def before_save

@@ -11,7 +11,7 @@ module Tombstone
       filtered_hash = params.reject{ |k,v| !v || v.empty? }.symbolize_keys!
       p filtered_hash
       filtered_hash = Person.prepare_values(filtered_hash)
-      json_response Person.search(filtered_hash)
+      json_response Person.search(filtered_hash, 50)
     end
 
     get :contacts, :provides => :json do

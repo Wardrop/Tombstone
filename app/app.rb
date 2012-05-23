@@ -2,7 +2,7 @@
 # Dir.glob(File.join(File.dirname(__FILE__), 'lib/*/**/*.rb')) { |f| require f }
 
 module Tombstone
-  VERSION = '0.8.2'
+  VERSION = '0.8.3'
   
   class App < Padrino::Application
     register Padrino::Rendering

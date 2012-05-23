@@ -1,5 +1,9 @@
 Sequel.migration do
   up do
+    self <<  "IF OBJECT_ID('PersonSearch') IS NOT NULL DROP PROC PersonSearch"
+  end
+  
+  down do
     self << "SET ANSI_NULLS ON"
     self << "IF OBJECT_ID('PersonSearch') IS NOT NULL DROP PROC PersonSearch"
     self << "
@@ -48,9 +52,5 @@ Sequel.migration do
         set rowcount @Top
       END
     "
-  end
-  
-  down do
-    self <<  "IF OBJECT_ID('PersonSearch') IS NOT NULL DROP PROC PersonSearch"
   end
 end

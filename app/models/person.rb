@@ -9,17 +9,50 @@ module Tombstone
         ['Mr', 'Ms', 'Mrs', 'Miss', 'Sir', 'Lady', 'Doctor', 'Director', 'Executor', 'Manager']
       end
       
-      def search(terms)
-        param_map = {
-          given_name: proc { |v| "@GivenNameTerm = "+db.literal("%#{v}%") },
-          middle_name: proc { |v| "@MiddleNameTerm = "+db.literal("%#{v}%") },
-          surname: proc { |v| "@SurnameTerm = "+db.literal("%#{v}%") },
-          date_of_birth: proc { |v| "@DOBTerm = #{db.literal(v)}" },
-          date_of_death: proc { |v| "@DODTerm = #{db.literal(v)}" }, 
-          gender: proc { |v| "@GenderTerm = #{db.literal(v)}" }
-        }
-        params = terms.select{ |k,v| param_map[k] }.map{ |k,v| param_map[k].call(v) }
-        self.db["EXEC PersonSearch #{params.join(',')}"].to_a
+      def search(hash, limit = 50)
+        hash = hash.clone
+        wildcard_params = [:given_name, :middle_name, :surname]
+        wildcard_params.each { |k| hash[k] = "%#{hash[k]}%" }
+        db["
+        	SELECT #{limit ? 'TOP '+limit.to_s : ''} *
+        	FROM
+        	(
+        		  SELECT Records.ID, SUM(Records.Score) as Score
+        		  FROM
+        		  (
+        				SELECT PERSON.ID, 20 * (CONVERT(Float,(LEN(:given_name) - 2)) / NULLIF(LEN(PERSON.GIVEN_NAME), 0)) AS Score
+        				FROM PERSON
+        				WHERE PERSON.GIVEN_NAME LIKE :given_name
+        				UNION ALL
+                SELECT PERSON.ID, 10 * (CONVERT(Float,(LEN(:middle_name) - 2)) / NULLIF(LEN(PERSON.MIDDLE_NAME), 0)) AS Score
+        				FROM PERSON
+        				WHERE PERSON.MIDDLE_NAME LIKE :middle_name
+        				UNION ALL
+        				SELECT PERSON.ID, 30 * (CONVERT(Float,(LEN(:surname) - 2)) / NULLIF(LEN(PERSON.SURNAME), 0)) AS Score
+        				FROM PERSON
+        				WHERE PERSON.SURNAME LIKE :surname
+        				UNION ALL
+        				SELECT PERSON.ID, 50 AS Score
+        				FROM PERSON
+        				WHERE PERSON.DATE_OF_BIRTH = :date_of_birth
+                UNION ALL
+        				SELECT PERSON.ID, 50 AS Score
+        				FROM PERSON
+        				WHERE PERSON.DATE_OF_DEATH = :date_of_death
+        		  ) AS Records
+        		  GROUP BY Records.ID
+        	) AS Scores
+        	LEFT JOIN PERSON ON Scores.ID = PERSON.ID
+        	WHERE Scores.Score > 0 AND (PERSON.GENDER = :gender OR :gender IS NULL OR PERSON.GENDER IS NULL)
+        	ORDER BY Score DESC
+        ", {
+          given_name: nil,
+          middle_name: nil,
+          surname: nil,
+          gender: nil,
+          date_of_birth: nil,
+          date_of_death: nil
+        }.merge(hash)].to_a
       end
     end
     

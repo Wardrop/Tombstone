@@ -27,6 +27,9 @@
   font-weight: normal;
   font-size: 140%;
 }
+.wc-cal-event .wc-title {
+  color: black;
+}
 .wc-business-hours{background:#F6F9FC;}
 .wc-business-hours .wc-time-header-cell{font-weight:bold;}
 .wc-business-hours .wc-am-pm {font-size:1em;}
@@ -41,11 +44,11 @@
 .wc-cal-event .wc-title{font-size:10px;}
 .wc-cal-event .wc-time{font-size:10px;}
 
-.wc-cal-event.provisional{background-color: #f0ebfa;}
-.wc-cal-event.pending{background-color: #faf3eb;}
-.wc-cal-event.interred{background-color: #f9fae1;}
-.wc-cal-event.approved{background-color: #ebf3fa;}
-.wc-cal-event.completed{background-color: #f3faeb;}
+.wc-cal-event.provisional{background-color: #c8affa;}
+.wc-cal-event.pending{background-color: #fad7af;}
+.wc-cal-event.interred{background-color: #faf2af;}
+.wc-cal-event.approved{background-color: #afd7fa;}
+.wc-cal-event.completed{background-color: #d7faaf;}
 
 .ui-combobox {
   position: relative;

@@ -43,6 +43,9 @@ module Tombstone
 
     put :index, :with => :id, :provides => :json do
       allocation = model_class.with_pk(params[:id].to_i)
+      if @user.role == 'operator' && allocation.status == 'approved'
+        params['status'] = 'pending'
+      end
       notification = Notification.new(allocation)
       response = {errors: allocation.errors, warnings: [], redirectTo: nil}
       if allocation.nil?
@@ -76,10 +79,8 @@ module Tombstone
         response[:errors] = "Could not edit status of #{controller} ##{params[:id]} as it does not exist."
       else
         allocation.set({status: params['status']})
-        p params['status']
-        p allocation.status
-        if allocation.status == 'deleted' || allocation.valid?
-          allocation.save(validate: false)
+        if allocation.valid?
+          allocation.save
           flash[:banner] = ['success', "Status of #{controller.capitalize} ##{params[:id]} was updated successfully."]
         end
       end
@@ -100,10 +101,11 @@ module Tombstone
               allocation.destroy
             end
           else
-            allocation.set(status: 'deleted').save(:status, validate: false)
+            allocation.set(status: 'deleted').save(:status)
           end
           flash[:banner] = ["success", "#{controller.capitalize} was deleted successfully."]
         rescue => e
+          p e
           flash[:banner] = ["error", "Error occured while deleting #{controller} ##{params[:id]}. The error was: \n#{e.message}"]
         end
       end

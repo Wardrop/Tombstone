@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.css' %>" />
   <link rel="stylesheet" href="<%= url "/style.css" %>" />
   <link rel="stylesheet" href="<%= url "/print.css" %>" />
-  <script type="text/javascript" src="<%= url '/scripts/vendor/shims/date-en-AU.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/vendor/date-en-AU.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/shims/es5-shim.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/shims/html5shiv-printshiv.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/moment.min.js' %>"></script>
@@ -63,7 +63,7 @@
       <%= @document[:page_heading] %><img src="<%= url 'images/trc_logo.png' %>" />
     </div>
     <%=
-    if(@document[:breadcrumb].is_a? Array)
+    if @document[:breadcrumb].is_a? Array
       '<div id="navigation_bar">'+build_breadcrumb(@document[:breadcrumb])+'</div>'
     elsif @document[:breadcrumb] == true
       '<div id="navigation_bar">'+build_breadcrumb+'</div>'

@@ -280,6 +280,7 @@ $( function () {
       this[$(el).data('action')]()
     },
     showPersonPage: function () {
+      console.log('showing person page')
       this.pages['person'] = new Ts.WizardViews.PersonPage({wizard: this})
       this.model.set({currentPage: this.pages['person']})
     },
@@ -305,9 +306,10 @@ $( function () {
       this._super('initialize', arguments)
       this.indicator = this.options.wizard.indicator
       this.wizard.model.get('role').on('change:person', this.renderForm, this)
-      this.people = new Ts.People
+      this.bindToSync(this.people = new Ts.People)
       this.formPane = $('<div style="width: 50%" class="pane padded" />')
       this.resultsPane = $('<div style="width: 50%" class="pane padded" />')
+      this.findPeople()
     },
     render: function () {
       this.$el.empty()
@@ -328,17 +330,18 @@ $( function () {
       var personResults = new Ts.WizardViews.PersonResults({collection: this.people, wizard: this.wizard})
       this.resultsPane.html(personResults.render().el)
     },
-    findPeople: function (e) {
+    findPeople: function () {
       var formValues = {}
-      _($(e.target).parents('form').serializeJSON()).each( function (v,k) {
+      _(this.wizard.model.get('role').get('person').toJSON()).each( function (v,k) {
         if (v) formValues[k] = v
       })
       if (formValues.given_name || formValues.middle_name || formValues.surname || formValues.date_of_birth || formValues.date_of_death) {
         this.people.fetch({
           url: '/person/search',
           data: formValues,
-          success: function (collection) {
-          }
+          success: _.bind(function (collection) {
+            this.renderResults()
+          }, this)
         })
       }
     }
@@ -362,10 +365,6 @@ $( function () {
     
 	Ts.WizardViews.PersonResults = Ts.WizardViews.BasePage.extend({
 		template: _.template($('#wizard\\:person_results_template').html()),
-    initialize: function () {
-      this._super('initialize', arguments)
-      this.collection.on('reset', this.render, this)
-    },
     render: function () {
       $(this.el).html(this.template()).append(this.indicator)
       if(this.collection.length > 0) {

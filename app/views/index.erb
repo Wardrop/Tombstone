@@ -27,6 +27,7 @@
     <h2>Upcoming Burials</h2>
     <div class="list_rows">
       <%
+      p @calendar.upcoming_interments(DateTime.now, (Date.today + 7)).sql
       grouped = Hash.new { |h,k| h[k] = [] }
       @calendar.upcoming_interments(DateTime.now, (Date.today + 7)).all.each do |interment|
         grouped[interment.interment_date.to_date] << interment

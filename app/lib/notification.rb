@@ -55,7 +55,6 @@ module Tombstone
       return unless self.interment.class.required_roles.include? 'deceased'
 
       deceased = self.interment.role_by_type('deceased').person
-
       place = self.interment.place
       
       mail = Mail.new

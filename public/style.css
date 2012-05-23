@@ -366,6 +366,8 @@ section:first-child {
   color: white;
   cursor: pointer;
   white-space: pre;
+  font-family: Verdana, Arial;
+  font-size: 11px;
 }
 .flash_banner:hover {
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
@@ -1087,6 +1089,7 @@ iframe {
 }
 .photos > .image_container .info {
   display: none;
+  pointer-events: none;
 }
 .photos > .image_container:hover .info {
   position: absolute;

@@ -129,6 +129,7 @@ $( function () {
       'click li' : 'onSelectItem'
     },
     initialize: function () {
+      this._super('initialize', arguments)
       _.bindAll(this, 'hideList', 'showList', 'keydownHideEvent')
     },
     render: function () {
@@ -148,7 +149,9 @@ $( function () {
       }
       this.$el.addClass(this.options['class'])
       this.$('li:first').addClass('selected')
-      if (this.options.selected) this.selectItem($(this.options.selected, this.$('li')).first().parent())
+      if (this.options.selected) {
+        this.selectItem($(this.options.selected, this.$('li')).first().parent())
+      }
       this.hideList()
       
   		return this
@@ -187,6 +190,7 @@ $( function () {
       if (height > 0) viewport.css({height: height})
     },
     selectItem: function(selectedItem) {
+      if (!selectedItem || selectedItem.length == 0) return false
       var list = this.$('.viewport > ul')
       if (selectedItem.constructor == String) {
         selected = list.find('li > [name='+selectedItem+']').parent()
@@ -470,6 +474,7 @@ $( function () {
   })
       
   Ts.FormViews.PhotosEditor = Ts.View.extend({
+    attributes: {name: 'photos'},
     templateId: 'form:photo_editor_template',
     events: {
       'change [type=file]': 'fileChanged',
@@ -538,17 +543,19 @@ $( function () {
       this.errorBlock.prependTo(this.el)
     },
     render: function () {
-      var items = _(this.permittedStates).without(['provisional', 'deleted']).map(function (state) {
+      var items = _(this.permittedStates.reverse()).without(['provisional', 'deleted', this.allocationData.status]).map(function (state) {
         return {name: state, value: this.stateMap[state] || state.titleize(), action: 'updateStatus'}
       }, this)
-      items[items.length - 1].className = 'with_bottom_divider'
+      if (items.length > 0) items[items.length - 1].className = 'with_bottom_divider'
       if (this.allocationData.type == 'interment') items.push({name: 'multiple_interment', value: 'Multiple Interment'})
       if (this.allocationData.type == 'reservation' && this.allocationData.status != 'deleted') items.push({name: 'inter', value: 'Inter'})
-      items.push(
-        {name: 'edit', value: 'Edit'},
-        {name: 'delete', value: 'Delete'},
-        {name: 'print', value: 'Print'}
-      )
+      if (this.allocationData.status != 'deleted' && this.allocationData.status != 'completed') {
+        items.push(
+          {name: 'edit', value: 'Edit'},
+          {name: 'delete', value: 'Delete'}
+        )
+      }
+      items.push({name: 'print', value: 'Print'})
       
       var multibutton = new Ts.FormViews.Multibutton({
         selected: '[name=edit]',
@@ -563,11 +570,11 @@ $( function () {
           multiple_interment: _.bind(function () {
             window.location = '/interment/?place_id='+this.allocationData.place_id
           }, this),
-          'delete': function () {
-            if (confirm('Are you sure you want to delete this interment?')) {
+          'delete': _.bind(function () {
+            if (confirm('Are you sure you want to delete this '+this.allocationData.type+'?')) {
               $('<form method="post" />').append($('<input type="hidden" name="_method" value="delete" />')).submit()
             }
-          },
+          }, this),
           print: function () {
             window.print()
           },
@@ -654,7 +661,7 @@ $( function () {
 			return this
 		},
 		renderPlaces: function () {
-			var section = new Ts.FormViews.Section({title: 'Location', name: 'place'})
+			var section = new Ts.FormViews.Section({title: 'Location'})
 			if(place_id = this.allocationData.place_id) {
 				var places;
 				for (var i = 0; places = this.placeData[i]; i++) {

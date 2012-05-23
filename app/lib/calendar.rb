@@ -36,8 +36,7 @@ module Tombstone
     end
 
     def upcoming_interments(start_date_time, end_date_time)
-      p Interment.filter(:interment_date => start_date_time..end_date_time).order(:interment_date).sql
-      Interment.filter(:interment_date => start_date_time..end_date_time).order(:interment_date)
+      Interment.filter(:interment_date => (start_date_time.to_datetime)..(end_date_time.to_datetime)).order(:interment_date)
     end
 
     def outstanding_tasks

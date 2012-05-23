@@ -26,6 +26,25 @@ module Tombstone
       end
     end
 
+    # Uses business rules to determine whether the given status is allowed to be set for this allocation
+    def status_allowed(state)
+      allowed_states = case status
+      when 'provisional'
+        ['pending', 'approved']
+      when 'pending'
+        ['approved']
+      when 'approved'
+        ['interred']
+      when 'interred'
+        ['completed']
+      else
+        []
+      end
+      
+      allowed_states << status if self.class.valid_states.include?(state)
+      allowed_states.include? state
+    end
+      
     def validate
       super
       self.class.required_roles.each do |role_type|
@@ -82,11 +101,11 @@ module Tombstone
       end
 
       def valid_roles
-        ['reservee', 'applicant', 'next_of_kin']
+        ['applicant', 'reservee', 'next_of_kin']
       end
 
       def required_roles
-        ['reservee', 'applicant']
+        []
       end
 
       def valid_states
@@ -101,7 +120,7 @@ module Tombstone
       end
       if errors[:reservee].empty?
         role = role_by_type('reservee')
-        if role.person.roles_by_type('reservee', self.class.exclude(primary_key_hash(true).sql_expr)).count > 0
+        if role && role.person.roles_by_type('reservee', self.class.exclude(primary_key_hash(true).sql_expr)).count > 0
           errors.add(:reservee, "cannot be used as the selected person already has a reservation.")
         end
       end
@@ -210,25 +229,35 @@ module Tombstone
     end
 
     def validate
-      super
-      if errors[:place].empty?
-        errors.add(:place, "is unavailable") unless place.allows_interment?(self)
+      existing_status = self.class.with_pk(id).status
+      if ['deleted', 'completed'].include?(existing_status)
+        errors.add(:Interment, "of status 'deleted' or 'completed' cannot be modified.")
       end
-      if errors[:deceased].empty?
-        role = role_by_type('deceased')
-        if role.person.roles_by_type('deceased', self.class.exclude(primary_key_hash(true))).count > 0
-          errors.add(:deceased, "cannot be used as the selected person is already deceased.")
+        
+      if status != 'deleted'
+        super
+        if errors[:place].empty?
+          errors.add(:place, "is unavailable") unless place.allows_interment?(self)
         end
-      end
-      validates_includes self.class.valid_states, :status
-      validates_presence :funeral_director
-      validates_min_length 5, :funeral_director_name
-      validates_min_length 5, :funeral_service_location
-      validates_presence [:advice_received_date, :interment_date]
-      validates_includes self.class.valid_interment_types, :interment_type
-      errors.add(:advice_received_date, "cannot be be in the future") { advice_received_date.to_date <= Date.today }
-      if errors[:interment_date].empty? && interment_date > DateTime.now && ['interred', 'completed'].include?(status)
-        errors.add(:status, "cannot be '#{status}' for a future interment date")
+        if errors[:deceased].empty?
+          role = role_by_type('deceased')
+          if role.person.roles_by_type('deceased', self.class.exclude(primary_key_hash(true))).count > 0
+            errors.add(:deceased, "cannot be used as the selected person is already deceased.")
+          end
+        end
+        validates_includes self.class.valid_states, :status
+        validates_presence :funeral_director
+        validates_presence :funeral_service_location
+        validates_min_length 2, :funeral_director_name
+        validates_presence [:advice_received_date, :interment_date]
+        validates_includes self.class.valid_interment_types, :interment_type
+        errors.add(:advice_received_date, "cannot be be in the future") { advice_received_date.to_date <= Date.today }
+        if errors[:interment_date].empty? && interment_date > DateTime.now && ['interred', 'completed'].include?(status)
+          errors.add(:status, "cannot be '#{status}' for a future interment date.")
+        end
+        if status == 'completed'
+          errors.add(:photos, 'must be added before an allocation can be completed.') if photos.empty?
+        end
       end
     end
 

@@ -42,7 +42,7 @@
       :can_delete_approved => false,
       :can_delete_interred => false,
       :can_delete_completed => false,
-      :can_edit_approved => false,
+      :can_edit_approved => true,
       :can_edit_interred => false,
       :can_edit_completed => false,
       :can_delete_photos => false,
