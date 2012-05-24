@@ -1,3 +1,8 @@
+
+if (typeof console == 'undefined') {
+  window.console = {log: function () {}}
+}
+
 Ts = {
   FormViews: {},
   getParameterByName: function (name) {
