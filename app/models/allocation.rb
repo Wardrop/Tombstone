@@ -1,5 +1,5 @@
 module Tombstone
-  class Allocation < BaseModel    
+  class Allocation < BaseModel
     set_primary_key [:id, :type]
     unrestrict_primary_key
 
@@ -62,13 +62,6 @@ module Tombstone
     
     def roles_by_type(type)
       self.roles.select { |r| r.type == type.to_s}
-    end
-
-    def status=(status)
-      old_status = self.status
-      super
-      changed
-      notify_observers(old_status, status)
     end
 
     # Makes the identify column "id" optional, which is something MSSQL doesn't automatically support.

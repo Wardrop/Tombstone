@@ -23,7 +23,7 @@ Sequel::Model.db = case Padrino.env
       host: 'trcsql02.trc.local',
       user: 'TRC\tombstone_user',
       password: '10Pippl$ah',
-      database: 'Tombstone_Test',
+      database: 'Tombstone_Dev',
       loggers: [Logger.new(nil)]
     })
   when :spec then
