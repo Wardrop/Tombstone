@@ -1,8 +1,9 @@
 {
   email: {
-    from: 'noreply@tombstone.trc.local',
+    from: 'noreply@trcapp05.trc.local',
     operator_email: 'tombstone_operators@trc.local',
-    coordinator_email: 'tomw@trc.qld.gov.au'
+    coordinator_email: 'tomw@trc.qld.gov.au',
+    delivery_method: :sendmail
   },
   base_url: 'http://tombstone.trc.local',
   ldap: {

@@ -26,7 +26,9 @@ module Tombstone
       
       set :config, eval(File.read(File.expand_path('../config.rb', __FILE__)))
       Tombstone.config = config
-      
+      Mail.defaults do
+        delivery_method Tombstone.config[:email][:delivery_method]
+      end
       Permissions.map = config[:roles]
       LDAP.servers = config[:ldap][:servers]
       LDAP.domain = config[:ldap][:domain]
