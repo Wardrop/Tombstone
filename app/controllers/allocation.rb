@@ -31,9 +31,12 @@ module Tombstone
       save_allocation(allocation, params)
       if allocation.errors.empty?
         if allocation.warnings.empty?
-          Notification.new(allocation, true)
           response[:redirectTo] = url(:"#{controller}_view", :id => allocation.id)
-          flash[:banner] = ['success', "#{controller.capitalize} was created successfully."]
+          if controller == 'interment'
+            flash[:banner] = ['success', "#{controller.capitalize} was created successfully. To create a new reservation, <a href='#{url '/reservation'}'>click here</a>"]
+          else
+            flash[:banner] = ['success', "#{controller.capitalize} was created successfully."]
+          end
         else
           response[:warnings] = allocation.warnings
         end
@@ -46,7 +49,6 @@ module Tombstone
       if @user.role == 'operator' && allocation.status == 'approved'
         params['status'] = 'pending'
       end
-      notification = Notification.new(allocation)
       response = {errors: allocation.errors, warnings: [], redirectTo: nil}
       if allocation.nil?
         response[:errors] = "Could not amend #{controller} ##{params[:id]} as it does not exist."
@@ -62,7 +64,6 @@ module Tombstone
       
       if allocation.errors.empty?
         if allocation.warnings.empty?
-          notification.send_notifications
           response[:redirectTo] = url(:"#{controller}_view", :id => allocation.id)
           flash[:banner] = ['success', "#{controller.capitalize} was amended successfully."]
         else

@@ -1,4 +1,5 @@
 Sequel.datetime_class = DateTime
+Sequel.default_timezone = :utc
 # TinyTds::Client.default_query_options[:timezone] = :utc
 Sequel::Dataset::TIMESTAMP_FORMAT = "'%Y-%m-%dT%H:%M:%S%N%z'"
 Sequel::Model.plugin :validation_helpers
@@ -32,6 +33,14 @@ Sequel::Model.db = case Padrino.env
       user: 'TRC\tombstone_user',
       password: '10Pippl$ah',
       database: 'Tombstone_Spec'
+    })
+  when :migration then
+    Sequel.connect({
+      adapter: 'tinytds',
+      host: 'trcsql02.trc.local',
+      user: 'TRC\tombstone_user',
+      password: '10Pippl$ah',
+      database: 'Tombstone_Migration'
     })
 end
 

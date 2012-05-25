@@ -70,7 +70,7 @@
     end
     %>
     <% if @document[:banner] %>
-      <div onclick="$(this).remove()" title="Click to hide" class="padded flash_banner <%= @document[:banner][0] %>"><%= @document[:banner][1] %></div>
+    <div class="padded flash_banner <%= @document[:banner][0] %>"><%= @document[:banner][1] %><a class="close" onclick="$(this).parent().remove()" title="Click to close"></a></div>
     <% end %>
     <%= yield %>
   </div>

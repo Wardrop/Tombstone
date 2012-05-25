@@ -1,30 +1,10 @@
 {
-  general: {
-    :hostname => 'localhost',
-    :port => 9292
+  email: {
+    from: 'noreply@tombstone.trc.local',
+    operator_email: 'tombstone_operators@trc.local',
+    coordinator_email: 'tomw@trc.qld.gov.au'
   },
-  notification: {
-    :enabled => true,
-    :email => {
-        :from => 'noreply@tombstone.trc.local',
-        :cc => 'tomw@trc.qld.gov.au',
-        :subject => 'Notification of Burial is "<%= interment.status.capitalize %>" [#<%= interment.id %>]',
-        :body =>
-        "A request for a new burial is '<%= interment.status.capitalize %>'.
-
-    Deceased: <%= deceased.title %> <%= deceased.given_name %> <%= deceased.surname %>
-    Cemetery: <%= place.description %>
-    Type: <%= print { interment.interment_type.capitalize } %>
-    At: <%= print { buinterment.interment_date } %>
-    
-    For more details <%= interment_site_url %>"
-    },
-    :status_rules => {
-      :rule_1 => {:from_status => 'pending', :to_status => 'approved', :notify => 'tomw@trc.qld.gov.au'},
-      :rule_2 => {:from_status => nil, :to_status => 'pending', :notify => 'tomw@trc.qld.gov.au'},
-      :rule_3 => {:from_status => nil, :to_status => 'provisional', :notify => 'tomw@trc.qld.gov.au'}
-    }
-  },
+  base_url: 'http://tombstone.trc.local',
   ldap: {
     servers: ['trcdc01.trc.local', 'trcdc02.trc.local'],
     domain: 'trc.local',

@@ -6,7 +6,7 @@ Sequel.migration do
       String :surname, :size => 40
       String :given_name, :size => 40
       String :middle_initials, :size => 3
-      String :gender, :size => 6
+      String :gender, :size => 20
       DateTime :date_of_birth
       DateTime :date_of_death
       String :modified_by, :size => 32

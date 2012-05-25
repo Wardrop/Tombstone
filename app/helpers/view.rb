@@ -35,7 +35,7 @@ module Tombstone
         fallback
       else
         case value
-          when Time
+          when Time, DateTime, Date
             ((value.hour + value.min + value.sec) > 0) ? value.strftime('%d/%m/%Y %l:%M%P') : value.strftime('%d/%m/%Y')
           else
             value

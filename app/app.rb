@@ -2,7 +2,11 @@
 # Dir.glob(File.join(File.dirname(__FILE__), 'lib/*/**/*.rb')) { |f| require f }
 
 module Tombstone
-  VERSION = '0.8.3'
+  VERSION = '0.8.4'
+  
+  class << self
+    attr_accessor :config
+  end
   
   class App < Padrino::Application
     register Padrino::Rendering
@@ -21,14 +25,13 @@ module Tombstone
       use Rack::Lock
       
       set :config, eval(File.read(File.expand_path('../config.rb', __FILE__)))
-    
+      Tombstone.config = config
+      
       Permissions.map = config[:roles]
       LDAP.servers = config[:ldap][:servers]
       LDAP.domain = config[:ldap][:domain]
       LDAP.logger = log
-    
-      Notification.config = config[:notification]
-      Notification.general = config[:general]
+
       if environment != :spec
         Models = ObjectSpace.each_object(::Class).to_a.select { |k| k < BaseModel || k == BaseModel }.each do |m|
           if m.name

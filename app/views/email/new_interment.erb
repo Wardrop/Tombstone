@@ -1,0 +1,8 @@
+A new interment has been created (#<%= @changed_allocation.id %>) with a status of <%= @existing_allocation.status.titleize %>.
+
+Deceased: <%= print { @changed_allocation.role_by_type('deceased').person.name } %>
+Cemetery: <%= @changed_allocation.place.description %>
+Interment Type: <%= print { @changed_allocation.interment_type.titleize } %>
+Interment Date: <%= print { @changed_allocation.interment_date } %>
+
+<%= allocation_url %>

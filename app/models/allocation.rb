@@ -1,7 +1,5 @@
 module Tombstone
-  class Allocation < BaseModel
-    include Observable
-
+  class Allocation < BaseModel    
     set_primary_key [:id, :type]
     unrestrict_primary_key
 
@@ -26,7 +24,7 @@ module Tombstone
       end
     end
 
-    # Uses business rules to determine whether the given status is allowed to be set for this allocation
+    # Follows business rules to determine whether the given status is allowed based on the current state of the allocation
     def status_allowed(state)
       allowed_states = case status
       when 'provisional'

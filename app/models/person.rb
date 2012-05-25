@@ -13,7 +13,7 @@ module Tombstone
         hash = hash.clone
         wildcard_params = [:given_name, :middle_name, :surname]
         wildcard_params.each { |k| hash[k] = "%#{hash[k]}%" }
-        r = db["
+        db["
         	SELECT #{limit ? 'TOP '+limit.to_s : ''} *
         	FROM
         	(
@@ -52,9 +52,7 @@ module Tombstone
           gender: nil,
           date_of_birth: nil,
           date_of_death: nil
-        }.merge(hash)]
-        p r
-        r.to_a
+        }.merge(hash)].to_a
       end
     end
     

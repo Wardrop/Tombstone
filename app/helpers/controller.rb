@@ -17,6 +17,11 @@ module Tombstone
           [k, v]
         } ]
         
+        begin
+          existing_allocation = allocation.clone.refresh
+        rescue Sequel::Error => e
+          existing_allocation = nil
+        end
         allocation.set_valid_only(values)
         allocation.save(validate: false)
 
@@ -85,14 +90,31 @@ module Tombstone
         else
           raise Sequel::Rollback
         end
+        
+        if existing_allocation
+          if allocation.status != existing_allocation.status
+            if existing_allocation.status == 'provisional' && allocation.status != 'deleted'
+              Notifiers::NewInterment.new(allocation, existing_allocation).send
+            elsif allocation.status == 'approved'
+              Notifiers::ChangedStatus.new(allocation, existing_allocation).send
+            end
+          end
+          unless allocation.interment_date == existing_allocation.interment_date
+            Notifiers::ChangedIntermentDate.new(allocation, existing_allocation).send
+          end
+        else
+          if allocation.status != 'provisonal'
+            Notifiers::NewInterment.new(allocation, existing_allocation).send
+          end
+        end
 
         update_photos
-
       end
     end
     
-    # Takes a string in a format similar to "some term field1:some value field2:another value", and returns a hash
-    # of field:value pairs. Any text before the first field:value pair is returned as the first return value.
+    # Takes a string in a format similar to "some term field1:some value field2:another value", and returns an array of
+    # terms, consisting of the field name, operator and value. Any text before the first term is returned as the first
+    # return value.
     def parse_search_string(str, valid_keys)
       valid_keys = valid_keys.map{|v| v.to_s}
       operators = [':']
@@ -102,12 +124,12 @@ module Tombstone
         index = str.index(/(?<=^| )#{Regexp.union valid_keys}#{Regexp.union operators}/, offset)
         (index) ? indices << index : break
       end
-      pairs = {}
+      terms = {}
       indices.each_index do |i|
         field, operator, value = str[Range.new(indices[i], (indices[i+1] || 0) - 1)].strip.partition(Regexp.union operators)
-        pairs[field] = value.strip
+        terms[field] = value.strip
       end
-      return str[Range.new(0, indices.first || str.length, true)].strip.gsub(/ +/, ' '), pairs
+      return str[Range.new(0, indices.first || str.length, true)].strip.gsub(/ +/, ' '), terms
     end
 
     def update_photos

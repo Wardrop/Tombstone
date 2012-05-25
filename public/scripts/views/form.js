@@ -548,7 +548,7 @@ $( function () {
         return {name: state, value: this.stateMap[state] || state.titleize(), action: 'updateStatus'}
       }, this)
       if (items.length > 0) items[items.length - 1].className = 'with_bottom_divider'
-      if (this.allocationData.type == 'interment') items.push({name: 'multiple_interment', value: 'Multiple Interment'})
+      if (this.allocationData.type == 'interment' && this.allocationData.status != 'deleted') items.push({name: 'multiple_interment', value: 'Multiple Interment'})
       if (this.allocationData.type == 'reservation' && this.allocationData.status != 'deleted') items.push({name: 'inter', value: 'Inter'})
       if (this.allocationData.status != 'deleted' && this.allocationData.status != 'completed') {
         items.push(

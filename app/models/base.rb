@@ -2,7 +2,9 @@
 module Tombstone
   class BaseModel < Class.new(Sequel::Model)
     set_restricted_columns :modified_by, :modified_at, :created_by, :created_at
-    
+    plugin :typecast_on_load
+    remove_instance_variable(:@dataset)
+
     def warnings
       @warnings ||= Sequel::Model::Errors.new
     end
@@ -27,9 +29,14 @@ module Tombstone
       (aliased) ? Hash[*keys.map{|k,v| ["#{self.class.table_name}__#{k}".to_sym, v] }.flatten] : keys
     end
     
-    remove_instance_variable(:@dataset)
     
     class << self
+      
+      def inherited(model)
+        super
+        model.add_typecast_on_load_columns *datetime_columns
+      end
+      
       def datetime_columns
         db_schema.select { |col, info| info[:type] == :datetime }.map { |k,v| k }
       end
