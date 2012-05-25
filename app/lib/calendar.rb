@@ -67,8 +67,12 @@ module Tombstone
     end
 
     def format_deceased(interment)
-      ((interment.role_by_type('deceased') == nil) ? "<Deceased Name Pending>" : interment.role_by_type('deceased').person.title \
-      << " " << interment.role_by_type('deceased').person.given_name << " " << interment.role_by_type('deceased').person.surname)
+      deceased = interment.role_by_type('deceased')
+      if deceased
+        "#{interment.role_by_type('deceased').person.title} #{interment.role_by_type('deceased').person.given_name} #{interment.role_by_type('deceased').person.middle_name} #{interment.role_by_type('deceased').person.surname}"
+      else
+        "<Deceased Name Pending>"
+      end
     end
 
   end
