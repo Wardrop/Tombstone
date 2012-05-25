@@ -1,3 +1,5 @@
+// The _cleanDate method of this file has been modified to prevent timezone offsets from altering the calendar display.
+
 /*
  * jQuery.weekCalendar v2.0-dev
  *
@@ -2102,13 +2104,14 @@
         * return a date for different representations
         */
       _cleanDate: function(d) {
-          if (typeof d == 'string') {
+        if (typeof d == 'string') {
             // if is numeric
             if (!isNaN(parseFloat(d)) && isFinite()) {
               return this._cleanDate(parseInt(d, 10));
             }
-            // this is a human readable date
-            return Date.parse(d) || new Date(d);
+            var date = new Date(d)
+            date = new Date(date - (Math.abs(date.getTimezoneOffset()) * 60000))
+            return date
           }
           if (typeof d == 'number') {
             return new Date(d);
