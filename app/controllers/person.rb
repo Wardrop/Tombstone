@@ -9,8 +9,9 @@ module Tombstone
     
     get :search, :provides => :json do
       filtered_hash = params.reject{ |k,v| !v || v.empty? }.symbolize_keys!
-      p filtered_hash
       filtered_hash = Person.prepare_values(filtered_hash)
+      filtered_hash[:date_of_birth] = filtered_hash[:date_of_birth].strftime('%d/%m/%Y') if filtered_hash[:date_of_birth]
+      filtered_hash[:date_of_death] = filtered_hash[:date_of_death].strftime('%d/%m/%Y') if filtered_hash[:date_of_death]
       json_response Person.search(filtered_hash, 50)
     end
 

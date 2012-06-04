@@ -11,6 +11,7 @@ body {
   letter-spacing: 0.1pt;
   background: #fafafa;
   line-height: 1.25;
+  position: relative;
 }
 input, select, button, textarea {
   padding: 0.4em;
@@ -853,7 +854,7 @@ a.row_button:hover {
   z-index: 100;
 }
 .overlay_container {
-  position: fixed;
+  position: absolute;
   left: 50%;
   top: 8%;
   margin-left: -300px;

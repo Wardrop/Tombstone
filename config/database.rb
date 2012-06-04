@@ -1,5 +1,5 @@
 Sequel.datetime_class = DateTime
-Sequel.default_timezone = :utc
+Sequel.default_timezone = :local
 # TinyTds::Client.default_query_options[:timezone] = :utc
 Sequel::Dataset::TIMESTAMP_FORMAT = "'%Y-%m-%dT%H:%M:%S%N%z'"
 Sequel::Model.plugin :validation_helpers

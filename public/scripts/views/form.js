@@ -21,6 +21,8 @@ $( function () {
   
   Ts.LegacyPane = Ts.View.extend({
     templateId: 'form:legacy_pane',
+    width: 500,
+    duration: 500,
     attributes: {
       id: 'legacy_pane'
     },
@@ -30,18 +32,20 @@ $( function () {
     },
     render: function () {
       this.$el.html(this.template({allocation: this.options.allocation}))
-      this.$el.css({right: -500})
+      this.$el.css({right: -this.width})
       return this
     },
     show: function () {
-      this.$el.animate({right: 0}, 500)
-      this.$('.bar').animate({left: 40, width: 'hide', opacity: 0}, 500)
-      $('body').animate({'margin-right': 500}, 500)
+      this.$el.animate({right: 0}, this.duration)
+      this.$('.bar').animate({left: 40, width: 'hide', opacity: 0}, this.duration)
+      $('.overlay_background').animate({'margin-right': this.width}, this.duration)
+      $('body').animate({'margin-right': this.width}, this.duration)
     },
     hide: function () {
-      this.$el.animate({right: -500}, 500)
-      this.$('.bar').animate({left: 0, width: 'show', opacity: 1}, 500)
-      $('body').animate({'margin-right': 0}, 500)
+      this.$el.animate({right: -this.width}, this.duration)
+      this.$('.bar').animate({left: 0, width: 'show', opacity: 1}, this.duration)
+      $('.overlay_background').animate({'margin-right': 0}, this.duration)
+      $('body').animate({'margin-right': 0}, this.duration)
     }
   })
   
@@ -662,7 +666,7 @@ $( function () {
 			return this
 		},
 		renderPlaces: function () {
-			var section = new Ts.FormViews.Section({title: 'Location'})
+			var section = new Ts.FormViews.Section({title: 'Location', name: 'place'})
 			if(place_id = this.allocationData.place_id) {
 				var places;
 				for (var i = 0; places = this.placeData[i]; i++) {
@@ -697,7 +701,13 @@ $( function () {
 			this.multibutton = new Ts.FormViews.Multibutton(_.extend({
 				actions: {
           'submitWithStatus': _.bind(function (el) {
-						this.submit({status: $(el).attr('name')})
+            var statusField = this.$('input[type=hidden][name=status]')
+            if(statusField.length == 0) {
+              statusField = $('<input type="hidden" name="status" />')
+            }
+            statusField.val($(el).attr('name'))
+            statusField.appendTo(this.$el)
+						this.submit()
 					}, this),
 					'default': _.bind(function (el) {
 						this.submit()
@@ -706,13 +716,13 @@ $( function () {
 			}, this.options.multibutton))
 			var section = new Ts.FormViews.Section({
 				title: 'Actions',
+        name: 'actions',
 				body: [this.multibutton.render().el, this.indicator]
 			})
 			$(this.el).append(section.render().el)
 		},
     renderLegacyPane: function () {
-      if (this.allocationData.legacy_fields.length == 0) return;
-      console.log(this.allocationData)
+      // if (this.allocationData.legacy_fields.length == 0) return;
       this.legacy || (this.legacy = new Ts.LegacyPane({allocation: this.allocationData}))
       $('body').append(this.legacy.render().el)
     },

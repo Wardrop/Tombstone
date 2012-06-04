@@ -199,7 +199,7 @@ module Tombstone
     end
     
     def check_warnings
-      # Cemetry date/time overlap.
+      # Cemetery date/time overlap.
       overlapping = self.class.
         exclude(primary_key_hash).
         exclude(status: 'deleted').
@@ -219,8 +219,15 @@ module Tombstone
           warnings.add :deceased, "has a reservation. Reservation ID is ##{res.id}"
         end
       end
-      
+
       warnings.add(:interment_date, "is in the past.") { interment_date >= DateTime.now }
+      interment_day = interment_date.strftime('%A')
+      if ['Saturday', 'Sunday'].include? interment_day
+        warnings.add(:interment_date, "falls on a #{interment_day}.")
+      elsif not (8..17).include? interment_date.hour
+        warnings.add(:interment_date, "falls outside of work hours.")
+      end
+      
     end
 
     def validate

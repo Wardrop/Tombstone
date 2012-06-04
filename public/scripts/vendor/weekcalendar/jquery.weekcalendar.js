@@ -2110,7 +2110,8 @@
               return this._cleanDate(parseInt(d, 10));
             }
             var date = new Date(d)
-            date = new Date(date - (Math.abs(date.getTimezoneOffset()) * 60000))
+            // Commented out.
+            // date = new Date(date - (Math.abs(date.getTimezoneOffset()) * 60000))
             return date
           }
           if (typeof d == 'number') {

@@ -92,6 +92,10 @@
       <div><%= model.get('person').get('date_of_birth') ? moment(model.get('person').get('date_of_birth')).format('DD/MM/YYYY') : '<small>none</small>'  %></div>
     </div>
     <div class="row">
+      <span>Date of Death</span>
+      <div><%= model.get('person').get('date_of_death') ? moment(model.get('person').get('date_of_death')).format('DD/MM/YYYY') : '<small>none</small>'  %></div>
+    </div>
+    <div class="row">
       <span class="align_top">Residential Contact</span>
       <div>
       <% rc = (model.get('residential_contact') && !model.get('residential_contact').isEmpty()) ? model.get('residential_contact').toJSON() : null; %>

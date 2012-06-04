@@ -94,6 +94,7 @@ $( function () {
         onConfirm: _.bind(function () {
           this.el.action = this.el.action+'?confirm'
           this.submit()
+          // this.$('section > [name=actions] > .multibutton li.selected').click()
         }, this)
       })
       warningOverlay.showWarnings(this.stringifyErrors(warnings))

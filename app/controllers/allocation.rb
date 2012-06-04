@@ -152,7 +152,7 @@ module Tombstone
     
     get :new_from_reservation, :map => "interment/:id/new" do
       @allocation = Reservation.with_pk(params[:id].to_i)
-      if not Allocation.filter(:id => params[:id].to_i, :type => 'interment').empty?
+      if not Allocation.filter(:id => params[:id].to_i, :type => 'interment').exclude(status: 'deleted').empty?
         halt 500, render("error", :locals => {
           :title => 'Interment Already Exists',
           :message => "An interment for reservation ##{params[:id]} already exists."

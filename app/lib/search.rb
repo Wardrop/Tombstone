@@ -14,7 +14,13 @@ module Tombstone
           dob: proc { |v|
             begin
               date = Date.parse(v)
-              "[PERSON].[DATE_OF_BIRTH] >= #{@db.literal(date)} AND [PERSON].[DATE_OF_BIRTH] < #{@db.literal(date + 1)}"
+              "[PERSON].[DATE_OF_BIRTH] >= #{@db.literal(date.strftime('%d/%m/%Y'))} AND [PERSON].[DATE_OF_BIRTH] < #{@db.literal((date + 1).strftime('%d/%m/%Y'))}"
+            end rescue nil
+          },
+          dod: proc { |v|
+            begin
+              date = Date.parse(v)
+              "[PERSON].[DATE_OF_DEATH] >= #{@db.literal(date.strftime('%d/%m/%Y'))} AND [PERSON].[DATE_OF_DEATH] < #{@db.literal((date + 1).strftime('%d/%m/%Y'))}"
             end rescue nil
           },
           name: proc { |v|
@@ -27,7 +33,8 @@ module Tombstone
             "(' '+[CONTACT].[STREET_ADDRESS]+', '+[CONTACT].[TOWN]+' '" +
             "+[CONTACT].[STATE]+' '+CAST([CONTACT].[POSTAL_CODE] as nvarchar))+' ' " +
             "LIKE #{value}"
-          }
+          },
+          place: proc { |v| "[PLACE].[NAME] LIKE #{@db.literal(v)}" }
         }
       end
       
@@ -52,6 +59,7 @@ module Tombstone
     def query(conditions = {}, *order)
       @conditions = conditions.symbolize_keys.select { |k,v| self.class.searchable[k] }
       @order = order.each_slice(2).to_a.select { |field, dir| self.class.sortable[field] }
+      p dataset.sql
       dataset
     end
     
@@ -92,6 +100,7 @@ module Tombstone
         LEFT JOIN [ROLE] ON [ROLE].[ID] = [ROLE_ASSOCIATION].[ROLE_ID]
         LEFT JOIN [PERSON] ON [PERSON].[ID] = [ROLE].[PERSON_ID]
         LEFT JOIN [CONTACT] ON ([CONTACT].[ID] = [ROLE].[RESIDENTIAL_CONTACT_ID]) OR ([CONTACT].[ID] = [ROLE].[MAILING_CONTACT_ID])
+        LEFT JOIN [PLACE] ON [ALLOCATION].[PLACE_ID] = [PLACE].[ID]
         #{conditions_sql("WHERE")}
       "]
     end

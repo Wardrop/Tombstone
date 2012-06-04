@@ -99,7 +99,7 @@ $( function () {
       $('body').prepend(this.$el.css({display: 'none'}))
 		},
 		render: function () {
-			this.$el.css({display: ''})
+			this.$el.css({display: '', 'margin-right': $('body').css('marginRight')})
 			this.$el.children().detach()
       this.$el.append(this.template({data: this.model.toJSON()}))
       if (this.options.showCloseButton) $('<a class="close" href="javascript:void(0)" title="Close"></a>').appendTo(this.$('.heading'))
