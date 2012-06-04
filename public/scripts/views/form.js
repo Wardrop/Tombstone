@@ -722,7 +722,7 @@ $( function () {
 			$(this.el).append(section.render().el)
 		},
     renderLegacyPane: function () {
-      // if (this.allocationData.legacy_fields.length == 0) return;
+      if (this.allocationData.legacy_fields.length == 0) return;
       this.legacy || (this.legacy = new Ts.LegacyPane({allocation: this.allocationData}))
       $('body').append(this.legacy.render().el)
     },
