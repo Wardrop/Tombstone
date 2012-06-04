@@ -109,13 +109,17 @@ module Tombstone
       if errors[:place].empty?
         errors.add(:place, "is unavailable") unless place.allows_reservation?(self)
       end
-      if errors[:reservee].empty?
-        role = role_by_type('reservee')
-        if role && role.person.roles_by_type('reservee', self.class.exclude(primary_key_hash(true).sql_expr)).count > 0
-          errors.add(:reservee, "cannot be used as the selected person already has a reservation.")
-        end
-      end
-      validates_includes self.class.valid_states, :status
+      # Bug 485 requested that duplicate reservees be allowed. Allowing this doesn't seem to be make any sense, but for 
+      # the sake of getting through these bugs as quickly as possible, I'll just remove the validation until another
+      # bug is raised to add this back in.
+      #
+      # if errors[:reservee].empty?
+      #   role = role_by_type('reservee')
+      #   if role && role.person.roles_by_type('reservee', self.class.exclude(primary_key_hash(true).sql_expr)).count > 0
+      #     errors.add(:reservee, "cannot be used as the selected person already has a reservation.")
+      #   end
+      # end
+      # validates_includes self.class.valid_states, :status
     end
 
     def before_create
@@ -241,6 +245,7 @@ module Tombstone
         validates_presence :funeral_service_location
         validates_min_length 2, :funeral_director_name
         validates_presence [:advice_received_date, :interment_date]
+        p interment_date, DateTime.now
         validates_includes self.class.valid_interment_types, :interment_type
         errors.add(:advice_received_date, "cannot be be in the future") { advice_received_date.to_date <= Date.today }
         if errors[:interment_date].empty? && interment_date > DateTime.now && ['interred', 'completed'].include?(status)

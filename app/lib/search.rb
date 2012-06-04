@@ -78,7 +78,8 @@ module Tombstone
       MODEL.select_all(MODEL.table_name).
         join(searchable_dataset, pk_join).
         left_join(sortable_dataset, pk_join.merge(:role => ['reservee', 'deceased'])).
-        order_by(*@order.map { |field, dir| (dir == :asc) ? field.to_sym.asc : field.to_sym.desc })
+        order_by(*@order.map { |field, dir| (dir == :asc) ? field.to_sym.asc : field.to_sym.desc }).
+        limit(50)
     end
     
   protected
