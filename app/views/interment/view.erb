@@ -80,7 +80,7 @@ end
       </label>
     	<label>
         <span>Interment Date</span>
-        <div><%= print { @allocation.interment_date } %></div>
+        <div><%= print { @allocation.interment_date.strftime('%d/%m/%Y %l:%M%P') } %></div>
       </label>
       <label>
         <span>Receipt No's</span>

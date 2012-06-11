@@ -29,11 +29,24 @@ content_for :head do
 end
 %>
 <div id="reservation_view" class="rowed very_wide view">
-  <% @allocation.roles.each do |role| %>
+  <%
+  roles = {}
+  roles['reservee'] = @allocation.alternate_reservee
+  @allocation.roles.each { |v| roles[v.type] = v }
+  roles.each do |type, value| %>
     <section>
-      <h2 class="underline"><%= role.type.demodulize.titleize %></h2>
-      <div id="<%= role.type %>_section" class="padded" name="reservee">
-        <%= partial 'shared/role_view', :locals => {role: role} %>
+      <h2 class="underline"><%= type.demodulize.titleize %></h2>
+      <div id="<%= type %>_section" class="padded" name="<%= type %>">
+        <%=
+        if value.is_a? Tombstone::Role
+          partial 'shared/role_view', :locals => {role: value}
+        else
+          "<div class='row'>
+            <span>Alternate Reservee</span>
+            <div>#{value}</div>
+          </div>"
+        end
+        %>
       </div>
     </section>
   <% end %>
@@ -72,7 +85,19 @@ end
       <label>
         <span>Interment</span>
         <div>
-          <%= print { "<a href='#{url(:interment_view, @allocation.interment.id)}'>View Interment</a>" } %>
+          <%
+          if @allocation.interments.empty?
+          %>
+            <small>none</small>
+          <% elsif @allocation.interments.length == 1 %>
+            <a href="<%= "#{url(:interment_view, @allocation.interments.first.id)}" %>">View Interment</a>
+          <% else
+            @allocation.interments.each_with_index do |interment, idx|
+            %>
+              <a href="<%= "#{url(:interment_view, interment.id)}" %>">View Interment #<%= idx+1 %></a>
+            <%
+            end
+          end %>
         </div>
       </label>
     </div>

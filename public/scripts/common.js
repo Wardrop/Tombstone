@@ -29,6 +29,12 @@ $( function () {
   $('input[type=datetime]').livequery( function () {
     $(this).datetimepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', changeYear: true, yearRange: "1900:", ampm: true, timeFormat: 'h:mmtt' })
   })
+  $('input.tooltip').livequery( function () {
+    $(this).tipsy({trigger: 'focus', opacity: 1, gravity: 'w'});
+  })
+  $('input[placeholder]').livequery( function () {
+    $(this).placeholder();
+  })
   
   // Control for adding an arbitary number of values for a field.
   $(document).on('blur keyup', '.multiinput_control input', function (e) {

@@ -9,10 +9,14 @@
         wrapper = $( "<span>" )
           .addClass( "ui-combobox" )
           .insertAfter( select );
-
-      select.change( function () { console.log('Changed!') })
           
       input = $( "<input>" )
+        .change( function (e) {
+          if (!e.isTrigger) {
+            e.stopPropagation()
+            return false
+          }
+        })
         .appendTo( wrapper )
         .val( value )
         .addClass( "ui-state-default" )
@@ -43,6 +47,7 @@
             });
           },
           change: function( event, ui ) {
+            input.trigger('change')
             if ( !ui.item ) {
               var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( $(this).val() ) + "$", "i" ),
                 valid = false;
@@ -52,18 +57,21 @@
                   return false;
                 }
               });
-              if ( !valid ) {
-                // remove invalid value, as it didn't match anything
-                $( this ).val( "" );
-                select.val( "" );
-                input.data( "autocomplete" ).term = "";
-                return false;
-              }
+              // if ( !valid ) {
+              //   // remove invalid value, as it didn't match anything
+              //   $( this ).val( "" );
+              //   select.val( "" );
+              //   input.data( "autocomplete" ).term = "";
+              //   return false;
+              // }
             }
           }
         })
-        .addClass( "ui-widget ui-widget-content ui-corner-left" );
+        .addClass( "ui-widget ui-widget-content ui-corner-left" )
+        .attr('name', select.attr('name'));
       
+      input.attr('placeholder', this.options.placeholder)
+      select.attr('name', null)
       input.data( "autocomplete" )._renderItem = function( ul, item ) {
         return $( "<li></li>" )
           .data( "item.autocomplete", item )

@@ -3,10 +3,10 @@
 <html>
 <head>
   <title><%= @document[:title] %></title>
-
   <link rel="stylesheet" href="<%= url "/reset.css" %>" />
   <link rel="stylesheet" href="<%= url "/scripts/vendor/jquery-ui/cupertino/jquery-ui-1.8.20.custom.css" %>" />
   <link rel="stylesheet" href="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.css' %>" />
+  <link rel="stylesheet" href="<%= url '/scripts/vendor/jquery.tipsy.css' %>" />
   <link rel="stylesheet" href="<%= url "/style.css" %>" />
   <link rel="stylesheet" href="<%= url "/print.css" %>" />
   <script type="text/javascript" src="<%= url '/scripts/vendor/date-en-AU.js' %>"></script>
@@ -17,10 +17,12 @@
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-1.7.2.min.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-1.7.2.min.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery.livequery.js' %>"></script>
-  <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-1.8.20.custom.min.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/vendor/jquery.tipsy.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/vendor/jquery.placeholder.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-1.8.21.custom.min.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery.ui.datepicker-en-AU.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.js' %>"></script>
-  <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-combobox.js' %>"></script>
+  <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-combobox.js' %>"></script>  
   <script type="text/javascript" src="<%= url '/scripts/vendor/underscore.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/backbone.custom.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/common.js' %>"></script>

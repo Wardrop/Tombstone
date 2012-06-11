@@ -1,12 +1,12 @@
 module Tombstone
   class Allocation < BaseModel
-    set_primary_key [:id, :type]
+    set_primary_key :id
     unrestrict_primary_key
 
     many_to_one :place, :key => :place_id, :class => :'Tombstone::Place'
-    many_to_many :roles, :join_table => :role_association, :left_key => [:allocation_id, :allocation_type], :right_key => :role_id, :class => :'Tombstone::Role'
-    many_to_one :funeral_director, {:key => :funeral_director_id, :class => :'Tombstone::FuneralDirector'}
-    one_to_many :transactions, {:key => [:allocation_id, :allocation_type] }
+    many_to_many :roles, :join_table => :role_association, :left_key => :allocation_id, :right_key => :role_id, :class => :'Tombstone::Role'
+    many_to_one :funeral_director, :key => :funeral_director_id, :class => :'Tombstone::FuneralDirector'
+    one_to_many :transactions, :key => :allocation_id
     one_to_many :photos, :key => :place_id, :primary_key => :place_id, :class => :'Tombstone::Photo'
     one_to_many :legacy_fields, :key => :allocation_id, :primary_key => :id, :class => :'Tombstone::LegacyField'
 
@@ -64,22 +64,12 @@ module Tombstone
       self.roles.select { |r| r.type == type.to_s}
     end
 
-    # Makes the identify column "id" optional, which is something MSSQL doesn't automatically support.
-    def around_create
-      if self.id
-        self.db.run "SET IDENTITY_INSERT [#{self.class.table_name}] ON"
-        super
-        self.db.run "SET IDENTITY_INSERT [#{self.class.table_name}] OFF"
-      else
-        super
-      end
-    end
-
   end
 
   class Reservation < Allocation
     set_dataset dataset.filter(:type => 'reservation')
-    one_to_one :interment, :primary_key => :id, :key => :id, :class => 'Tombstone::Interment', :conditions => {status: 'deleted'}.sql_negate
+    one_to_many :interments, :primary_key => :place_id, :key => :place_id, :class => 'Tombstone::Interment', :conditions => {status: 'deleted'}.sql_negate
+    
     
     # def initialize
     #   super
@@ -87,10 +77,6 @@ module Tombstone
     # end
     
     class << self
-      def with_pk(id)
-        self.first(:id => id)
-      end
-
       def valid_roles
         ['applicant', 'reservee', 'next_of_kin']
       end
@@ -109,17 +95,18 @@ module Tombstone
       if errors[:place].empty?
         errors.add(:place, "is unavailable") unless place.allows_reservation?(self)
       end
-      # Bug 485 requested that duplicate reservees be allowed. Allowing this doesn't seem to be make any sense, but for 
-      # the sake of getting through these bugs as quickly as possible, I'll just remove the validation until another
-      # bug is raised to add this back in.
-      #
-      # if errors[:reservee].empty?
-      #   role = role_by_type('reservee')
-      #   if role && role.person.roles_by_type('reservee', self.class.exclude(primary_key_hash(true).sql_expr)).count > 0
-      #     errors.add(:reservee, "cannot be used as the selected person already has a reservation.")
-      #   end
-      # end
-      # validates_includes self.class.valid_states, :status
+      
+      if (not alternate_reservee.blank?) && role_by_type(:reservee)
+        errors.add(:reservee, "must be either a person or an alternate reservee (i.e. family name), not both.")
+      end
+      
+      if errors[:reservee].empty?
+        role = role_by_type('reservee')
+        if role && role.person.roles_by_type('reservee', self.class.exclude(primary_key_hash(true).sql_expr)).count > 0
+          errors.add(:reservee, "cannot be used as the selected person already has a reservation.")
+        end
+      end
+      validates_includes self.class.valid_states, :status
     end
 
     def before_create
@@ -130,13 +117,9 @@ module Tombstone
 
   class Interment < Allocation
     set_dataset dataset.filter(:type => 'interment')
-    one_to_one :reservation, :primary_key => :id, :key => :id, :class => 'Tombstone::Reservation', :conditions => {status: 'deleted'}.sql_negate
+    one_to_one :reservation, :primary_key => :place_id, :key => :place_id, :class => 'Tombstone::Reservation', :conditions => {status: 'deleted'}.sql_negate
     
     class << self
-      def with_pk(id)
-        self.first(:id => id)
-      end
-
       def valid_roles
         ['deceased', 'next_of_kin']
       end
@@ -252,7 +235,6 @@ module Tombstone
         validates_presence :funeral_service_location
         validates_min_length 2, :funeral_director_name
         validates_presence [:advice_received_date, :interment_date]
-        p interment_date, DateTime.now
         validates_includes self.class.valid_interment_types, :interment_type
         errors.add(:advice_received_date, "cannot be be in the future") { advice_received_date.to_date <= Date.today }
         if errors[:interment_date].empty? && interment_date > DateTime.now && ['interred', 'completed'].include?(status)

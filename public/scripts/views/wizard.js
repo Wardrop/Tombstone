@@ -33,9 +33,14 @@ $( function () {
       this.model.on('change', this.modelChanged, this)
   		_.bindAll(this, 'formChanged');
   	},
+    // Broken out of render() method to allow adding or overriding behaviour before delegating events and populating form values.
+    renderTemplate: function () {
+      this.$el.html(this.template({data: this.model.toJSON(), wizard: this.wizard, action: this.options.action})).prepend(this.errorBlock);
+      this.$el.append(this.indicator)
+    },
   	render: function () {
       this.$el.empty()
-  		this.$el.html(this.template({data: this.model.toJSON(), wizard: this.wizard, action: this.options.action})).prepend(this.errorBlock);
+      this.renderTemplate()
       this.delegateEvents()
       this.populateForm(this.model.toJSON())
   		return this
@@ -52,6 +57,7 @@ $( function () {
       this.model.set(hash)
     },
     modelChanged: function () {
+      window.test = this
       this.populateForm(this.model.changedAttributes())
     },
     populateForm: function (hash) {
@@ -219,6 +225,7 @@ $( function () {
         mailing_contact: this.model.get('role').get('mailing_contact') && this.model.get('role').get('mailing_contact').clone()
       })
       role.get('person').valid(this.model.get('role').get('person').valid())
+      
       role.get('residential_contact') && role.get('residential_contact').valid(this.model.get('role').get('residential_contact').valid())
       role.get('mailing_contact') && role.get('mailing_contact').valid(this.model.get('role').get('mailing_contact').valid())
       this.model.set({role: role})
@@ -234,25 +241,32 @@ $( function () {
     },
     roleChanged: function () {
       this.updateUI()
-      this.model.get('role').get('person').off('validityChange', this.updateUI).on('validityChange', this.updateUI, this)
-      if (this.model.get('role').get('residential_contact')) {
-        this.model.get('role').get('residential_contact').off('validityChange', this.updateUI).on('validityChange', this.updateUI, this)
+      var role = this.model.get('role')
+      role.on('change:person', this.personChanged, this)
+      role.get('person').off('validityChange', this.updateUI).on('validityChange', this.updateUI, this)
+      if (role.get('residential_contact')) {
+        role.get('residential_contact').off('validityChange', this.updateUI).on('validityChange', this.updateUI, this)
       }
-      if (this.model.get('role').get('mailing_contact')) {
-        this.model.get('role').get('mailing_contact').off('validityChange', this.updateUI).on('validityChange', this.updateUI, this)
+      if (role.get('mailing_contact')) {
+        role.get('mailing_contact').off('validityChange', this.updateUI).on('validityChange', this.updateUI, this)
       }
     },
     updateUI: function () {
       var role = this.model.get('role')
       var lastValid = true
       this.$('ul.menu > li').each( function () {
-        var model = role.get($(this).data('model'))
-        if (lastValid) {
-          $(this).removeClass('disabled')
-          lastValid = (model) ? model.valid() : false
-        } else {
-          $(this).addClass('disabled')
+        var modelName = $(this).data('model')
+        var model = role.get(modelName)
+        
+        if(modelName != 'person') {
+          role.get('person').valid() ? $(this).removeClass('disabled') : $(this).addClass('disabled')
         }
+        // if (lastValid) {
+        //   $(this).removeClass('disabled')
+        //   lastValid = (model) ? model.valid() : false
+        // } else {
+        //   $(this).addClass('disabled')
+        // }
         if (model && !model.isEmpty()) {
           $('.delete', this).css('display', '')
         } else {
@@ -264,6 +278,14 @@ $( function () {
       } else {
         this.$('[name=ok]').addClass('disabled')
       }
+    },
+    personChanged: function () {
+      var target = this.$('ul.menu > li[data-model=person]')
+      var self = this
+      target.nextAll().each( function () {
+        self.model.get('role').set($(this).data('model'), null)
+      })
+      this.updateUI()
     },
     deleteModel: function (key) {
       var target = this.$('ul.menu > li[data-model='+key+']')
@@ -280,7 +302,6 @@ $( function () {
       this[$(el).data('action')]()
     },
     showPersonPage: function () {
-      console.log('showing person page')
       this.pages['person'] = new Ts.WizardViews.PersonPage({wizard: this})
       this.model.set({currentPage: this.pages['person']})
     },
@@ -293,9 +314,11 @@ $( function () {
       this.model.set({currentPage: this.pages['mailing_contact']})
     },
     saveRole: function () {
-      if (this.model.get('role').get('mailing_contact') && this.model.get('role').get('mailing_contact').isEmpty()) {
-        this.model.get('role').set('mailing_contact', null, {silent: true})
-      }
+      _.each(['residential_contact', 'mailing_contact'], function (contact_type) {
+        if (this.model.get('role').get(contact_type) && this.model.get('role').get(contact_type).isEmpty()) {
+          this.model.get('role').set(contact_type, null, {silent: true})
+        }
+      }, this)
       this.close()
       this.options.onComplete(this.model.get('role'))      
     }
@@ -306,7 +329,7 @@ $( function () {
       this._super('initialize', arguments)
       this.indicator = this.options.wizard.indicator
       this.wizard.model.get('role').on('change:person', this.renderForm, this)
-      this.bindToSync(this.people = new Ts.People)
+      this.people = new Ts.People
       this.formPane = $('<div style="width: 50%" class="pane padded" />')
       this.resultsPane = $('<div style="width: 50%" class="pane padded" />')
       this.findPeople()
@@ -439,13 +462,14 @@ $( function () {
   Ts.WizardViews.ContactForm = Ts.WizardViews.GenericForm.extend({
 		templateId: 'wizard:create_contact_form_template',
     initialize: function () {
+      window.form = this
       this._super('initialize', arguments)
       this.model.on('change', this.checkValidity, this)
     },
-    render: function () {
-      this._super('render', arguments)
-      // this.$("[name=state]").combobox()
-      return this
+    renderTemplate: function () {
+      this._super('renderTemplate', arguments)
+      this.$("[name=state]").combobox()
+      this.$("[name=country]").combobox()
     },
     checkValidity: function () {
       if (this.model.hasRequired()) {

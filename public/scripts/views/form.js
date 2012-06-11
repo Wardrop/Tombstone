@@ -19,6 +19,23 @@ $( function () {
     }
   })
   
+  Ts.FormViews.AutostretchTextInput = Ts.View.extend({
+    events: {
+      'keyup input': 'inputChanged'
+    },
+    render: function () {
+      this.$el.html('<div style="display: inline-block; position: relative; padding-right: 12px;">'+
+        '<input type="text" name="'+this.options.name+'" value="'+((this.options.value) ? this.options.value : '')+'" placeholder="'+this.options.placeholder+'" style="min-width: 240px; width: 100%; position: absolute; left: 0; top: 0;" />'+
+        '<span class="input_style" style="visibility: hidden;"></span>'+
+      '</div>')
+      return this
+    },
+    inputChanged: function (e) {
+      var span = this.$('span')
+      span.text($(e.target).val())
+    }
+  })
+  
   Ts.LegacyPane = Ts.View.extend({
     templateId: 'form:legacy_pane',
     width: 500,
@@ -89,7 +106,13 @@ $( function () {
   		return this
     },
     getJSON: function () {
-      return (this.model && this.model.recursiveToJSON()) || (this.use && {type: this.role_type, use: this.use}) || null
+      if (!this.model || this.model.isEmpty()) {
+        return null
+      } else if (this.use) {
+        return {type: this.role_type, use: this.use}
+      } else {
+        return this.model.recursiveToJSON()
+      }
     },
     addRole: function () {
       this.use = null
@@ -416,7 +439,7 @@ $( function () {
       if ($(e.target).hasClass('delete')) this['delete']()
     },
     add_child: function () {
-      this.prepareWizard()
+      this.prepareWizard('Add Child')
       this.wizardView.model.set('place', new Ts.Place({
         parent_id: this.collection.get(this.$(':selected').val()).get('id'),
         status: 'available'
@@ -425,7 +448,7 @@ $( function () {
       this.wizardView.showPlaceForm()
     },
     add: function () {
-      this.prepareWizard()
+      this.prepareWizard('Add')
       var placeData = this.wizardView.model.get('place').toJSON()
       this.wizardView.model.set('place', new Ts.Place({
         parent_id: this.collection.at(0).get('parent_id'),
@@ -436,7 +459,7 @@ $( function () {
       this.wizardView.showPlaceForm()
     },
     edit: function () {
-      this.prepareWizard()
+      this.prepareWizard('Edit')
       this.wizardView.model.set('title', 'Edit Place')
       this.wizardView.showPlaceForm()
     },
@@ -453,13 +476,13 @@ $( function () {
         }, this)
       })
     },
-    prepareWizard: function () {
+    prepareWizard: function (title) {
       var place = (
         this.collection.get(this.$(':selected').val()) ||
         new Ts.Place({parent_id: this.collection.at(0).get('parent_id'), type: this.collection.at(0).get('type')})
       )
 			this.wizardView = new Ts.WizardViews.PlaceWizard({
-        model: new Ts.PlaceWizard({place: place}),
+        model: new Ts.PlaceWizard({place: place, title: title}),
         onComplete: _.bind(this.refresh, this)
       })
       this.wizardView.render()
@@ -547,7 +570,6 @@ $( function () {
       this.errorBlock.prependTo(this.el)
     },
     render: function () {
-      console.log(this.permittedStates)
       var items = _(this.permittedStates.reverse()).without(['provisional', 'deleted', this.allocationData.status]).map(function (state) {
         return {name: state, value: this.stateMap[state] || state.titleize(), action: 'updateStatus'}
       }, this)
@@ -647,18 +669,28 @@ $( function () {
             type: type,
             person: new Ts.Person(roleData[type].person),
             residential_contact: new Ts.Contact(roleData[type].residential_contact),
-            mailing_contact: roleData[type].mailing_contact && new Ts.Contact(roleData[type].mailing_contact)
+            mailing_contact: new Ts.Contact(roleData[type].mailing_contact)
           })
           role.get('person').valid(true)
-          role.get('residential_contact').valid(true)
-          if (role.get('mailing_contact')) role.get('mailing_contact').valid(true)
+          if(role.get('residential_contact')) role.get('residential_contact').valid(!role.get('residential_contact').isEmpty())
+          if(role.get('mailing_contact')) role.get('mailing_contact').valid(!role.get('mailing_contact').isEmpty())
 				}
 				var roleBlock = new Ts.FormViews.RoleBlock({role_name: type, role_type: type, group: this.roleBlocks, model: role})
 				this.roleBlocks[type] = roleBlock
+        var body = [roleBlock.el]
+        if(type == 'reservee') {
+          body.push($(' <div class="separator"><span></span></div>'))
+          body.push((new Ts.FormViews.AutostretchTextInput({
+            name: 'alternate_reservee',
+            placeholder: 'Alternate reservee, e.g. family name',
+            value: this.allocationData.alternate_reservee
+          })).render().el)
+          //body.push($('<input type="input" name="alternate_reservee" maxlength="255" style="width: 40%" />'))
+        }
 				var section = new Ts.FormViews.Section({
 					title: type.demodulize().titleize(),
 					name: type,
-					body: roleBlock.el
+					body: body
 				})
 				this.firstSection.before(section.render().el)
 			}, this)

@@ -74,7 +74,7 @@ module Tombstone
       self.roles_dataset.filter(:role__type => type).
           filter(
             allocation_dataset.
-              left_join(:role_association, :allocation_id => :allocation__id, :allocation_type => :allocation__type).
+              left_join(:role_association, :allocation_id => :allocation__id).
               exclude(:status => 'deleted').
               filter(:role_association__role_id => :role__id).
               exists
@@ -87,7 +87,7 @@ module Tombstone
     
     # def role_count(type)
     #   Tombstone::Allocation.
-    #     join(:role_association, :allocation_id => :id, :allocation_type => :type).
+    #     join(:role_association, :allocation_id => :id).
     #     join(:role, :id => :role_id, :type => type).
     #     exclude(:allocation__status => 'deleted').
     #     filter(:person_id => role.person_id).

@@ -37,21 +37,21 @@ module Tombstone
       places[0][:child_count].should == Place.filter(:parent_id => places[0].id).count
     end
     
+    it "provides helper for determing whether reservations are allowed" do
+      Place.with_pk(10).allows_reservation?.should == false # has children
+      Place.with_pk(14).allows_reservation?.should == false # unavailable
+      Place.with_pk(15).allows_reservation?.should == true # vacant; has deleted reservation
+      Place.with_pk(13).allows_reservation?.should == false # in use
+      Place.with_pk(13).allows_reservation?(Reservation.with_pk(4)).should == true # excludes given allocation
+    end
+    
     it "provides helper for determing whether interments are allowed" do
       Place.with_pk(10).allows_interment?.should == false # has children
       Place.with_pk(14).allows_interment?.should == false # unavailable
       Place.with_pk(15).allows_interment?.should == true # vacant; has deleted allocation
       Place.with_pk(7).allows_interment?.should == true # multiple interments inherited from parent
       Place.with_pk(13).allows_interment?.should == false # in use
-      Place.with_pk(13).allows_interment?(Interment.with_pk(3)).should == true # excludes given allocation
-    end
-    
-    it "provides helper for determing whether reservations are allowed" do
-      Place.with_pk(10).allows_reservation?.should == false # has children
-      Place.with_pk(14).allows_reservation?.should == false # unavailable
-      Place.with_pk(15).allows_reservation?.should == true # vacant; has deleted reservation
-      Place.with_pk(13).allows_reservation?.should == false # in use
-      Place.with_pk(13).allows_reservation?(Reservation.with_pk(3)).should == true # excludes given allocation
+      Place.with_pk(13).allows_interment?(Interment.with_pk(5)).should == true # excludes given allocation
     end
     
     it "gets all ancestors" do

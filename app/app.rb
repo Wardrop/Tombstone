@@ -2,7 +2,7 @@
 # Dir.glob(File.join(File.dirname(__FILE__), 'lib/*/**/*.rb')) { |f| require f }
 
 module Tombstone
-  VERSION = '0.8.5'
+  VERSION = '0.9'
   
   class << self
     attr_accessor :config
@@ -13,7 +13,7 @@ module Tombstone
     register Padrino::Mailer
     register Padrino::Helpers
     
-    configure :spec do
+    configure do
       set :log, Logger.new(nil)
     end
     configure :development, :production do

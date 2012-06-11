@@ -32,11 +32,7 @@ module Tombstone
       if allocation.errors.empty?
         if allocation.warnings.empty?
           response[:redirectTo] = url(:"#{controller}_view", :id => allocation.id)
-          if controller == 'interment'
-            flash[:banner] = ['success', "#{controller.capitalize} was created successfully. To create a new reservation, <a href='#{url '/reservation'}'>click here</a>"]
-          else
-            flash[:banner] = ['success', "#{controller.capitalize} was created successfully."]
-          end
+          flash[:banner] = ['success', "#{controller.capitalize} was created successfully. To create a new reservation, <a href='#{url '/reservation'}'>click here</a>"]
         else
           response[:warnings] = allocation.warnings
         end
@@ -57,7 +53,7 @@ module Tombstone
           allocation.roles_dataset.delete
           allocation.remove_all_roles
           allocation.transactions_dataset.delete
-          allocation.values.select { |k,v| model_class.restricted_columns.push(:id, :type) }
+          # allocation.values.select { |k,v| model_class.restricted_columns.push(:id, :type) }
           save_allocation(allocation, params)
         end
       end

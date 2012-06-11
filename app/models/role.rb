@@ -5,7 +5,7 @@ module Tombstone
     many_to_one :person, {:key => :person_id}
     many_to_one :residential_contact, {:key => :residential_contact_id, :class => :'Tombstone::Contact'}
     many_to_one :mailing_contact, {:key => :mailing_contact_id, :class => :'Tombstone::Contact'}
-    many_to_many :allocations, :join_table => :role_association, :left_key => :role_id, :right_key => [:allocation_id, :allocation_type], :class => :'Tombstone::Allocation'
+    many_to_many :allocations, :join_table => :role_association, :left_key => :role_id, :right_key => :allocation_id, :class => :'Tombstone::Allocation'
     
     class << self
       def valid_types
@@ -33,7 +33,6 @@ module Tombstone
               end
             end
           else
-            p hash['person']
             person = Person.new(hash['person'])
             if person.valid?
               person.save
@@ -43,10 +42,9 @@ module Tombstone
             end
           end
           
-          contacts = {:residential_contact => hash['residential_contact']}
-          if hash['mailing_contact'] && !hash['mailing_contact'].empty?
-             contacts[:mailing_contact] = hash['mailing_contact']
-          end
+          contacts = {}
+          contacts[:residential_contact] = hash['residential_contact'] unless hash['residential_contact'].empty?
+          contacts[:mailing_contact] = hash['mailing_contact'] unless hash['mailing_contact'].empty?
           contacts.each do |type, data|
             if data['id']
               contact = Contact[data['id']]
@@ -55,7 +53,6 @@ module Tombstone
                 raise Sequel::Rollback
               else
                 contact.set_valid_only(data)
-                p contact
                 if contact.valid?
                   contact.save
                 else
@@ -96,7 +93,9 @@ module Tombstone
     def validate
       super
       errors.add(:person, "must have an associated person") if !person
-      errors.add(:residential_contact, "must have an associated residential contact") if !person
+      errors.add(:person, "must have an associated contact") unless residential_contact || mailing_contact
+      errors.add(:residential_contact, "cannot be shared between multiple people") if residential_contact && residential_contact.shared?
+      errors.add(:mailing_contact, "cannot be shared between multiple people") if mailing_contact && mailing_contact.shared?
       validates_includes self.class.valid_types, :type
       errors.add(:type, "must be one of: #{self.class.valid_types.join(', ')}") if !self.class.valid_types.include? type.downcase
     end

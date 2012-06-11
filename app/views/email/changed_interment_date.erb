@@ -1,4 +1,4 @@
-The interment date of <%= @changed_allocation.type.titleize %> #<%= @changed_allocation.id %> was changed from <%= print { @existing_allocation.interment_date } %> to <%= print { @existing_allocation.interment_date } %>.
+The interment date of <%= @changed_allocation.type.titleize %> #<%= @changed_allocation.id %> was changed from <%= print { @existing_allocation.interment_date } %> to <%= print { @changed_allocation.interment_date } %>.
 
 Deceased: <%= print { @changed_allocation.role_by_type('deceased').person.name } %>
 Cemetery: <%= @changed_allocation.place.description %>

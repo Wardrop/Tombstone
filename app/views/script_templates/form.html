@@ -101,7 +101,7 @@
       <% rc = (model.get('residential_contact') && !model.get('residential_contact').isEmpty()) ? model.get('residential_contact').toJSON() : null; %>
       <% if (rc) { %>
         <div><%= rc.street_address %></div>
-        <div><%= rc.town %>, <%= rc.state %> <%= rc.postal_code %></div>
+        <div><%= rc.town %> <%= rc.state %> <%= rc.country %> <%= rc.postal_code %></div>
         <div><%= rc.primary_phone %> <%= (rc.secondary_phone) ? rc.secondary_phone : '' %></div>
         <div><%= rc.email %></div>
       <% } else { %>
@@ -115,7 +115,7 @@
       <% mc = (model.get('mailing_contact') && !model.get('mailing_contact').isEmpty())? model.get('mailing_contact').toJSON() : null; %>
       <% if (mc) { %>
         <div><%= mc.street_address %></div>
-        <div><%= mc.town %>, <%= mc.state %> <%= mc.postal_code %></div>
+        <div><%= mc.town %> <%= mc.state %> <%= mc.country %> <%= mc.postal_code %></div>
         <div><%= mc.primary_phone %> <%= (mc.secondary_phone) ? rc.secondary_phone : '' %></div>
         <div><%= mc.email %></div>
       <% } else { %>

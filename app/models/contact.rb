@@ -13,13 +13,20 @@ module Tombstone
       end
     end
     
+    # Whether or not this contact is shared between people.
+    def shared?
+      Role.filter({residential_contact_id: id, mailing_contact_id: id}.sql_or).select(:person_id).distinct.count > 1
+    end
+    
     def validate
       super
       validates_min_length 5, :street_address # Shortest possible street address would be something like a single-residence street, e.g Tu St
       validates_min_length 3, :town
-      if state && !state.empty? && !self.class.valid_states.include?(state)
-        errors.add(:state, ", if given, must be one of: #{self.class.valid_states.join(', ')}")
-      end
+      # if state && !state.empty? && !self.class.valid_states.include?(state)
+      #   errors.add(:state, ", if given, must be one of: #{self.class.valid_states.join(', ')}")
+      # end
+      validates_min_length 1, :state
+      validates_min_length 1, :country
       validates_integer :postal_code
       errors.add(:postal_code, "must be exactly 4 characters long") unless postal_code.to_s.length == 4
       if !email.blank? && !email.match(/.+@.+/)

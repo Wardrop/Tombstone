@@ -25,7 +25,7 @@ module Tombstone
     end
     
     def primary_key_hash(aliased = false)
-      keys = values.select { |k,v| primary_key.include? k }
+      keys = values.select { |k,v| [*primary_key].include?(k) }
       (aliased) ? Hash[*keys.map{|k,v| ["#{self.class.table_name}__#{k}".to_sym, v] }.flatten] : keys
     end
     

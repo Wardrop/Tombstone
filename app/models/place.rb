@@ -39,8 +39,8 @@ module Tombstone
 
     def validate
       super
-      validates_presence :name
-      validates_presence :type
+      validates_min_length 1, :name
+      validates_min_length 1, :type
       validates_includes self.class.valid_states, :status
       validates_not_string :max_interments
       errors.add(:parent, "does not exist") if !parent_id.nil? && parent.nil?

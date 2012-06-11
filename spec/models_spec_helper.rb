@@ -8,6 +8,6 @@ db = Sequel::Model.db
 
 # Recreate the database tables
 db.drop_table(*db.tables)
-Sequel::Migrator.apply(db, File.join(current_dir, '/../db/migrations'))
+Sequel::Migrator.apply(db, File.join(current_dir, '/../db/migrate'))
 
 `cd #{current_dir}/../ && padrino rake db:populate --environment spec`

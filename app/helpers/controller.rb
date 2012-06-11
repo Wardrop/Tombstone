@@ -52,7 +52,7 @@ module Tombstone
               r.save
               allocation.add_role(r)
             else
-              allocation.errors.add(key.to_sym, r.errors)
+              allocation.errors.add(v['type'].to_sym, r.errors)
               raise Sequel::Rollback
             end
           end
@@ -60,7 +60,7 @@ module Tombstone
 
         if params['transactions'].is_a? Array
           params['transactions'].reject{ |v| v.blank? }.each do |trans|
-            trans = Transaction.new(allocation_id: allocation.id, allocation_type: allocation.type, receipt_no: trans)
+            trans = Transaction.new(allocation_id: allocation.id, receipt_no: trans)
             if trans.valid?
               trans.save
             else

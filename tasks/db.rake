@@ -9,53 +9,55 @@ namespace :db do
 
     # Recreate the database tables
     db.drop_table(*db.tables)
-    Sequel::Migrator.run(db, File.expand_path('../../db/migrations'))
+    Sequel::Migrator.run(db, File.expand_path('../../db/migrate', __FILE__))
   end
   
   task :migrate, :version do |v|
     Sequel.extension :migration
-    Sequel::Migrator.apply(db, File.expand_path('../../db/migrations', __FILE__), (v) ? v.to_i : nil)
+    Sequel::Migrator.apply(db, File.expand_path('../../db/migrate', __FILE__), (v) ? v.to_i : nil)
   end
   
   desc "Populates the database with dummy data"
   task :populate do
-    db.execute("EXEC sp_MSForEachTable 'TRUNCATE TABLE ?'")
-    
+    db.execute("EXEC sp_MSForEachTable 'if (''?'' <> ''[dbo].[FUNERAL_DIRECTOR]'' AND ''?'' <> ''[dbo].[CONTACT]'')
+      TRUNCATE TABLE ?
+    '")
+
     db[:person] << {title: 'Mr', surname: 'Fickle', given_name: 'Roger', middle_name: 'D', gender: 'male', date_of_birth: DateTime.parse('09/03/1934'), date_of_death: nil}
     db[:person] << {title: 'Mr', surname: 'Bunson', given_name: 'Sam', middle_name: 'F', gender: 'male', date_of_birth: DateTime.parse('27/11/1971'), date_of_death: nil}
     db[:person] << {title: 'Mr', surname: 'Rojenstien', given_name: 'Phillip', middle_name: 'R', gender: 'male', date_of_birth: DateTime.parse('26/01/1988'), date_of_death: nil}
     
-    db[:contact] << {email: 'manager@bigbiz.com', street_address: '56 Hughey Cl', town: 'Mareeba', state: 'Queensland', postal_code: 4880, primary_phone: '(07) 4092 6735', secondary_phone: '0422 454 829'}
-    db[:contact] << {email: 'littlesamurai@myfantasy.com', street_address: '65 Rankin St', town: 'Mareeba', state: 'Queensland', postal_code: 4880, primary_phone: '(07) 4095 4116', secondary_phone: nil}
-    db[:contact] << {email: 'emochick56@hotmail.com', street_address: '72 Ray Rd', town: 'Mareeba', state: 'Queensland', postal_code: 4880, primary_phone: '(07) 5555 5555', secondary_phone: nil}
-    db[:contact] << {email: 'me@iamme.com', street_address: '4 Gordon St', town: 'Malanda', state: 'Queensland', postal_code: 4873, primary_phone: '(07) 6666 6666', secondary_phone: nil}
-    db[:contact] << {email: 'bickboy@gmail.com', street_address: '11-14 Jaquillan St', town: 'Atherton', state: 'Queensland', postal_code: 4873, primary_phone: '(07) 7777 7777', secondary_phone: nil}
+    contact1 = db[:contact].insert(email: 'manager@bigbiz.com', street_address: '56 Hughey Cl', town: 'Mareeba', state: 'Queensland', postal_code: 4880, primary_phone: '(07) 4092 6735', secondary_phone: '0422 454 829')
+    contact2 = db[:contact].insert(email: 'littlesamurai@myfantasy.com', street_address: '65 Rankin St', town: 'Mareeba', state: 'Queensland', postal_code: 4880, primary_phone: '(07) 4095 4116', secondary_phone: nil)
+    contact3 = db[:contact].insert(email: 'emochick56@hotmail.com', street_address: '72 Ray Rd', town: 'Mareeba', state: 'Queensland', postal_code: 4880, primary_phone: '(07) 5555 5555', secondary_phone: nil)
+    contact4 = db[:contact].insert(email: 'me@iamme.com', street_address: '4 Gordon St', town: 'Malanda', state: 'Queensland', postal_code: 4873, primary_phone: '(07) 6666 6666', secondary_phone: nil)
+    contact5 = db[:contact].insert(email: 'bickboy@gmail.com', street_address: '11-14 Jaquillan St', town: 'Atherton', state: 'Queensland', postal_code: 4873, primary_phone: '(07) 7777 7777', secondary_phone: nil)
   
-    db[:role] << {person_id: 1, type: 'reservee', residential_contact_id: 1, mailing_contact_id: 2}
-    db[:role] << {person_id: 2, type: 'next_of_kin', residential_contact_id: 5, mailing_contact_id: 4}
-    db[:role] << {person_id: 3, type: 'applicant', residential_contact_id: 3}
-    db[:role] << {person_id: 1, type: 'deceased', residential_contact_id: 2}
-    db[:role] << {person_id: 3, type: 'reservee', residential_contact_id: 3, mailing_contact_id: 3}
+    db[:funeral_director] << {:name => 'Jolly Jumping Jack Funerals', :residential_contact_id => contact1, :mailing_contact_id => contact1}
+    
+    db[:role] << {person_id: 1, type: 'reservee', residential_contact_id: contact1, mailing_contact_id: contact2}
+    db[:role] << {person_id: 2, type: 'next_of_kin', residential_contact_id: contact5, mailing_contact_id: contact4}
+    db[:role] << {person_id: 3, type: 'applicant', residential_contact_id: contact3}
+    db[:role] << {person_id: 1, type: 'deceased', residential_contact_id: contact2}
+    db[:role] << {person_id: 3, type: 'reservee', residential_contact_id: contact3, mailing_contact_id: contact3}
     
     db[:allocation].insert(type: 'reservation', place_id: 7,  status: 'approved')
-    id1 = db[:allocation].insert(type: 'reservation', place_id: 8,  status: 'approved', location_description: 'Next to the big rock.', comments: 'Just some dummy comment text.')
-    id2 = db[:allocation].insert(type: 'reservation', place_id: 13, status: 'approved')
-    db.run('SET IDENTITY_INSERT [allocation] ON')
-    db[:allocation].insert(id: id1, type: 'interment', place_id: 8,  status: 'approved', funeral_director_id: 1, interment_date: (DateTime.now + 7), interment_type: 'coffin', comments: 'Call office prior burial.')
-    db[:allocation].insert(id: id2, type: 'interment', place_id: 13, status: 'approved', funeral_director_id: 1, interment_date: (DateTime.now + 3), interment_type: 'ashes', burial_requirements: 'On back please')
-    db.run('SET IDENTITY_INSERT [allocation] OFF')
-    
-    db[:allocation].insert(type: 'interment', place_id: 15, status: 'deleted', funeral_director_id: 1, interment_date: (DateTime.now + 10), interment_type: 'ashes', burial_requirements: 'To be provided')
+    db[:allocation].insert(type: 'reservation', place_id: 8,  status: 'approved', location_description: 'Next to the big rock.', comments: 'Just some dummy comment text.')
+    db[:allocation].insert(type: 'interment', place_id: 8,  status: 'approved', funeral_director_id: 1, interment_date: (DateTime.now + 7), interment_type: 'coffin', comments: 'Call office prior burial.')
+    db[:allocation].insert(type: 'reservation', place_id: 13, status: 'approved')
+    db[:allocation].insert(type: 'interment', place_id: 13, status: 'approved', funeral_director_id: 1, interment_date: (DateTime.now + 3), interment_type: 'ashes', burial_requirements: 'On back please')
     db[:allocation].insert(type: 'reservation', place_id: 15, status: 'deleted')
+    db[:allocation].insert(type: 'interment', place_id: 15, status: 'deleted', funeral_director_id: 1, interment_date: (DateTime.now + 10), interment_type: 'ashes', burial_requirements: 'To be provided')
     
-    db[:role_association] << {role_id: 1, allocation_id: 2, allocation_type: 'reservation'}
-    db[:role_association] << {role_id: 3, allocation_id: 2, allocation_type: 'reservation'}
-    db[:role_association] << {role_id: 2, allocation_id: 2, allocation_type: 'interment'}
-    db[:role_association] << {role_id: 4, allocation_id: 3, allocation_type: 'interment'}
-    db[:role_association] << {role_id: 5, allocation_id: 1, allocation_type: 'reservation'}
+    db[:role_association] << {role_id: 1, allocation_id: 1}
+    db[:role_association] << {role_id: 1, allocation_id: 2}
+    db[:role_association] << {role_id: 3, allocation_id: 2}
+    db[:role_association] << {role_id: 2, allocation_id: 3}
+    db[:role_association] << {role_id: 4, allocation_id: 4}
+    db[:role_association] << {role_id: 5, allocation_id: 5}
     
-    db[:transaction] << {:allocation_id => 2, :allocation_type => 'interment', :receipt_no => '69242a'}
-    db[:transaction] << {:allocation_id => 2, :allocation_type => 'reservation', :receipt_no => 72353}
+    db[:transaction] << {:allocation_id => 3, :receipt_no => '69242a'}
+    db[:transaction] << {:allocation_id => 5, :receipt_no => 72353}
     
     db[:user] << {id: 'tomw', role: 'coordinator'}
     db[:user] << {id: 'tatej', role: 'coordinator'}

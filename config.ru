@@ -1,4 +1,4 @@
-#!/usr/bin/env rackup
+#!/usr/bin/env ruby
 # encoding: utf-8
 
 # This file can be used to start Padrino,

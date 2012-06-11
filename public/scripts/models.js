@@ -43,8 +43,9 @@ Ts.Model = Backbone.Model.extend({
     if (value == undefined) {
       return this._valid
     } else {
+      this._valid = !!value
       this.trigger('validityChange', this)
-      return this._valid = !!value
+      return this._valid
     }
   },
   // Consider an object with all falsey values as empty.
@@ -78,12 +79,13 @@ Ts.Contact = Ts.Model.extend({
 		street_address: null,
 		town: null,
 		state: null,
+    country: null,
 		postal_code: null,
     email: null,
 		primary_phone: null,
 		secondary_phone: null
 	},
-  required: ['street_address', 'town', 'state', 'postal_code'],
+  required: ['street_address', 'town', 'state', 'country', 'postal_code'],
 	urlRoot: '/contact'
 })
 
@@ -97,14 +99,17 @@ Ts.Role = Ts.Model.extend({
 	},
   initialize: function () {
     if(!this.get('person')) this.set({person: new Ts.Person})
-    if(!this.get('residential_contact')) this.set({residential_contact: new Ts.Contact})
+    if(this.get('residential_contact') && this.get('residential_contact').isEmpty()) this.set('residential_contact', null)
+    if(this.get('mailing_contact') && this.get('mailing_contact').isEmpty()) this.set('mailing_contact', null)
   },
   valid: function () {
+    window.tester = this
     return !!(
       this.get('person').valid() &&
-      this.get('residential_contact') &&
-      this.get('residential_contact').valid() &&
-      (!this.get('mailing_contact') || this.get('mailing_contact').isEmpty() || this.get('mailing_contact').valid())
+      (
+        (this.get('residential_contact') && this.get('residential_contact').valid()) ||
+        (this.get('mailing_contact') && this.get('mailing_contact').valid())
+      )
     )
   }
 })

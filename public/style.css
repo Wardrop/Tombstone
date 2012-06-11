@@ -13,20 +13,21 @@ body {
   line-height: 1.25;
   position: relative;
 }
-input, select, button, textarea {
+input, select, button, textarea, .input_style {
+  font-family: arial;
   padding: 0.4em;
   font-size: 100%;
 }
 select {
   padding: 0.2em;
 }
-input, select, button {
+input, select, button, .input_style {
   height: 28px;
 }
 select {
   min-width: 64px;
 }
-input[type=text], input[type=password], select {
+input[type=text], input[type=password], select, .input_style {
   border: 1px solid #999;
 }
 input[type=text]:focus, input[type=password]:focus, select:focus {
@@ -573,6 +574,25 @@ a.row_button:hover {
   vertical-align: middle;
 }
 
+.separator {
+  height: 1px;
+  background: #bbb;
+  margin: 20px 0;
+  text-align: center;
+}
+.separator > span {
+  display: inline-block;
+  height: 14px;
+  background: white;
+  position: relative;
+  top: -7px;
+  width: 38px;
+  color: #999;
+}
+.separator > span:before {
+  content: "OR";
+}
+
 .inline_layout {
   display: block;
   width: 100%;
@@ -596,7 +616,6 @@ a.row_button:hover {
   vertical-align: top;
 }
 .inline_layout > .separator {
-  position: relative;
   height: 100%;
 }
 .inline_layout > .separator > span {
@@ -615,8 +634,8 @@ a.row_button:hover {
   background: #999;
   width: 1px;
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: 5%;
+  bottom: 5%;
   left: 50%;
 }
 

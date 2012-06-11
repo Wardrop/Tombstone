@@ -22,6 +22,12 @@
     end.to_json
     %>
   </script>
+  
+  <script type="text/javascript">
+    $(function() {
+  		$('[name=funeral_service_location]').combobox({placeholder: 'Select or type...'});
+  	});
+  </script>
 <% end %>
 <form id="interment_form" class="rowed wide" action="<%= (Tombstone::Interment === @allocation) ? "/interment/#{@allocation.id}" : "/interment" %>">
   <section>
@@ -40,9 +46,14 @@
         <span>Director Name</span>
         <input type="text" name="funeral_director_name" style="width: 40%" />
       </label>
-      <label>
+      <label class="ui-widget">
         <span>Location</span>
-        <input type="text" name="funeral_service_location" style="width: 40%;"  />
+      	<select name="funeral_service_location">
+      		<option value="">Select or type...</option>
+      		<option value="ActionScript">Grave Side</option>
+      		<option value="AppleScript">Church</option>
+      	</select>
+        <!-- <input type="text" name="funeral_service_location" style="width: 40%;"  /> -->
         <!--
         <span style="position: relative; border: 1px solid #999; width: 30%; padding-right: 20px; padding-bottom: 0px;">
           <input type="text" name="funeral_service_location" style="width: 100%; border: none; position: relative; z-index: 10; outline: none !important;"  />
