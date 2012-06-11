@@ -1,6 +1,5 @@
 <%
 @document[:title] = "View Reservation ##{@allocation.id}"
-p @allocation.role_by_type('reservee')
 @document[:page_heading] = print("Reservation ##{@allocation.id}") do
   "Reservation for #{@allocation.role_by_type('reservee').person.name.titleize}"
 end
@@ -31,7 +30,7 @@ end
 <div id="reservation_view" class="rowed very_wide view">
   <%
   roles = {}
-  roles['reservee'] = @allocation.alternate_reservee
+  roles['reservee'] = @allocation.alternate_reservee if @allocation.alternate_reservee
   @allocation.roles.each { |v| roles[v.type] = v }
   roles.each do |type, value| %>
     <section>
