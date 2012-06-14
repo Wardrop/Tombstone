@@ -2,7 +2,7 @@
 # Dir.glob(File.join(File.dirname(__FILE__), 'lib/*/**/*.rb')) { |f| require f }
 
 module Tombstone
-  VERSION = '0.9'
+  VERSION = '0.9.1'
   
   class << self
     attr_accessor :config
@@ -61,7 +61,8 @@ module Tombstone
         breadcrumb: true,
         banner: flash[:banner]
       }
-      @user = User.with_pk session[:user_id]
+      
+      User.current = @user = User.with_pk(session[:user_id])
       BaseModel.permissions = (@user.role_permissions rescue nil)
 
       if request.content_type && request.content_type.match(%r{^application/json})

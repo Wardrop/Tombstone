@@ -5,6 +5,8 @@ content_for :head do %>
     $( function () {
       $('#search_results .clickable').click( function (e) {
         if(e.target.tagName != 'A') {
+          $(this).children('.details').slideToggle(150)
+          <!--
           if($(this).hasClass('expanded')) {
             $(this).removeClass('expanded')
             $(this).attr('title', 'Click to expand')
@@ -12,6 +14,7 @@ content_for :head do %>
             $(this).addClass('expanded')
             $(this).attr('title', 'Click to collapse')
           }
+          -->
         }
       }).attr('title', 'Click to expand')
     })
@@ -22,8 +25,8 @@ content_for :head do %>
     <h2 class="underline">Find</h2>
     <form class="inline_layout spaced h_padded" method="GET" action".">
       <label style="width: 68%">
-        <input type="text" name="search" placeholder="Search terms..." style="width: 100%"
-          title="Valid search fields: <%= Tombstone::Search.searchable.keys.join(', ') %>" />
+        <input class="tooltip" type="text" name="search" placeholder="Search terms..." style="width: 100%"
+        title="Valid search fields include: <%= Tombstone::Search.searchable.keys.join(', ') %>. Dates must be in the format dd/mm/yyyy. Dates support less than (<) and greater than (>) operators, e.g. dob>15/04/1960." />
       </label>
       <label style="width: 20%">
         <select type="text" name="type" style="width: 100%">
@@ -38,15 +41,19 @@ content_for :head do %>
   <section id="search_results">
     <h3 class="underline">
       Results
-      <!--
       <div class="heading_float order_options">
         Order By:
-        <a href="#">Given Name</a>
-        <a href="#">Surname</a>
-        <a href="#" class="desc">Created At</a>
-        <a href="#">Created By</a>
+        <%
+        base = URI(url('find'))
+        Tombstone::Search.sortable.each do |k,v|
+          k = k.to_s
+          order_dir = (params['order_by'] == k && params['order_dir'] == 'asc') ? 'desc' : 'asc'
+          %>
+          <a class="<%= params['order_by'] == k ? params['order_dir'] : '' %>" href="<%= base.query = URI.encode_www_form(params.merge('order_by' => k, 'order_dir' => order_dir)); base.to_s %>"><%= k.demodulize.titleize %></a>
+          <%
+        end
+        %>
       </div>
-      -->
     </h3>
     <div class="list_rows padded">
     <%=

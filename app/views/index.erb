@@ -25,9 +25,8 @@
   <div style="width: 4%"></div>
   <div style="width: 48%">
     <h2>Upcoming Burials</h2>
-    <div class="list_rows">
+    <div>
       <%
-      p @calendar.upcoming_interments(DateTime.now, (Date.today + 7)).sql
       grouped = Hash.new { |h,k| h[k] = [] }
       @calendar.upcoming_interments(DateTime.now, (Date.today + 7)).all.each do |interment|
         grouped[interment.interment_date.to_date] << interment
@@ -35,7 +34,8 @@
       grouped.each do |date, interments| %>
         <h3><%= print_simple_day(date) %></h3>
         <div class="list_rows">
-          <% interments.each do |interment|
+          <%
+          interments.each do |interment|
             deceased_role = interment.role_by_type('deceased')
             %>
             <div class="padded">

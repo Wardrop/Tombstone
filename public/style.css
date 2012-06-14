@@ -5,6 +5,9 @@
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
+a {
+  color: blue;
+}
 body {
   font-family: "Lucida Sans", arial;
   font-size: 13px;
@@ -12,6 +15,9 @@ body {
   background: #fafafa;
   line-height: 1.25;
   position: relative;
+}
+.input_style {
+  display: inline-block;
 }
 input, select, button, textarea, .input_style {
   font-family: arial;
@@ -325,11 +331,16 @@ h1 .heading_float, h2 .heading_float, h3 .heading_float {
 .heading_float.order_options a {
   margin: auto 2px;
 }
+.heading_float.order_options a:visited {
+  color: blue;
+}
 .heading_float.order_options a.desc:after {
-  content: " (desc)";
+  content: " ▼";
+  font-size: 90%;
 }
 .heading_float.order_options a.asc:after {
-  content: " (asc)";
+  content: " ▲";
+  font-size: 90%;
 }
 
 .padded {
@@ -402,7 +413,7 @@ section:first-child {
   margin-bottom: 1px;
   position: relative;
 }
-.list_rows > div:nth-child(even),  {
+.list_rows > div:nth-child(even)  {
   background: none;
 }
 .list_rows > div.even {

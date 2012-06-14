@@ -29,6 +29,30 @@ module Tombstone
       (aliased) ? Hash[*keys.map{|k,v| ["#{self.class.table_name}__#{k}".to_sym, v] }.flatten] : keys
     end
     
+    def before_update
+      super
+      self.class.dataset.columns.each do |column|
+        case column
+        when :modified_by
+          self.modified_by = (User.current) ? User.current.id : nil
+        when :modified_at
+          self.modified_at = DateTime.now
+        end    
+      end
+    end
+    
+    def before_create
+      super
+      self.class.dataset.columns.each do |column|
+        case column
+        when :created_by
+          self.created_by = (User.current) ? User.current.id : nil
+        when :created_at
+          self.created_at = DateTime.now
+        end
+      end
+    end
+    
     
     class << self
       

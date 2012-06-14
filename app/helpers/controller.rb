@@ -117,19 +117,22 @@ module Tombstone
     # return value.
     def parse_search_string(str, valid_keys)
       valid_keys = valid_keys.map{|v| v.to_s}
-      operators = [':']
+      operators = [':', '>', '<']
       indices = []
       loop do
         offset = (indices.last) ? str.index(Regexp.union(operators), indices.last) + 1 : 0
         index = str.index(/(?<=^| )#{Regexp.union valid_keys}#{Regexp.union operators}/, offset)
         (index) ? indices << index : break
       end
-      terms = {}
+      terms = []
       indices.each_index do |i|
         field, operator, value = str[Range.new(indices[i], (indices[i+1] || 0) - 1)].strip.partition(Regexp.union operators)
-        terms[field] = value.strip
+        value = value.strip
+        terms << {field: field.to_sym, operator: operator, value: value.strip} unless value.empty?
       end
-      return str[Range.new(0, indices.first || str.length, true)].strip.gsub(/ +/, ' '), terms
+      general_term = str[Range.new(0, indices.first || str.length, true)].strip.gsub(/ +/, ' ')
+      terms.unshift(field: :all, operator: ':', value: general_term) unless general_term.empty?
+      terms
     end
 
     def update_photos

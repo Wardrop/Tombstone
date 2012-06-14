@@ -66,7 +66,8 @@ module Tombstone
       validates_min_length 2, [:given_name, :surname]
       validates_presence [:date_of_birth, :gender]
       validates_includes ['male', 'female'], :gender
-      errors.add(:date_of_birth, "must be before today") { date_of_birth < Date.today }
+      errors.add(:date_of_birth, "must not be after today") { date_of_birth <= Date.today }
+      errors.add(:date_of_death, "must not be after today") { date_of_death <= Date.today } if date_of_death
     end
     
     # Filters

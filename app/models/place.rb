@@ -5,7 +5,8 @@ module Tombstone
     one_to_many :children, :class => self, :key => :parent_id
     one_to_many :allocations, :class => :'Tombstone::Allocation', :key => :place_id
     one_to_many :photos, :class => :'Tombstone::Photo', :key => :place_id
-
+    set_dataset dataset.disable_insert_output
+    
     def_dataset_method(:with_child_count) do
       left_join(
         Place.group(:parent_id).select{[count(parent_id).as(child_count), :parent_id___child_parent_id]},
@@ -40,12 +41,14 @@ module Tombstone
     def validate
       super
       validates_min_length 1, :name
+      errors.add(:name, "cannot contain less than or greater than character (>)") { name.include?('>') || name.include?('<') }
       validates_min_length 1, :type
       validates_includes self.class.valid_states, :status
       validates_not_string :max_interments
       errors.add(:parent, "does not exist") if !parent_id.nil? && parent.nil?
       siblings = self.siblings(false).all
       unless siblings.empty?
+        type.downcase! if type
         errors.add(:type, "must be same as siblings (#{siblings[0].type.capitalize()})") unless type == siblings[0].type
         errors.add(:name, "must be unique among siblings") unless siblings.select{ |s| s.name == name }.empty?
       end
@@ -68,7 +71,7 @@ module Tombstone
     end
 
     def has_photos?
-      Photo.filter(:place_id => :place_id).and(:enabled => 1).count > 0
+      Photo.filter(:type_id => :place_id).and(:enabled => 1).count > 0
     end
 
     def calculated_max_interments

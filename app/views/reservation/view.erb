@@ -30,7 +30,7 @@ end
 <div id="reservation_view" class="rowed very_wide view">
   <%
   roles = {}
-  roles['reservee'] = @allocation.alternate_reservee if @allocation.alternate_reservee
+  roles['reservee'] = @allocation.alternate_reservee unless @allocation.alternate_reservee.blank?
   @allocation.roles.each { |v| roles[v.type] = v }
   roles.each do |type, value| %>
     <section>
@@ -97,6 +97,19 @@ end
             <%
             end
           end %>
+        </div>
+      </label>
+      <div class="row" style="height: 16px;"></div>
+      <label>
+        <span>Created</span>
+        <div>
+          <%= print('<small>unknown</small>') { "#{@allocation.created_at.strftime('%d/%m/%Y %l:%M%P')} by #{@allocation.created_by}" } %>
+        </div>
+      </label>
+      <label>
+        <span>Modified</span>
+        <div>
+          <%= print('<small>never</small>') { "#{@allocation.modified_at.strftime('%d/%m/%Y %l:%M%P')} by #{@allocation.modified_by}" } %>
         </div>
       </label>
     </div>

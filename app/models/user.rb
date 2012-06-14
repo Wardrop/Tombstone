@@ -3,6 +3,10 @@ module Tombstone
     set_primary_key :id
     unrestrict_primary_key
     
+    class << self
+      attr_accessor :current
+    end
+    
     attr_accessor :ldap
     
     def role_permissions

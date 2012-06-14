@@ -104,6 +104,19 @@ end
           <%= print { "<a href='#{url(:reservation_view, @allocation.reservation.id)}'>View Reservation</a>" } %>
         </div>
       </label>
+      <div class="row" style="height: 16px;"></div>
+      <label>
+        <span>Created</span>
+        <div>
+          <%= print('<small>unknown</small>') { "#{@allocation.created_at.strftime('%d/%m/%Y %l:%M%P')} by #{@allocation.created_by}" } %>
+        </div>
+      </label>
+      <label>
+        <span>Modified</span>
+        <div>
+          <%= print('<small>never</small>') { "#{@allocation.modified_at.strftime('%d/%m/%Y %l:%M%P')} by #{@allocation.modified_by}" } %>
+        </div>
+      </label>
     </div>
   </section>
   <section>
