@@ -7,9 +7,9 @@ end
 module Tombstone
   describe ModelPermissions do
     context "dataset" do
-      it "has an empty Permissions object by default" do
+      it "defaults to default role" do
         SpecialPerson.permissions.should be_a(Tombstone::Permissions)
-        SpecialPerson.permissions.to_hash.should be_empty
+        SpecialPerson.permissions.role.should == :default
       end
       
       it "can set and get permissions" do
@@ -25,10 +25,10 @@ module Tombstone
     end
     
     context "instance" do
-      it "has an empty Permissions object by default" do
+      it "defaults to default role" do
         sp = SpecialPerson.find
         sp.permissions.should be_a(Tombstone::Permissions)
-        sp.permissions.to_hash.should be_empty
+        sp.permissions.role.should == :default
       end
       
       it "can set and get permissions" do
