@@ -133,7 +133,7 @@ table.wc-time-slots {
 }
 
 .wc-time-slots {
-	position: absolute;	
+/* position: absolute;*/
 	width: 100%;
 }
 

@@ -1,11 +1,22 @@
 <% records.each do |record|
-  main_role = record.role_by_type('reservee') || record.role_by_type('deceased')
-  applicant = record.role_by_type('applicant')
+  main_role = record.role_by_type('deceased') || record.role_by_type('reservee')
+  applicant = record.role_by_type('applicant') 
   next_of_kin = record.role_by_type('next_of_kin')
   %>
   <div class="clickable <%= record.status %>">
     <div class="summary">
-      <%= record.type.demodulize.titleize %> - <%= print { record.place.name } %> - <%= print { "#{main_role.person.title} #{main_role.person.given_name} #{main_role.person.surname}" } %>
+      <span style="float: left;">
+        <%= record.type.demodulize.titleize %> for
+        <%= print {
+          (main_role) ?
+            "#{main_role.person.title} #{main_role.person.given_name} #{main_role.person.surname}" :
+            (record.alternate_reservee) ?
+              record.alternate_reservee :
+              "<small>"+(record.type == 'interment' ? 'No deceased' : 'No reservee')+"</small>"
+        } %>
+      </span>
+      <span style="float: right; margin-right: 32px;"><%= print { record.place.full_name } %></span>
+      <div style="clear: both;"></div>
       <a class="goto" href="<%= url :"#{record.type.downcase}_view", :id => record.id %>" title="View record"></a>
     </div>
     <div class="details">
@@ -25,10 +36,10 @@
       </div>
       <div class="right rowed">
         <div class="row">
-          <span>Created:</span><div>15/01/2012 by Mara Rooks</div>
+          <span>Created:</span><div><%= print('<small>unknown</small>') { "#{record.created_at.strftime('%d/%m/%Y %l:%M%P')} by #{record.created_by}" } %></div>
         </div>
         <div class="row">
-          <span>Last Modified:</span><div>25/01/2012 by Ron Clarke</div>
+          <span>Last Modified:</span><div><%= print('<small>never</small>') { "#{record.modified_at.strftime('%d/%m/%Y %l:%M%P')} by #{record.modified_by}" } %></div>
         </div>
       </div>
     </div>

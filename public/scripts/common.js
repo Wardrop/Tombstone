@@ -30,10 +30,18 @@ $( function () {
     $(this).datetimepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', changeYear: true, yearRange: "1900:", ampm: true, timeFormat: 'h:mmtt' })
   })
   $('input.tooltip').livequery( function () {
-    $(this).tipsy({trigger: 'focus', opacity: 1, gravity: 'w'});
+    var gravity = $(this).data('gravity')
+    if(!gravity) gravity = 'w'
+    $(this).tipsy({trigger: 'focus', opacity: 1, gravity: gravity});
   })
   $('input[placeholder]').livequery( function () {
     $(this).placeholder();
+  })
+  
+  $(document).on('click', 'section > h2.underline', function () {
+    $(this).next().slideToggle(150);
+  }).on('mouseover', 'section > h2.underline', function () {
+    $(this).css({cursor: 'pointer'}).attr('title', 'Click to show/hide')
   })
   
   // Control for adding an arbitary number of values for a field.
@@ -61,7 +69,6 @@ $( function () {
 
 // _super taken from https://gist.github.com/1542120
 (function(Backbone) {
-
   // The super method takes two parameters: a method name
   // and an array of arguments to pass to the overridden method.
   // This is to optimize for the common case of passing 'arguments'.
@@ -94,6 +101,14 @@ $( function () {
   });
 
 })(Backbone);
+
+_.templateSettings.escape = /<\?-([\s\S]+?)\?>/g
+_.templateSettings.evaluate = /<\?([\s\S]+?)\?>/g
+_.templateSettings.interpolate = /<\?=([\s\S]+?)\?>/g
+
+escape: /<%-([\s\S]+?)%>/g
+evaluate: /<%([\s\S]+?)%>/g
+interpolate: /<%=([\s\S]+?)%>/g
 
 Backbone.Model.prototype.recursiveToJSON = function () {
   var json = this.toJSON()

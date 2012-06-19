@@ -106,12 +106,12 @@ $( function () {
   		return this
     },
     getJSON: function () {
-      if (!this.model || this.model.isEmpty()) {
-        return null
-      } else if (this.use) {
+      if (this.use && (!this.model || this.model.isEmpty())) {
         return {type: this.role_type, use: this.use}
-      } else {
+      } else if (this.model && !this.model.isEmpty()) {
         return this.model.recursiveToJSON()
+      } else {
+        return null
       }
     },
     addRole: function () {
@@ -624,6 +624,7 @@ $( function () {
           
 			var section = new Ts.FormViews.Section({
 				title: 'Actions',
+        className: 'noprint',
 				body: [multibutton.render().el, this.indicator]
 			})
 			$(this.el).append(section.render().el)

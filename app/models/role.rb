@@ -93,7 +93,6 @@ module Tombstone
     def validate
       super
       errors.add(:person, "must have an associated person") if !person
-      errors.add(:person, "must have an associated contact") unless residential_contact || mailing_contact
       errors.add(:residential_contact, "cannot be shared between multiple people") if residential_contact && residential_contact.shared?
       errors.add(:mailing_contact, "cannot be shared between multiple people") if mailing_contact && mailing_contact.shared?
       validates_includes self.class.valid_types, :type

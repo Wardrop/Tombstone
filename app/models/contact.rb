@@ -27,8 +27,7 @@ module Tombstone
       # end
       validates_min_length 1, :state
       validates_min_length 1, :country
-      validates_integer :postal_code
-      errors.add(:postal_code, "must be exactly 4 characters long") unless postal_code.to_s.length == 4
+      validates_min_length 1, :postal_code
       if !email.blank? && !email.match(/.+@.+/)
         errors.add(:email, "must be valid, if given")
       end

@@ -3,17 +3,23 @@
 content_for :head do %>
   <script type="text/javascript">
     $( function () {
-      $('#search_results .clickable').click( function (e) {
-        if(e.target.tagName != 'A') {
-          if($(this).hasClass('expanded')) {
-            $(this).removeClass('expanded')
-            $(this).attr('title', 'Click to expand')
-          } else {
-            $(this).addClass('expanded')
-            $(this).attr('title', 'Click to collapse')
-          }
-        }
-      }).attr('title', 'Click to expand')
+      $('#search_results .clickable a').click( function (e) {
+        e.stopPropagation();
+      })
+      $('#search_results .clickable').toggle( function () {
+        $(this).attr('title', 'Click to collapse')
+        $('.details', this).slideDown(150)
+      }, function () {
+        $(this).attr('title', 'Click to expand')
+        $('.details', this).slideUp(150)
+      })
+      
+      var searchField = $('#search_defintion [name=search]')
+      var setTitle = function () {
+        searchField.attr('title', "Valid search fields include: "+$(':selected', this).data('searchable'))
+      }
+      $('#search_defintion [name=type]').change(setTitle)
+      setTitle.apply($('#search_defintion [name=type]')[0])
     })
   </script>
 <% end %>
@@ -22,12 +28,12 @@ content_for :head do %>
     <h2 class="underline">Find</h2>
     <form class="inline_layout spaced h_padded" method="GET" action".">
       <label style="width: 68%">
-        <input type="text" name="search" placeholder="Search terms..." style="width: 100%"
-          title="Valid search fields: <%= Tombstone::Search.searchable.keys.join(', ') %>" />
+        <input type="text" class="tooltip" data-gravity="s" title="" name="search" placeholder="Search terms..." style="width: 100%" />
       </label>
       <label style="width: 20%">
         <select type="text" name="type" style="width: 100%">
-          <option value="allocations">Find Allocations</option>
+          <option value="allocations" data-searchable="<%= Tombstone::AllocationSearch.searchable.keys.join(', ') %>">Find Allocations</option>
+          <option value="places" data-searchable="<%= Tombstone::PlaceSearch.searchable.keys.join(', ') %>">Find Places</option>
         </select>
       </label>
       <label style="text-align: right; width: 12%">
@@ -38,15 +44,21 @@ content_for :head do %>
   <section id="search_results">
     <h3 class="underline">
       Results
-      <!--
       <div class="heading_float order_options">
-        Order By:
-        <a href="#">Given Name</a>
-        <a href="#">Surname</a>
-        <a href="#" class="desc">Created At</a>
-        <a href="#">Created By</a>
+        <%
+        if @search_class
+          base = URI(url('find'))
+          %>Order By:<%
+          @search_class.sortable.each do |k,v|
+            k = k.to_s
+            order_dir = (params['order_by'] == k && params['order_dir'] == 'asc') ? 'desc' : 'asc'
+            %>
+            <a class="<%= params['order_by'] == k ? params['order_dir'] : '' %>" href="<%= base.query = URI.encode_www_form(params.merge('order_by' => k, 'order_dir' => order_dir)); base.to_s %>"><%= k.demodulize.titleize %></a>
+            <%
+          end
+        end
+        %>
       </div>
-      -->
     </h3>
     <div class="list_rows padded">
     <%=

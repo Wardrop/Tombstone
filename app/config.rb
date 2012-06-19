@@ -1,4 +1,5 @@
 {
+  search_record_limit: 250,
   email: {
     from: 'noreply@trcapp05.trc.local',
     operator_email: 'tombstone_operators@trc.local',

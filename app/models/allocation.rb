@@ -63,6 +63,12 @@ module Tombstone
     def roles_by_type(type)
       self.roles.select { |r| r.type == type.to_s}
     end
+    
+    def check_warnings
+      roles.each do |role|
+        warnings.add(role.type, "does not have an associated contact") unless role.residential_contact || role.mailing_contact
+      end
+    end
 
   end
 
@@ -182,7 +188,7 @@ module Tombstone
     end
     
     def check_warnings
-      # Cemetery date/time overlap.
+      super
       overlapping = self.class.
         exclude(primary_key_hash).
         exclude(status: 'deleted').

@@ -10,6 +10,7 @@ content_for :head do
       var id = 10;
       
       $calendar.weekCalendar({
+        readonly: true,
         displayOddEven:true,
         timeslotsPerHour : 2,
         allowCalEventOverlap : true,
@@ -23,9 +24,6 @@ content_for :head do
         //switchDisplay: {'work week': 5, 'full week': 7},
         title: function(daysToShow) {
           return daysToShow == 1 ? '%date%' : '%start% - %end%';
-        },
-        height : function($calendar) {
-          return $(window).height() - $("h1").outerHeight() - 1;
         },
         eventRender : function(calEvent, $event) {
           $event.addClass(calEvent.status);
@@ -60,5 +58,4 @@ content_for :head do
     })
   </script>
 <% end %>
-<h1></h1>
 <div id='calendar'></div>

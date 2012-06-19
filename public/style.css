@@ -5,6 +5,9 @@
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
+a {
+  color: blue;
+}
 body {
   font-family: "Lucida Sans", arial;
   font-size: 13px;
@@ -12,6 +15,9 @@ body {
   background: #fafafa;
   line-height: 1.25;
   position: relative;
+}
+.input_style {
+  display: inline-block;
 }
 input, select, button, textarea, .input_style {
   font-family: arial;
@@ -325,11 +331,16 @@ h1 .heading_float, h2 .heading_float, h3 .heading_float {
 .heading_float.order_options a {
   margin: auto 2px;
 }
+.heading_float.order_options a:visited {
+  color: blue;
+}
 .heading_float.order_options a.desc:after {
-  content: " (desc)";
+  content: " ▼";
+  font-size: 90%;
 }
 .heading_float.order_options a.asc:after {
-  content: " (asc)";
+  content: " ▲";
+  font-size: 90%;
 }
 
 .padded {
@@ -344,7 +355,7 @@ h1 .heading_float, h2 .heading_float, h3 .heading_float {
 
 .details {
   display: block;
-  padding: 0 14px 4px;
+  padding: 0 14px 6px;
   font-size: 11px;
   overflow: auto; /* Required for clearing the container for floating children */
 }
@@ -402,7 +413,7 @@ section:first-child {
   margin-bottom: 1px;
   position: relative;
 }
-.list_rows > div:nth-child(even),  {
+.list_rows > div:nth-child(even)  {
   background: none;
 }
 .list_rows > div.even {
@@ -418,7 +429,7 @@ section:first-child {
 .list_rows > div.deleted {
   color: #777;
 }
-.list_rows > div.deleted > .summary {
+.list_rows > div.deleted > .summary * {
   text-decoration: line-through;
 }
 .list_rows > div > .details {

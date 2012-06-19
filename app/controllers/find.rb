@@ -3,9 +3,10 @@ module Tombstone
     
     get :index do
       @records = []
-      conditions = {}
+      @search_class = nil
+      terms = []
       unless params['search'].blank? && params['type'].blank?
-        search_class = case params['type']
+        @search_class = case params['type']
           when 'people'
             PersonSearch
           when 'places'
@@ -13,15 +14,14 @@ module Tombstone
           else
             AllocationSearch
           end
-          
-        general, specific = parse_search_string(params['search'], search_class.searchable.keys)
-        conditions = (general.blank?) ? specific : {'all' => general}.merge(specific)
-        @records = search_class.new.query(conditions).all
+        terms = parse_search_string(params['search'], @search_class.searchable.keys)
+        order = (params['order_by']) ? [params['order_by'], params['order_dir']] : []
+        @records = @search_class.new.query(terms, [params['order_by'], params['order_dir']], settings.config[:search_record_limit]).all
       end
       prepare_form(render('find/index'), {
         selector: '#search_defintion',
         values: params.merge({
-          'search' => conditions.map{|f,v| "#{f}:#{v}"}.join(' ').strip
+          'search' => terms.map{ |v| "#{v[:field]}#{v[:operator]}#{v[:value]}"}.join(' ').strip
         })
       })
     end

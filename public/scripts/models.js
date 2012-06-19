@@ -103,14 +103,7 @@ Ts.Role = Ts.Model.extend({
     if(this.get('mailing_contact') && this.get('mailing_contact').isEmpty()) this.set('mailing_contact', null)
   },
   valid: function () {
-    window.tester = this
-    return !!(
-      this.get('person').valid() &&
-      (
-        (this.get('residential_contact') && this.get('residential_contact').valid()) ||
-        (this.get('mailing_contact') && this.get('mailing_contact').valid())
-      )
-    )
+    return !!this.get('person').valid()
   }
 })
 

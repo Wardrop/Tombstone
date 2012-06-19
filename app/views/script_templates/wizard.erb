@@ -1,7 +1,7 @@
 <script type="text/template" id="wizard:wizard_template">
-  <div class="overlay_container <%= this.options.className %>">
+  <div class="overlay_container <?= this.options.className ?>">
     <div class="heading">
-      <h2 class="underline"><%= data.title %></h2>
+      <h2 class="underline"><?= data.title ?></h2>
     </div>
     <div class="body">
       <div class="page"></div>
@@ -10,9 +10,9 @@
 </script>
 
 <script type="text/template" id="wizard:role_wizard_template">
-  <div class="overlay_container <%= this.options.className %>">
+  <div class="overlay_container <?= this.options.className ?>">
     <div class="heading">
-      <h2 class="underline"><%= data.title %></h2>
+      <h2 class="underline"><?= data.title ?></h2>
     </div>
     <div class="body">
       <ul class="menu pane" style="width: 25%">
@@ -39,9 +39,9 @@
 <script type="text/template" id="wizard:warning_confirmation_template">
   The following warnings were raised when trying to submit the form:
   <ul class="classic">
-  <% _.each(warnings, function (warning) { %>
-    <li><%= warning %></li>
-  <% }) %>
+  <? _.each(warnings, function (warning) { ?>
+    <li><?= warning ?></li>
+  <? }) ?>
   </ul>
   <div class="v_padded">
     <input type="button" value="Continue" class="warning" data-action="confirm" />
@@ -60,11 +60,9 @@
   		<span>Type</span>
   		<select name="type">
         <option value=""></option>
-        <option value="cemetery">Cemetery</option>
-        <option value="section">Section</option>
-        <option value="sub-section">Sub-Section</option>
-        <option value="row">Row</option>
-        <option value="plot">Plot</option>
+        <% Tombstone::Place.select(:type).distinct.naked.all.map{ |v| v[:type] }.each do |v| %>
+          <option value="<%= v %>"><%= v.demodulize.titleize %></option>
+        <% end %>
       </select>
   	</label>
   	<div class="row">
@@ -83,8 +81,8 @@
 </script>
 
 <script type="text/template" id="wizard:contact_block_template">
-  <span><strong><%= contact.street_address %></strong></span>
-  <div><%= contact.town %>, <%= contact.state %> <%= contact.postal_code %></div>
+  <span><strong><?= contact.street_address ?></strong></span>
+  <div><?= contact.town ?>, <?= contact.state ?> <?= contact.postal_code ?></div>
 </script>
 
 <script type="text/template" id="wizard:contact_results_template">
@@ -94,12 +92,12 @@
 
 <script type="text/template" id="wizard:create_contact_form_template">
   <div class="padded">
-    <% if (data.id) { %>
+    <? if (data.id) { ?>
       <label>
     		<span>ID</span>
-    		<input type="text" disabled="disabled" style="width: 50%;" value="<%= data.id %>" />
+    		<input type="text" disabled="disabled" style="width: 50%;" value="<?= data.id ?>" />
     	</label>
-    <% } %>
+    <? } ?>
   	<label>
   		<span>Street Address</span>
   		<input type="text" name="street_address" style="width: 100%;" />
@@ -393,12 +391,12 @@
 
 <script type="text/template" id="wizard:person_form_template">
   <div class="padded">
-    <% if (data.id) { %>
+    <? if (data.id) { ?>
       <label>
     		<span>ID</span>
-    		<input type="text" disabled="disabled" style="width: 50%;" value="<%= data.id %>" />
+    		<input type="text" disabled="disabled" style="width: 50%;" value="<?= data.id ?>" />
     	</label>
-    <% } %>
+    <? } ?>
     <label>
   		<span>Title</span>
       <select type="text" name="title">
@@ -445,9 +443,9 @@
 </script>
 
 <script type="text/template" id="wizard:person_block_template">
-  <% var dob = moment(person.date_of_birth) %>
-  <span><strong><%= person.title %> <%= person.given_name %> <%= person.middle_name %> <%= person.surname %></strong></span>
-  DOB: <%= (dob && dob.format('DD/MM/YYYY')) || '<small>none</small>' %>, Gender: <%= person.gender %>
+  <? var dob = moment(person.date_of_birth) ?>
+  <span><strong><?= person.title ?> <?= person.given_name ?> <?= person.middle_name ?> <?= person.surname ?></strong></span>
+  DOB: <?= (dob && dob.format('DD/MM/YYYY')) || '<small>none</small>' ?>, Gender: <?= person.gender ?>
 </script>
 
 <script type="text/template" id="wizard:person_results_template">
@@ -460,35 +458,35 @@
   <div class="rowed display wide">
     <div class="row">
       <span>Name</span>
-      <div><%= person.title %> <%= person.given_name %> <%= person.middle_name %> <%= person.surname %></div>
+      <div><?= person.title ?> <?= person.given_name ?> <?= person.middle_name ?> <?= person.surname ?></div>
     </div>
     <div class="row">
       <span>Gender</span>
-      <div><%= person.gender.titleize() %></div>
+      <div><?= person.gender.titleize() ?></div>
     </div>
     <div class="row">
       <span>Date of Birth</span>
-      <div><%= moment(person.date_of_birth).format('DD/MM/YYYY') %></div>
+      <div><?= moment(person.date_of_birth).format('DD/MM/YYYY') ?></div>
     </div>
     <div class="row">
       <span class="align_top">Residential Contact</span>
       <div>
-        <%= residential_contact.street_address %><br />
-        <%= residential_contact.town %> <%= residential_contact.state %> <%= residential_contact.country %> <%= residential_contact.postal_code %><br />
-        <%= residential_contact.primary_phone %><%= (residential_contact.secondary_phone) ? ", "+residential_contact.secondary_phone : '' %>
+        <?= residential_contact.street_address ?><br />
+        <?= residential_contact.town ?> <?= residential_contact.state ?> <?= residential_contact.country ?> <?= residential_contact.postal_code ?><br />
+        <?= residential_contact.primary_phone ?><?= (residential_contact.secondary_phone) ? ", "+residential_contact.secondary_phone : '' ?>
       </div>
     </div>
     <div class="row">
       <span class="align_top">Mailing Contact</span>
-      <% if(mailing_contact.street_address) { %>
+      <? if(mailing_contact.street_address) { ?>
         <div>
-          <%= mailing_contact.street_address %><br />
-          <%= mailing_contact.town %> <%= mailing_contact.state %> <%= mailing_contact.country %> <%= mailing_contact.postal_code %><br />
-          <%= mailing_contact.primary_phone %><%= (mailing_contact.secondary_phone) ? ", "+mailing_contact.secondary_phone : '' %>
+          <?= mailing_contact.street_address ?><br />
+          <?= mailing_contact.town ?> <?= mailing_contact.state ?> <?= mailing_contact.country ?> <?= mailing_contact.postal_code ?><br />
+          <?= mailing_contact.primary_phone ?><?= (mailing_contact.secondary_phone) ? ", "+mailing_contact.secondary_phone : '' ?>
         </div>
-      <% } else { %>
+      <? } else { ?>
         <div>None</div>
-      <% } %>
+      <? } ?>
     </div>
   </div>
   <div style="text-align: right;"><input type="button" value="Save" data-action="saveRole" /></div>

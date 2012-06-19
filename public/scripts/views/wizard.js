@@ -11,13 +11,17 @@ $( function () {
       this.options.scrollToErrors = false
   	},
     doAction: function (e) {
-      var action = null
-      if (e && e.target) {
-  		  action = $(e.target).data('action')
-      } else {
-        action = this.$('input[data-action]').data('action')
-      }
-      this.wizard[action](this.model)
+      var self = this
+      // Wrapped in a setTimeout because of some of the timing of events in vendor libraries. It's annoying as hell, but this is the easiest fix.
+      setTimeout( function () {
+        var action = null
+        if (e && e.target) {
+    		  action = $(e.target).data('action')
+        } else {
+          action = self.$('input[data-action]').data('action')
+        }
+        self.wizard[action](self.model)
+      }, 80)
       return false
   	}
   })
@@ -35,7 +39,7 @@ $( function () {
   	},
     // Broken out of render() method to allow adding or overriding behaviour before delegating events and populating form values.
     renderTemplate: function () {
-      this.$el.html(this.template({data: this.model.toJSON(), wizard: this.wizard, action: this.options.action})).prepend(this.errorBlock);
+      this.$el.html(this.template({data: this.model.toJSON(), wizard: this.wizard, action: this.options.action, view: this})).prepend(this.errorBlock);
       this.$el.append(this.indicator)
     },
   	render: function () {
@@ -197,7 +201,15 @@ $( function () {
   })
   
   Ts.WizardViews.PlaceForm = Ts.WizardViews.GenericForm.extend({
-    templateId: 'wizard:place_form_template'
+    templateId: 'wizard:place_form_template',
+    initialize: function () {
+      this._super('initialize', arguments)
+      this.placeTypes = $('#json\\:place_types').parseJSON() || {}
+    },
+    renderTemplate: function () {
+      this._super('renderTemplate', arguments)
+      this.$("[name=type]").combobox()
+    }
   })
   
   
@@ -225,7 +237,6 @@ $( function () {
         mailing_contact: this.model.get('role').get('mailing_contact') && this.model.get('role').get('mailing_contact').clone()
       })
       role.get('person').valid(this.model.get('role').get('person').valid())
-      
       role.get('residential_contact') && role.get('residential_contact').valid(this.model.get('role').get('residential_contact').valid())
       role.get('mailing_contact') && role.get('mailing_contact').valid(this.model.get('role').get('mailing_contact').valid())
       this.model.set({role: role})
@@ -249,6 +260,12 @@ $( function () {
       }
       if (role.get('mailing_contact')) {
         role.get('mailing_contact').off('validityChange', this.updateUI).on('validityChange', this.updateUI, this)
+      }
+      if(role.get('residential_contact') &&
+          role.get('mailing_contact') &&
+          role.get('residential_contact').get('id') == role.get('mailing_contact').get('id')
+      ) {
+        role.set('mailing_contact', role.get('residential_contact'))
       }
     },
     updateUI: function () {
