@@ -204,8 +204,8 @@ module Tombstone
       # Reservation for deceased.
       deceased = self.role_by_type('deceased')
       if deceased && deceased.person.role_by_type('reservee')
-        deceased.person.role_by_type('reservee').allocations_dataset.exclude(id: id).each do |res|
-          warnings.add :deceased, "has a reservation. Reservation ID is ##{res.id}"
+        deceased.person.role_by_type('reservee').allocations_dataset.exclude(place_id: place_id).each do |res|
+          warnings.add :deceased, "has a reservation for another place. Reservation ID is ##{res.id}."
         end
       end
 

@@ -575,7 +575,7 @@ $( function () {
       }, this)
       if (items.length > 0) items[items.length - 1].className = 'with_bottom_divider'
       if (this.allocationData.type == 'interment' && this.allocationData.status != 'deleted') items.push({name: 'multiple_interment', value: 'Multiple Interment'})
-      if (this.allocationData.type == 'reservation' && this.allocationData.status != 'deleted') items.push({name: 'inter', value: 'Inter'})
+      if (this.allocationData.type == 'reservation' && this.allocationData.status != 'deleted' && this.allocationData.interments.length == 0) items.push({name: 'inter', value: 'Inter'})
       if (this.allocationData.status != 'deleted' && this.allocationData.status != 'completed') {
         items.push(
           {name: 'edit', value: 'Edit'},
@@ -592,7 +592,7 @@ $( function () {
             window.location = '/'+this.allocationData.type+'/'+this.allocationData.id+'/edit'
           }, this),
           inter: _.bind(function () {
-            window.location = '/interment/'+this.allocationData.id+'/new'
+            window.location = '/interment/from_reservation/'+this.allocationData.id
           }, this),
           multiple_interment: _.bind(function () {
             window.location = '/interment/?place_id='+this.allocationData.place_id
@@ -686,7 +686,6 @@ $( function () {
             placeholder: 'Alternate reservee, e.g. family name',
             value: this.allocationData.alternate_reservee
           })).render().el)
-          //body.push($('<input type="input" name="alternate_reservee" maxlength="255" style="width: 40%" />'))
         }
 				var section = new Ts.FormViews.Section({
 					title: type.demodulize().titleize(),
@@ -708,7 +707,7 @@ $( function () {
             selected: selected,
             collection: new Ts.Places(places),
             nextAvailableFrom: 'section',
-            disabled: !this.allocationData.id
+            disabled: !this.allocationData.id || (this.options.type != this.allocationData.type)
           })
 					section.body.push(placeView.render().el)
 				}
@@ -755,7 +754,7 @@ $( function () {
 			$(this.el).append(section.render().el)
 		},
     renderLegacyPane: function () {
-      if (this.allocationData.legacy_fields.length == 0) return;
+      if (!this.allocationData.legacy_fields || this.allocationData.legacy_fields.length == 0) return;
       this.legacy || (this.legacy = new Ts.LegacyPane({allocation: this.allocationData}))
       $('body').append(this.legacy.render().el)
     },

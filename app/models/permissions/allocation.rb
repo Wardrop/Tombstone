@@ -23,7 +23,6 @@ module Tombstone
           unpermitted << 'completed' unless permissions.can_complete?
           unpermitted << 'deleted' unless can_delete
           permitted = self.class.valid_states.reject { |v| unpermitted.include? v }
-          p permitted
           permitted.select! { |v| status_allowed(v) }
         end
       end

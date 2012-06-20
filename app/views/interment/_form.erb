@@ -1,13 +1,17 @@
 <% content_for :head do %>  
   <script type="application/json" id="json:allocation_data">
     <%=
-    @allocation.to_json( include: {
-      roles: { include: [:person, :residential_contact, :mailing_contact] },
-      place: {},
-      transactions: {},
-      photos: {:include => [:thumbnail, :thumbnail_dimensions]},
-      legacy_fields: {}
-    })
+    if @allocation.new?
+      @allocation.to_json
+    else
+      @allocation.to_json( include: {
+        roles: { include: [:person, :residential_contact, :mailing_contact] },
+        place: {},
+        transactions: {},
+        photos: {:include => [:thumbnail, :thumbnail_dimensions]},
+        legacy_fields: {}
+      })
+    end
     %>
   </script>
   
@@ -110,7 +114,7 @@
       </label>
     </div>
   </section>
-  <% if @allocation.id %>
+  <% if Tombstone::Interment === @allocation && @allocation.id %>
     <input type="hidden" name="id" value="<%= @allocation.id %>" />
   <% end %>
   <input type="hidden" name="_method" value="<%= (Tombstone::Interment === @allocation && @allocation.id) ? 'put' : 'post'  %>" />

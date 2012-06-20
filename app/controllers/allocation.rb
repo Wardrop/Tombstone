@@ -146,17 +146,17 @@ module Tombstone
       prepare_form(render("interment/new"), {selector: 'form', values: @allocation.values})
     end
     
-    get :new_from_reservation, :map => "interment/:id/new" do
+    get :new_from_reservation, :map => "interment/from_reservation/:id" do
       @allocation = Reservation.with_pk(params[:id].to_i)
-      if not Allocation.filter(:id => params[:id].to_i, :type => 'interment').exclude(status: 'deleted').empty?
-        halt 500, render("error", :locals => {
-          :title => 'Interment Already Exists',
-          :message => "An interment for reservation ##{params[:id]} already exists."
-        })
-      elsif !@allocation
+      if !@allocation
         halt 404, render("error", :locals => {
           :title => 'Reservation Not Found',
           :message => "The reservation with ID ##{params[:id]} does not exist."
+        })
+      elsif not @allocation.interments.empty?
+        halt 500, render("error", :locals => {
+          :title => 'Interment Already Exists',
+          :message => "An interment for reservation ##{params[:id]} already exists."
         })
       else
         @allocation.roles.each { |r| r.type = 'deceased' if r.type == 'reservee' }

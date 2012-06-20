@@ -13,6 +13,7 @@ content_for :head do
   <script type="application/json" id="json:allocation_data">
     <%=
     @allocation.to_json( include: {
+      interments: {},
       roles: { include: [:person, :residential_contact, :mailing_contact] },
       place: {},
       transactions: {},
