@@ -45,7 +45,7 @@ module Tombstone
           },
           address: proc { |v,o|
             v = text_value(v)
-            "([CONTACT].[STREET_ADDRESS]+', '+[CONTACT].[TOWN]+' '+[CONTACT].[STATE]+' '+[CONTACT].[COUNTRY]+' '+[CONTACT].[POSTAL_CODE] LIKE #{@db.literal(v)}"
+            "([CONTACT].[STREET_ADDRESS]+', '+[CONTACT].[TOWN]+' '+[CONTACT].[STATE]+' '+[CONTACT].[COUNTRY]+' '+[CONTACT].[POSTAL_CODE]) LIKE #{@db.literal(v)}"
           },
           interment_date: proc { |v,o|
             v = date_value(v)

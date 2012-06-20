@@ -46,3 +46,4 @@ end
 
 Sequel::Model.db << 'SET DATEFORMAT DMY'
 Sequel::Model.db << 'SET ANSI_NULLS ON'
+Sequel::Model.db << 'SET CONCAT_NULL_YIELDS_NULL OFF'
