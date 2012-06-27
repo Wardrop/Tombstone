@@ -12,8 +12,8 @@ module Tombstone
             }.select{|v| v}.join(' OR ')
           },
           id: proc { |v,o|
-            v = strict_value(v)
-            "[ALLOCATION].[ID] = #{@db.literal(v)}" 
+            v = integer_value(v)
+            (v) ? "[ALLOCATION].[ID] = #{@db.literal(v)}" : nil
           },
           dob: proc { |v,o|
             v = strict_value(v)
@@ -117,6 +117,11 @@ module Tombstone
       (value =~ /^"(.*)"$/) ? $1 : value
     end
     
+    def integer_value(value)
+      match = /^"?([0-9]+)"?$/.match(value)
+      match && match[0]
+    end
+    
   protected
     
     def conditions_sql(prefix = nil)
@@ -211,8 +216,8 @@ module Tombstone
             }.select{|v| v}.join(' OR ')
           },
           id: proc { |v,o|
-            v = strict_value(v)
-            "[PLACE].[ID] = #{@db.literal(v)}" 
+            v = integer_value(v)
+            (v) ? "[PLACE].[ID] = #{@db.literal(v)}" : nil
           },
           name: proc { |v,o|
             v = wildcard_value(v)
