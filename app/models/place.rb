@@ -41,7 +41,7 @@ module Tombstone
     def validate
       super
       validates_min_length 1, :name
-      errors.add(:name, "cannot contain less than or greater than character (>)") { name.include?('>') || name.include?('<') }
+      errors.add(:name, "cannot contain less than or greater than character (ie. > or <)") { !name.include?('>') && !name.include?('<') }
       validates_min_length 1, :type
       validates_includes self.class.valid_states, :status
       validates_not_string :max_interments

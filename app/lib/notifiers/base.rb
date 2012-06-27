@@ -32,7 +32,9 @@ module Tombstone
       def allocation_url
         URI.join(Tombstone.config[:base_url], "/#{@changed_allocation.type}/#{@changed_allocation.id}")
       end
-      
+    
+    protected
+    
       def print(fallback = 'none', &block)
         value = block.call rescue nil
         if value.blank?
@@ -46,8 +48,6 @@ module Tombstone
           end
         end
       end
-    
-    protected
       
       def render
         ERB.new(File.read("app/views/email/#{template}.erb")).result(binding)

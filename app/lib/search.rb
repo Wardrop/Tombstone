@@ -11,8 +11,12 @@ module Tombstone
               "(#{part})" if part
             }.select{|v| v}.join(' OR ')
           },
+          id: proc { |v,o|
+            v = strict_value(v)
+            "[ALLOCATION].[ID] = #{@db.literal(v)}" 
+          },
           dob: proc { |v,o|
-            v = date_value(v)
+            v = strict_value(v)
             begin
               date = Date.strptime(v, '%d/%m/%Y')
               case o
@@ -26,7 +30,7 @@ module Tombstone
             end rescue nil
           },
           dod: proc { |v,o|
-            v = date_value(v)
+            v = strict_value(v)
             begin
               date = Date.strptime(v, '%d/%m/%Y')
               case o
@@ -40,15 +44,15 @@ module Tombstone
             end rescue nil
           },
           name: proc { |v,o|
-            v = text_value(v)
+            v = wildcard_value(v)
             "([PERSON].[TITLE]+' '+[PERSON].[GIVEN_NAME]+' '+[PERSON].[SURNAME]) LIKE #{@db.literal(v)}" 
           },
           address: proc { |v,o|
-            v = text_value(v)
+            v = wildcard_value(v)
             "([CONTACT].[STREET_ADDRESS]+', '+[CONTACT].[TOWN]+' '+[CONTACT].[STATE]+' '+[CONTACT].[COUNTRY]+' '+[CONTACT].[POSTAL_CODE]) LIKE #{@db.literal(v)}"
           },
           interment_date: proc { |v,o|
-            v = date_value(v)
+            v = strict_value(v)
             begin
               date = Date.strptime(v, '%d/%m/%Y')
               case o
@@ -62,11 +66,11 @@ module Tombstone
             end rescue nil
           },
           place: proc { |v,o|
-            v = text_value(v)
+            v = wildcard_value(v)
             "[PLACE].[FULL_NAME] LIKE #{@db.literal(v)}"
           },
           status: proc { |v,o|
-            v = text_value(v)
+            v = wildcard_value(v)
             "[ALLOCATION].[STATUS] LIKE #{@db.literal(v)}"
           }
         }
@@ -84,7 +88,7 @@ module Tombstone
           :given_name => :given_name,
           :surname => :surname,
           :created_at => :created_at,
-          :modified_at => :created_at
+          :modified_at => :modified_at
         }
       end
     end
@@ -93,23 +97,23 @@ module Tombstone
       @db = self.class.const_get(:MODEL).db
     end
     
-    # Takes a hash of conditions (searchable fields with the value to match on), and an optional array of sortable fields
-    # to sort on. The sort order argument should be an array where ever odd element is a field, and every even element is
-    # the sort direction (either :asc, or :desc)
-    # Returns a dataset corresponding to the Model association with the current class.
+    # Takes an array of hashes, where each hash is a search condition consisting of the :field, :operator and :value.
+    # An optional array of field/direction pairs can also be provided to set sorting, e.g. [['name', 'desc'], ['id', 'asc']]
+    # Returns a dataset corresponding to the Model associated with the current class.
     def query(conditions = [], order = [], limit = 250)
+      conditions.select!{ |h| Proc === self.class.searchable[h[:field].to_sym]}
       @conditions = conditions
-      @order = Hash[*order].reject { |field, dir| field.nil? || !self.class.sortable[field.to_sym] }.
+      @order = Hash[order].reject { |field, dir| field.nil? || !self.class.sortable[field.to_sym] }.
         map{ |field, dir| (dir == 'asc') ? self.class.sortable[field.to_sym].asc : self.class.sortable[field.to_sym].desc }
       @limit = limit
       dataset
     end
     
-    def text_value(value)
+    def wildcard_value(value)
       (value =~ /^"(.*)"$/) ? $1 : "%#{value}%"
     end
     
-    def date_value(value)
+    def strict_value(value)
       (value =~ /^"(.*)"$/) ? $1 : value
     end
     
@@ -206,20 +210,24 @@ module Tombstone
               "(#{part})" if part
             }.select{|v| v}.join(' OR ')
           },
+          id: proc { |v,o|
+            v = strict_value(v)
+            "[PLACE].[ID] = #{@db.literal(v)}" 
+          },
           name: proc { |v,o|
-            v = text_value(v)
+            v = wildcard_value(v)
             "[PLACE].[NAME] LIKE #{@db.literal(v)}" 
           },
           full_name: proc { |v,o|
-            v = text_value(v)
+            v = wildcard_value(v)
             "[PLACE].[FULL_NAME] LIKE #{@db.literal(v)}"
           },
           type: proc { |v,o|
-            v = text_value(v)
+            v = wildcard_value(v)
             "[PLACE].[TYPE] LIKE #{@db.literal(v)}"
           },
           status: proc { |v,o|
-            v = text_value(v)
+            v = wildcard_value(v)
             "[PLACE].[STATUS] LIKE #{@db.literal(v)}"
           }
         }

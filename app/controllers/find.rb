@@ -15,8 +15,8 @@ module Tombstone
             AllocationSearch
           end
         terms = parse_search_string(params['search'], @search_class.searchable.keys)
-        order = (params['order_by']) ? [params['order_by'], params['order_dir']] : []
-        @records = @search_class.new.query(terms, [params['order_by'], params['order_dir']], settings.config[:search_record_limit]).all
+        order = (params['order_by']) ? [[params['order_by'], params['order_dir']]] : []
+        @records = @search_class.new.query(terms, [[params['order_by'], params['order_dir']]], settings.config[:search_record_limit]).all
       end
       prepare_form(render('find/index'), {
         selector: '#search_defintion',
