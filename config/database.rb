@@ -4,6 +4,7 @@ Sequel.default_timezone = :local
 Sequel::Dataset::TIMESTAMP_FORMAT = "'%Y-%m-%dT%H:%M:%S%N%z'"
 Sequel::Model.plugin :validation_helpers
 Sequel::Model.plugin :json_serializer
+Sequel::Model.plugin :tactical_eager_loading
 Sequel::Model.raise_on_typecast_failure = true
 Sequel::Model.raise_on_save_failure = true
 Sequel::Model.json_serializer_opts[:naked] = true

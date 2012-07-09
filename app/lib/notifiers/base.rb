@@ -17,16 +17,25 @@ module Tombstone
       end
       
       def to
-        Tombstone.config[:email][:operator_email]
+        
+      end
+      
+      def email_addresses_for_role(role)
+        ldap = LDAP.new(Tombstone.config[:ldap][:username], Tombstone.config[:ldap][:password])
+        ldap.user_details_for(Tombstone::User.filter(role: role.to_s).naked.all.map! { |v| v[:id] }).map! do |v|
+          v[:mail][0]
+        end
       end
       
       def send
-        Mail.deliver({
-          from: Tombstone.config[:email][:from],
-          to: to,
-          subject: subject,
-          body: render
-        })
+        [*to].each do |recipient|
+          Mail.deliver({
+            from: Tombstone.config[:email][:from],
+            to: recipient,
+            subject: subject,
+            body: render
+          })
+        end
       end
       
       def allocation_url

@@ -1,12 +1,10 @@
 {
   search_record_limit: 250,
+  base_url: 'http://tombstone.trc.local',
   email: {
-    from: 'noreply@trcapp05.trc.local',
-    operator_email: 'tombstone_operators@trc.local',
-    coordinator_email: 'tomw@trc.qld.gov.au',
+    from: 'noreply@tombstone.trc.local',
     delivery_method: :sendmail
   },
-  base_url: 'http://tombstone.trc.local',
   ldap: {
     servers: ['trcdc01.trc.local', 'trcdc02.trc.local'],
     domain: 'trc.local',

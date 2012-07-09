@@ -14,10 +14,10 @@
         deceased_role = interment.role_by_type('deceased')
         %>
         <div class="padded">
-        <%= interment.id %> -
-        <%= print { "#{deceased_role.person.title} #{deceased_role.person.given_name} #{deceased_role.person.surname}" } %> -
-        <%= print { interment.status.capitalize } %>
-        <a class="goto <%= interment.alert_status %>" href="<%= url :"#{interment.type.downcase}_view", :id => interment.id %>" title="View record"></a>
+          <%= interment.id %> -
+          <%= print { "#{deceased_role.person.title} #{deceased_role.person.given_name} #{deceased_role.person.surname}" } %> -
+          <%= print { interment.status.capitalize } %>
+          <a class="goto <%= interment.alert_status %>" href="<%= url :"#{interment.type.downcase}_view", :id => interment.id %>" title="View record"></a>
         </div>
       <% end %>
     </div>

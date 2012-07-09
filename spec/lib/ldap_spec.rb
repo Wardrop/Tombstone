@@ -85,10 +85,25 @@ module Tombstone
         end
       end
       
-      it "can get the users details" do
-        details = LDAP.new(@username, @password).user_details
-        details.should be_a(Net::LDAP::Entry)
-        details[:sAMAccountName][0].should == @username
+      it "can get details of the authenticated user" do
+        ldap = LDAP.new(@username, @password)
+        2.times do # Loop twice to ensure any caching mechanisms aren't affecting behaviour
+          details = ldap.user_details
+          details.should be_a(Net::LDAP::Entry)
+          details[:sAMAccountName][0].should == @username
+        end
+      end
+      
+      it "can get details of multiple users" do
+        ldap = LDAP.new(@username, @password)
+        usernames = @username, 'trcadmin'
+        2.times do # Loop twice to ensure any caching mechanisms aren't affecting behaviour
+          details = ldap.user_details_for(usernames)
+          details.each do |v|
+            v.should be_a(Net::LDAP::Entry)
+            usernames.should include(v[:sAMAccountName][0])
+          end
+        end
       end
     end
     

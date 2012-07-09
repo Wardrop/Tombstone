@@ -7,7 +7,7 @@ module Tombstone
       end
       
       def to
-        Tombstone.config[:email][:coordinator_email]
+        email_addresses_for_role('coordinator')
       end
       
       def subject

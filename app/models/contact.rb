@@ -27,7 +27,7 @@ module Tombstone
       # end
       validates_min_length 1, :state
       validates_min_length 1, :country
-      validates_min_length 1, :postal_code
+      validates_min_length 4, :postal_code
       if !email.blank? && !email.match(/.+@.+/)
         errors.add(:email, "must be valid, if given")
       end

@@ -93,7 +93,7 @@ module Tombstone
           halt 404
         end
       end
-      json_response places.order(:name).with_child_count.with_natural_order.naked.all
+      json_response places.with_child_count.with_natural_order.naked.all
     end
 
     # get :children, :with => [:parent_id, :option], :provides => :json do

@@ -9,6 +9,10 @@ module Tombstone
     class << self
       attr_accessor :servers, :use_ssl, :domain, :logger, :connection
       
+      def domain=(domain)
+        @domain = domain
+      end
+      
       def server
         servers << servers.shift
         host, port = servers[-1].split(':')
@@ -29,6 +33,8 @@ module Tombstone
       username = parse_username(username)
       qualified_username = "#{username}@#{domain}"
       @qualified_username, @username, @password = qualified_username, username.to_s, password.to_s
+      @treebase = domain.split('.').map{|v| "dc=#{v}"}.join(',')
+      @user_details_cache = {}
     end
     
     def connection
@@ -82,14 +88,31 @@ module Tombstone
     
     # Returns the details of the authenticated user (the username that was given when the object was initialized)
     def user_details
-      return @user_details if @user_details
-      treebase = domain.split('.').map{|v| "dc=#{v}"}.join(',')
-      result_set = connection.search(:base => treebase,:filter => Net::LDAP::Filter.eq("userPrincipalName", @qualified_username))
-      if result_set.nil?
-        op_result = ldap.connection.get_operation_result
-        raise StandardError, "Could not get user details for user #{@username}. The error was: (#{op_result.code}) #{op_result.message}" 
+      user_details_for(@qualified_username).first
+    end
+    
+    def user_details_for(users)
+      filters = []
+      results = []
+      [*users].each do |user|
+        if @user_details_cache[user]
+          results << @user_details_cache[user]
+        else
+          filters << Net::LDAP::Filter.eq('sAMAccountName', user.sub(/(@.+|$)/, ''))
+        end
       end
-      result_set.first
+      intersection = filters.reduce(filters.shift) { |memo, filter| memo | filter }
+      result_set = connection.search(
+        :base => @treebase,
+        :filter => intersection
+      )
+      if result_set.nil?
+        op_result = connection.get_operation_result
+        raise StandardError, "Could not get user details for user #{@username}. The error was: (#{op_result.code}) #{op_result.message}" 
+      else
+        result_set.each { |obj| @user_details_cache[obj[:sAMAccountName]] = @user_details_cache }
+      end
+      results.push *result_set
     end
   end
 end

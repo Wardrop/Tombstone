@@ -1,11 +1,12 @@
 # require_relative '../spec_helper'
+Tombstone.send :remove_const, :Permissions
 require_relative '../../app/lib/permissions'
 
 module Tombstone
   describe Permissions do
     map = {
-      :operator => {:can_approve => true, :can_create_burials => false, :invalid_option => true},
-      :coordinator => {:can_approve => true, :can_create_burials => true, :can_delete_photos => true}
+      :operator => {:can_approve => true, :can_edit => false, :invalid_option => true},
+      :coordinator => {:can_approve => true, :can_edit => true, :can_delete_photos => true}
     }
     
     context "class" do
@@ -20,7 +21,7 @@ module Tombstone
       
       it "can provide all valid permission options" do
         Permissions.options.should be_a(Set)
-        Permissions.options.should include(:can_approve, :can_create_burials, :can_delete_photos)
+        Permissions.options.should include(:can_approve, :can_edit, :can_delete_photos)
         Permissions.options.should_not include(:invalid_option)
       end
     end
@@ -63,22 +64,22 @@ module Tombstone
       it "can return boolean values when checking permissions" do
         perms = Permissions.new(:operator)
         perms.can_approve?.should == true
-        perms.can_create_burials?.should == false
+        perms.can_edit?.should == false
       end
       
       it "can raise an error when checking permissions" do
         perms = Permissions.new(:operator)
         perms.can_approve! # Shouldn't raise error
         expect {
-          perms.can_create_burials!
+          perms.can_edit!
         }.to raise_error(PermissionsError)
       end
       
       it "allows the role to be changed" do
         perms = Permissions.new(:operator)
-        perms.can_create_burials?.should == false
+        perms.can_edit?.should == false
         perms.role = :coordinator
-        perms.can_create_burials?.should == true
+        perms.can_edit?.should == true
       end
       
     end

@@ -21,7 +21,7 @@ module Tombstone
         	  THEN CAST([place].[name] as integer)
         	ELSE
         	  2147483647
-        	END as [NATURAL_ORDER]".lit).order(:NATURAL_ORDER.asc)
+        	END as [NATURAL_ORDER]".lit).order(:name.asc, :NATURAL_ORDER.asc)
     end
 
     def_dataset_method(:available_only) do

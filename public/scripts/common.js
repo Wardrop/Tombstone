@@ -22,13 +22,23 @@ Ts = {
 /**** Common Page Behaviours ****/
 
 $( function () {
+  var date = $('<input type="date" />')[0]
+  var datetime = $('<input type="datetime" />')[0]
+  var supportsDateInput = date.type == 'date' && (date.value = 'invalid date') && !(date.value == 'invalid date')
+  var supportsDateTimeInput = datetime.type == 'datetime' && (datetime.value = 'invalid datetime') && !(datetime.value == 'invalid datetime')
+  
   // Enable jQuery datepicker on all date and datetime fields.
-  $('input[type=date]').livequery( function () {
-    $(this).datepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', changeYear: true, yearRange: "1900:" })
-  })
-  $('input[type=datetime]').livequery( function () {
-    $(this).datetimepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', changeYear: true, yearRange: "1900:", ampm: true, timeFormat: 'h:mmtt' })
-  })
+  if (!supportsDateInput) {
+    $('input[type=date]').livequery( function () {
+      $(this).datepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', changeYear: true, yearRange: "1900:" })
+    })
+  }
+  if (!supportsDateTimeInput) {
+    $('input[type=datetime]').livequery( function () {
+      $(this).datetimepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', changeYear: true, yearRange: "1900:", ampm: true, timeFormat: 'h:mmtt' })
+    })
+  }
+  
   $('input.tooltip').livequery( function () {
     var gravity = $(this).data('gravity')
     if(!gravity) gravity = 'w'

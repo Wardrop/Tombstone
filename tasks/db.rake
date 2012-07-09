@@ -27,11 +27,11 @@ namespace :db do
     db[:person] << {title: 'Mr', surname: 'Bunson', given_name: 'Sam', middle_name: 'F', gender: 'male', date_of_birth: DateTime.parse('27/11/1971'), date_of_death: nil}
     db[:person] << {title: 'Mr', surname: 'Rojenstien', given_name: 'Phillip', middle_name: 'R', gender: 'male', date_of_birth: DateTime.parse('26/01/1988'), date_of_death: nil}
     
-    contact1 = db[:contact].insert(email: 'manager@bigbiz.com', street_address: '56 Hughey Cl', town: 'Mareeba', state: 'Queensland', postal_code: 4880, primary_phone: '(07) 4092 6735', secondary_phone: '0422 454 829')
-    contact2 = db[:contact].insert(email: 'littlesamurai@myfantasy.com', street_address: '65 Rankin St', town: 'Mareeba', state: 'Queensland', postal_code: 4880, primary_phone: '(07) 4095 4116', secondary_phone: nil)
-    contact3 = db[:contact].insert(email: 'emochick56@hotmail.com', street_address: '72 Ray Rd', town: 'Mareeba', state: 'Queensland', postal_code: 4880, primary_phone: '(07) 5555 5555', secondary_phone: nil)
-    contact4 = db[:contact].insert(email: 'me@iamme.com', street_address: '4 Gordon St', town: 'Malanda', state: 'Queensland', postal_code: 4873, primary_phone: '(07) 6666 6666', secondary_phone: nil)
-    contact5 = db[:contact].insert(email: 'bickboy@gmail.com', street_address: '11-14 Jaquillan St', town: 'Atherton', state: 'Queensland', postal_code: 4873, primary_phone: '(07) 7777 7777', secondary_phone: nil)
+    contact1 = db[:contact].insert(email: 'manager@bigbiz.com', street_address: '56 Hughey Cl', town: 'Mareeba', state: 'Queensland', country: 'Australia', postal_code: 4880, primary_phone: '(07) 4092 6735', secondary_phone: '0422 454 829')
+    contact2 = db[:contact].insert(email: 'littlesamurai@myfantasy.com', street_address: '65 Rankin St', town: 'Mareeba', state: 'Queensland', country: 'Australia', postal_code: 4880, primary_phone: '(07) 4095 4116', secondary_phone: nil)
+    contact3 = db[:contact].insert(email: 'emochick56@hotmail.com', street_address: '72 Ray Rd', town: 'Mareeba', state: 'Queensland', country: 'Australia', postal_code: 4880, primary_phone: '(07) 5555 5555', secondary_phone: nil)
+    contact4 = db[:contact].insert(email: 'me@iamme.com', street_address: '4 Gordon St', town: 'Malanda', state: 'Queensland', country: 'Australia', postal_code: 4873, primary_phone: '(07) 6666 6666', secondary_phone: nil)
+    contact5 = db[:contact].insert(email: 'bickboy@gmail.com', street_address: '11-14 Jaquillan St', town: 'Atherton', state: 'Queensland', country: 'Australia', postal_code: 4873, primary_phone: '(07) 7777 7777', secondary_phone: nil)
   
     db[:funeral_director] << {:name => 'Jolly Jumping Jack Funerals', :residential_contact_id => contact1, :mailing_contact_id => contact1}
     

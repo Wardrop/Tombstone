@@ -28,33 +28,22 @@ module Tombstone
       model.should == model_class.filter(model.pk_hash).first
     end
     
-    it "can search fields" do
-      search.query(:email => 'littlesamurai@myfantasy.com').count.should >= 1
-      search.query(:email => 'littlesamurai@myfantasy.com', :given_name => 'Phillip').count.should >= 1
-    end
-    
     it "ignores invalid and non-searchable fields" do
-      search.query(:primary_phone => '07 4959 39493', :raspberry => 'Yes Please!').count.should == model_class.all.count
-      search.query(
-        :primary_phone => '07 4959 39493',
-        :email => 'littlesamurai@myfantasy.com'
-      ).count.should == search.query(:email => 'littlesamurai@myfantasy.com').count
+      example_search = search.query([{field: :name, operator: ':', value: 'a'}, {field: :raspberry, operator: ':', value: 'a'}])
+      example_search.count.should == search.query([{field: :name, operator: ':', value: 'a'}]).count
     end
     
-    # We have no easy way to verify the sort behaviour, so we just ensure that sorting doesn't alter the number of results returned.
-    it "can sort fields" do
-      search.query({}, :surname, :desc).to_a.count.should == model_class.all.count
+    it "can search and sort fields" do
+      record_count = search.query([{field: :name, operator: ':', value: 'a'}], [[:created_at, :desc], [:modified_at, :asc]]).to_a.count
+      record_count.should > 0
+      record_count.should < model_class.all.count
     end
     
-    it "can sort multiple fields" do
-      search.query({}, :surname, :desc, :given_name, :asc).to_a.count.should == model_class.all.count
-    end
-    
-    it "can sort and search at the same time" do
-      search.query(
-        {:email => 'littlesamurai@myfantasy.com', :given_name => 'Phillip'},
-        :surname, :desc, :given_name, :asc
-      ).to_a.count.should >= 1
+    it "modifies the given array of search terms" do
+      terms = [{field: :name, operator: ':', value: 'a'}, {field: :raspberry, operator: ':', value: 'a'}]
+      search.query(terms)
+      terms.length.should == 1
+      terms[0][:field].should == :name
     end
   end
     
@@ -62,7 +51,7 @@ module Tombstone
     it_behaves_like "a search class"
   end
   
-  describe PersonSearch do
+  describe PlaceSearch do
     it_behaves_like "a search class"
   end
 end

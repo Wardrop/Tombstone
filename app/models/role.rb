@@ -43,8 +43,12 @@ module Tombstone
           end
           
           contacts = {}
-          contacts[:residential_contact] = hash['residential_contact'] unless hash['residential_contact'].empty?
-          contacts[:mailing_contact] = hash['mailing_contact'] unless hash['mailing_contact'].empty?
+          if hash['residential_contact'] && !hash['residential_contact'].empty?
+            contacts[:residential_contact] = hash['residential_contact']
+          end
+          if hash['mailing_contact'] && !hash['mailing_contact'].empty?
+            contacts[:mailing_contact] = hash['mailing_contact'] 
+          end
           contacts.each do |type, data|
             if data['id']
               contact = Contact[data['id']]

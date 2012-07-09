@@ -27,11 +27,30 @@ module Tombstone
     end
     
     context "create role from a hash" do
+      before :all do
+        @person = Person.new(
+          'title' => 'Mr',
+          'surname' => 'Royson',
+          'given_name' => 'Jose',
+          'gender' => 'male',
+          'date_of_birth' => '1987-10-01 00:00:00 UTC'
+        ).save
+        @contact = Contact.new(
+          'street_address' => '26 Horse St',
+          'town' => 'Mareeba',
+          'state' => 'QLD',
+          'country' => 'Australia',
+          'postal_code' => '4880',
+          'email' => 'royco@gmail.com',
+          'primary_phone' => '(07) 5511 5511'
+        ).save
+      end
+      
       it "can create a role with all new objects" do
         errors = Sequel::Model::Errors.new
         role_hash = {
-          'type' => 'reservee',
-          'person' => {
+            'type' => 'reservee',
+            'person' => {
             'title' => 'Mr',
             'surname' => 'Royson',
             'given_name' => 'Jose',
@@ -42,6 +61,7 @@ module Tombstone
             'street_address' => '26 Horse St',
             'town' => 'Mareeba',
             'state' => 'QLD',
+            'country' => 'Australia',
             'postal_code' => '4880',
             'email' => 'royco@gmail.com',
             'primary_phone' => '(07) 5511 5511'
@@ -50,6 +70,7 @@ module Tombstone
             'street_address' => '18 Shetlin St',
             'town' => 'Mareeba',
             'state' => 'QLD',
+            'country' => 'Australia',
             'postal_code' => '4880',
             'email' => 'royco@gmail.com',
             'primary_phone' => '(07) 4028 2222'
@@ -67,20 +88,20 @@ module Tombstone
         role_hash = {
           'type' => 'reservee',
           'person' => {
-            'id' => 2
+            'id' => @person.id
           },
           'residential_contact' => {
-            'id' => 8
+            'id' => @contact.id
           },
           'mailing_contact' => {
-            'id' => 9
+            'id' => @contact.id
           }
         }
         role = Role.create_from(role_hash, errors)
         role.should_not be_nil
-        role.person.id.should == 2
-        role.residential_contact.id.should == 8
-        role.mailing_contact.id.should == 9
+        role.person.id.should == @person.id
+        role.residential_contact.id.should == @contact.id
+        role.mailing_contact.id.should == @contact.id
       end
       
       it "can update existing objects when creating role" do
@@ -88,23 +109,23 @@ module Tombstone
         role_hash = {
           'type' => 'reservee',
           'person' => {
-            'id' => 2,
+            'id' => @person.id,
             'surname' => 'facer'
           },
           'residential_contact' => {
-            'id' => 8,
-            'postal_code' => 5555
+            'id' => @contact.id,
+            'postal_code' => '5555'
           },
           'mailing_contact' => {
-            'id' => 9,
-            'postal_code' => 6666
+            'id' => @contact.id,
+            'postal_code' => '6666'
           }
         }
         role = Role.create_from(role_hash, errors)
         role.should_not be_nil
         role.person.surname.should == 'facer'
-        role.residential_contact.postal_code.should == 5555
-        role.mailing_contact.postal_code.should == 6666
+        role.residential_contact.postal_code.should == '5555'
+        role.mailing_contact.postal_code.should == '6666'
       end
       
       it "updates the given error object with any validation errors" do
@@ -115,7 +136,7 @@ module Tombstone
             'surname' => 'f'
           },
           'residential_contact' => {
-            'id' => 8
+            'id' => @contact.id
           }
         }
         role = Role.create_from(role_hash, errors)
@@ -124,11 +145,11 @@ module Tombstone
         role_hash = {
           'type' => 'reservee',
           'person' => {
-            'id' => 2
+            'id' => @person.id
           },
           'residential_contact' => {
-            'id' => 8,
-            'postal_code' => 111
+            'id' => @contact.id,
+            'postal_code' => 'a'
           }
         }
         role = Role.create_from(role_hash, errors)

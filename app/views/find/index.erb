@@ -61,21 +61,27 @@ content_for :head do %>
       </div>
     </h3>
     <div class="list_rows padded">
-    <%=
-    if @records.length == 0
-      "No records found."
-    else
-      case @records[0]
-      when Tombstone::Allocation
-        partial 'find/allocation_records', :locals => {records: @records}
-      when Tombstone::Person
-        partial 'find/person_records', :locals => {records: @records}
-      when Tombstone::Place
-        partial 'find/place_records', :locals => {records: @records}
+      <%=
+      if @records.length == 0
+        "No records found."
       else
-        halt 500, "No view has been configured for the model class `#{@records[0].class}`"
+        case @records[0]
+        when Tombstone::Allocation
+          partial 'find/allocation_records', :locals => {records: @records}
+        when Tombstone::Person
+          partial 'find/person_records', :locals => {records: @records}
+        when Tombstone::Place
+          partial 'find/place_records', :locals => {records: @records}
+        else
+          halt 500, "No view has been configured for the model class `#{@records[0].class}`"
+        end
       end
-    end
-    %>
+      %>
+    </div>
+    <% if @records.length == Tombstone.config[:search_record_limit] %>
+      <div class="padded" style="text-align: center;">
+        <small>Search results capped at 250 records.</small>
+      </div>
+    <% end %>
   </section>
 </div>
