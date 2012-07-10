@@ -14,10 +14,10 @@ module Tombstone
     register Padrino::Helpers
     
     configure do
-      set :log, Logger.new(nil)
+      set :log, Logger.new(nil, 'weekly')
     end
     configure :development, :production do
-      set :log, Logger.new(STDOUT)
+      set :log, Logger.new(STDOUT, 'weekly')
     end
     configure do
       disable :show_exceptions
