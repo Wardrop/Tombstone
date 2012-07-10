@@ -124,7 +124,7 @@ ul.classic > li {
   text-align: left;
   position: relative;
   display: block;
-  margin: 0 auto 48px;
+  margin: 0 auto;
   padding: 1px 24px 24px 24px;
   background: white;
   width: 880px;
@@ -233,13 +233,11 @@ ul.classic > li {
 }
 
 #footer {
-  margin-top: 48px;
   font-size: 11px;
-  border-top: 1px solid #e5e5e5;
   text-align: center;
-  padding-top: 12px;
   color: #999;
   letter-spacing: 0.2pt;
+  margin: 22px 0;
 }
 #footer a {
   color: #9fb4c7;

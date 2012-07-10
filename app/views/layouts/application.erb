@@ -60,7 +60,7 @@
         } %>
       </div>
     </div>
-    <div id="main_banner">Tombstone <sup>v<%= Tombstone::VERSION %></sup></div>
+    <div id="main_banner">Tombstone <sup><%= settings.environment.to_s.titleize %></sup></div>
     <div id="print_banner">
       <%= @document[:page_heading] %><img src="<%= url 'images/trc_logo.png' %>" />
     </div>
@@ -76,6 +76,7 @@
     <% end %>
     <%= yield %>
   </div>
+  <div id="footer">Tombstone v<%= Tombstone::VERSION %></div>
   <script>
     // Used to add odd/even styling to list_rows children by adding an even class for all even elements.
     $('.list_rows > div:nth-child(even)').livequery( function () {
