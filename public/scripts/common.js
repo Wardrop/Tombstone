@@ -3,37 +3,40 @@ if (typeof console == 'undefined') {
   window.console = {log: function () {}}
 }
 
-Ts = {
-  FormViews: {},
-  getParameterByName: function (name) {
-    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search)
-    return match && decodeURIComponent(match[1].replace(/\+/g, ' '))
-  },
-  elementInDocument: function(element) {
-    if (element instanceof jQuery) element = element[0]
-    while (element) {
-      if (element == document) return true;
-      element = element.parentNode;
+Ts = function () {
+  var date = $('<input type="date" />')[0]
+  var datetime = $('<input type="datetime" />')[0]
+  return {
+    FormViews: {},
+    supportsDateInput: date.type == 'date' && (date.value = 'invalid date') && !(date.value == 'invalid date'),
+    supportsDateTimeInput: datetime.type == 'datetime' && (datetime.value = 'invalid datetime') && !(datetime.value == 'invalid datetime'),
+    getParameterByName: function (name) {
+      var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search)
+      return match && decodeURIComponent(match[1].replace(/\+/g, ' '))
+    },
+    elementInDocument: function(element) {
+      if (element instanceof jQuery) element = element[0]
+      while (element) {
+        if (element == document) return true;
+        element = element.parentNode;
+      }
+      return false;
     }
-    return false;
   }
-}
+}()
 
 /**** Common Page Behaviours ****/
 
 $( function () {
-  var date = $('<input type="date" />')[0]
-  var datetime = $('<input type="datetime" />')[0]
-  var supportsDateInput = date.type == 'date' && (date.value = 'invalid date') && !(date.value == 'invalid date')
-  var supportsDateTimeInput = datetime.type == 'datetime' && (datetime.value = 'invalid datetime') && !(datetime.value == 'invalid datetime')
+  $('[autofocus]').focus()
   
   // Enable jQuery datepicker on all date and datetime fields.
-  if (!supportsDateInput) {
+  if (!Ts.supportsDateInput) {
     $('input[type=date]').livequery( function () {
       $(this).datepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', changeYear: true, yearRange: "1900:" })
     })
   }
-  if (!supportsDateTimeInput) {
+  if (!Ts.supportsDateTimeInput) {
     $('input[type=datetime]').livequery( function () {
       $(this).datetimepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', changeYear: true, yearRange: "1900:", ampm: true, timeFormat: 'h:mmtt' })
     })

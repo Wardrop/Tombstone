@@ -29,12 +29,13 @@
       <div class="row">
         <span class="align_top">Receipt No's</span>
         <div class="multiinput_control">
-          <% if @allocation.id
-            @allocation.transactions.each do |trans| %>
-              <div><input type="text" name="transactions[]" value="<%= trans.receipt_no %>" placeholder="Add..."></div>
-            <% end
-          end %>
-          <div><input type="text" name="transactions[]" placeholder="Add..."></div>
+          <% [nil].unshift(*@allocation.transactions).each do |trans| %>
+            <div>
+              <input type="text" name="transactions[]" value="<%= trans ? trans.receipt_no : '' %>" placeholder="Add..." 
+                maxlength="<%= Tombstone::Transaction.db_schema[:receipt_no][:max_chars].to_i %>"
+                title="Expects a valid proclaim receipt number">
+            </div>
+          <% end %>
         </div>
       </div>
     	<label>

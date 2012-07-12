@@ -64,6 +64,7 @@ module Tombstone
             if trans.valid?
               trans.save
             else
+              allocation.errors.add(:transaction, trans.errors)
               raise Sequel::Rollback
             end
           end
