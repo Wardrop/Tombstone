@@ -8,14 +8,16 @@ if (typeof console == 'undefined') {
 
 // Fixes an atroshious bug where the value of an empty input element can become a hybrid string/null object.
 (function() {
-  var builtInInputValue =Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").get;
+  try {
+    var builtInInputValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").get;
   
-  Object.defineProperty(HTMLInputElement.prototype, "value", {
-    get: function() {
-      var possiblyBad = builtInInputValue.call(this);
-      return possiblyBad === "" ? "" : possiblyBad;
-    }
-  });
+    Object.defineProperty(HTMLInputElement.prototype, "value", {
+      get: function() {
+        var possiblyBad = builtInInputValue.call(this);
+        return possiblyBad === "" ? "" : possiblyBad;
+      }
+    });
+  } catch (e) {}
 })();
 
 /**** Tombstone object initializer ****/
@@ -50,11 +52,17 @@ $( function () {
   // Enable jQuery datepicker on all date and datetime fields.
   if (!Ts.supportsDateInput) {
     $('input[type=date]').livequery( function () {
+      if ($(this).val().length != 0) {
+        $(this).val(moment($(this).val()).format('DD/MM/YYYY'))
+      }
       $(this).datepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', changeYear: true, yearRange: "1900:" })
     })
   }
   if (!Ts.supportsDateTimeInput) {
     $('input[type=datetime]').livequery( function () {
+      if ($(this).val().length != 0) {
+        $(this).val(moment($(this).val()).format('DD/MM/YYYY hh:mma'))
+      }
       $(this).datetimepicker({ dateFormat: 'dd/mm/yy', showOn: 'button', changeYear: true, yearRange: "1900:", ampm: true, timeFormat: 'h:mmtt' })
     })
   }

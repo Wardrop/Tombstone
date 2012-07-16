@@ -26,6 +26,11 @@ content_for :head do %>
 <div>
   <section id="search_defintion">
     <h2 class="underline">Find</h2>
+    <% unless @rejected_terms.empty? %>
+      <div class="padded" style="padding-top: 0;">
+        <div class="message_banner warning">The following fields were invalid and removed from the search: <%= @rejected_terms.map { |v| v[:field] }.join(", ") %></div>
+      </div>
+    <% end %>
     <form class="inline_layout spaced h_padded" method="GET" action".">
       <label style="width: 68%">
         <input type="text" class="tooltip" data-gravity="s" title="" name="search" placeholder="Search terms..." style="width: 100%" />

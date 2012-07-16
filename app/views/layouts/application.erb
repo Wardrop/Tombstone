@@ -13,7 +13,6 @@
   <script type="text/javascript" src="<%= url '/scripts/vendor/shims/es5-shim.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/shims/html5shiv-printshiv.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/moment.min.js' %>"></script>
-  <script type="text/javascript" src="<%= url '/scripts/vendor/moment.en-gb.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-1.7.2.min.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-1.7.2.min.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery.livequery.js' %>"></script>
@@ -72,7 +71,7 @@
     end
     %>
     <% if @document[:banner] %>
-    <div class="padded flash_banner <%= @document[:banner][0] %>"><%= @document[:banner][1] %><a class="close" onclick="$(this).parent().remove()" title="Click to close"></a></div>
+    <div class="padded message_banner <%= @document[:banner][0] %>"><%= @document[:banner][1] %><a class="close" onclick="$(this).parent().remove()" title="Click to close"></a></div>
     <% end %>
     <%= yield %>
   </div>

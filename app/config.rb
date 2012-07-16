@@ -1,12 +1,12 @@
 {
   search_record_limit: 250,
-  base_url: 'http://tombstone.trc.local',
+  base_url: 'http://tombstone.trc.local', # The primary URL at which tombstone is accessible. Used for links in email notifications.
   email: {
     from: 'noreply@tombstone.trc.local',
     delivery_method: :sendmail
   },
   ldap: {
-    servers: ['trcdc01.trc.local', 'trcdc02.trc.local'],
+    servers: ['trcdc01.trc.local', 'trcdc02.trc.local'], # An array of LDAP servers
     domain: 'trc.local',
     username: 'tombstone_user',
     password: '10Pippl$ah'

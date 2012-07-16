@@ -116,14 +116,13 @@ module Tombstone
     # Takes a string in a format similar to "some term field1:some value field2:another value", and returns an array of
     # terms, consisting of the field name, operator and value. Any text before the first term is returned as the first
     # return value.
-    def parse_search_string(str, valid_keys)
+    def parse_search_string(str)
       str ||= ''
-      valid_keys = valid_keys.map{|v| v.to_s}
       operators = [':', '>', '<']
       indices = []
       loop do
         offset = (indices.last) ? str.index(Regexp.union(operators), indices.last) + 1 : 0
-        index = str.index(/(?<=^| )#{Regexp.union valid_keys}#{Regexp.union operators}/, offset)
+        index = str.index(/(?<=^| )[a-zA-Z0-9_]+#{Regexp.union operators}/, offset)
         (index) ? indices << index : break
       end
       terms = []

@@ -144,11 +144,6 @@ ul.classic > li {
   color: #666;
   z-index: 3;
 }
-.banner {
-  position: relative;
-  margin: 12px 0 16px;
-  font-size: 160%;
-}
 #main_banner {
   position: relative;
   margin: 12px 0 16px;
@@ -376,7 +371,7 @@ section:first-child {
 .clickable {
   cursor: pointer;
 }
-.flash_banner {
+.message_banner {
   position: relative;
   padding: 10px 14px;
   margin: 6px 0;
@@ -384,11 +379,12 @@ section:first-child {
   white-space: pre;
   font-family: Verdana, Arial;
   font-size: 12px;
+  background: grey;
 }
-.flash_banner a {
+.message_banner a {
   color: white;
 }
-.flash_banner .close {
+.message_banner .close {
   position: absolute;
   right: 0;
   top: 0;
@@ -396,14 +392,17 @@ section:first-child {
   width: 32px;
   background: url('images/close_small.png') no-repeat center center;
 }
-.flash_banner a.close:hover {
+.message_banner a.close:hover {
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
   opacity: 0.75;
 }
-.flash_banner.success {
+.message_banner.success {
   background: #69ad34;
 }
-.flash_banner.error {
+.message_banner.warning {
+ background: #d98416;
+}
+.message_banner.error {
  background: #a63232;
 }
 .list_rows > div {
@@ -618,7 +617,7 @@ a.row_button:hover {
 .inline_layout.spaced > * {
   padding-left: 0.5em;
 }
-.inline_layout.spaced > *:first-child; {
+.inline_layout.spaced > :first-child {
   padding-left: 0;
 }
 .inline_layout.align_top > * {

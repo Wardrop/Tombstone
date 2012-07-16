@@ -78,9 +78,9 @@ module Tombstone
           val = case val
           when Date, Time
               if v['type'] == 'date'
-                val.strftime('%d/%m/%Y')
+                val.strftime('%F')
               elsif v['type'] == 'datetime'
-                val.strftime('%d/%m/%Y %-I:%M%P')
+                val.strftime('%FT%T')
               else
                 ((val.hour + val.min + val.sec) > 0) ? val.strftime('%d/%m/%Y %l:%M%P') : val.strftime('%d/%m/%Y')
               end

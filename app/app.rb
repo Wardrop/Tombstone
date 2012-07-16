@@ -2,7 +2,7 @@
 # Dir.glob(File.join(File.dirname(__FILE__), 'lib/*/**/*.rb')) { |f| require f }
 
 module Tombstone
-  VERSION = '1.0.3'
+  VERSION = '1.0.4'
   
   class << self
     attr_accessor :config
@@ -30,7 +30,7 @@ module Tombstone
         delivery_method Tombstone.config[:email][:delivery_method]
       end
       Permissions.map = config[:roles]
-      LDAP.servers = config[:ldap][:servers]
+      LDAP.servers = [*config[:ldap][:servers]]
       LDAP.domain = config[:ldap][:domain]
       LDAP.logger = log
 

@@ -3,6 +3,7 @@ module Tombstone
     
     get :index do
       @records = []
+      @rejected_terms = []
       @search_class = nil
       terms = []
       unless params['search'].blank? && params['type'].blank?
@@ -14,9 +15,12 @@ module Tombstone
           else
             AllocationSearch
           end
-        terms = parse_search_string(params['search'], @search_class.searchable.keys)
+        
+        terms = parse_search_string(params['search'])
+        original_terms = terms.clone
         order = (params['order_by']) ? [[params['order_by'], params['order_dir']]] : []
         @records = @search_class.new.query(terms, [[params['order_by'], params['order_dir']]], settings.config[:search_record_limit]).all
+        @rejected_terms = original_terms.reject { |v| terms.any? { |t| t[:field] == v[:field] } }
       end
       prepare_form(render('find/index'), {
         selector: '#search_defintion',

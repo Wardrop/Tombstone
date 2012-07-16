@@ -77,6 +77,14 @@ $( function () {
           }
           value = (Ts.supportsDateInput) ? value.format('YYYY-MM-DD') : value.format('DD/MM/YYYY')
         }
+        if(field.attr('type') == 'datetime' && value) {
+          if (match = value.match(/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{2,4}) ([0-9]{2}):([0-9]{2})([a-zA-Z]{2})/)) {
+            value = moment(new Date(match[3], match[2]-1, match[1], (match[6].toUpperCase() == "PM" ? 12 + match[4] : match[4]), match[5]))
+          } else {
+            value = moment(value)
+          }
+          value = (Ts.supportsDateTimeInput) ? value.format('YYYY-MM-DDTHH-mm-ss') : value.format('DD/MM/YYYY hh:mma')
+        }
         if(field.attr('type') == 'radio') {
           var item = field.filter('[value='+(value && value.toLowerCase())+']')
           if (!item.is(':checked')) {
