@@ -62,49 +62,52 @@ module Tombstone
     # values: Hash of key/value pairs, where key is the field name.
     # selector: A CSS selector to provide scope.
     def prepare_form(xml, opts = {})
-      doc = Nokogiri::HTML::Document.parse(xml)
-      doc = doc.css(opts[:selector]) unless opts[:selector].nil?
+      document = Nokogiri::HTML::Document.parse(xml)
+      working_set = opts[:selector].nil? ? document : document.css(opts[:selector]) unless 
 
       # Add error class to all fields with errors.
       unless opts[:errors].nil? || opts[:errors].empty?
-        doc.css(opts[:errors].map { |v| "[name='#{v}']" }.join(", ")).each { |v| v['class'] = 'field_error' }
+        working_set.css(opts[:errors].map { |v| "[name='#{v}']" }.join(", ")).each { |v| v['class'] = 'field_error' }
       end
 
       # Repopulate field with the given field values.
       unless opts[:values].nil? || opts[:values].empty?
         values = opts[:values]
-        doc.css(values.keys.map { |k| "[name='#{k}']" }.join(", ")).each do |v|
+        working_set.css(values.keys.map { |k| "[name='#{k}']" }.join(", ")).each do |v|
           val = values[v['name']] || values[v['name'].to_sym]
           val = case val
           when Date, Time
-              if v['type'] == 'date'
-                val.strftime('%F')
-              elsif v['type'] == 'datetime'
-                val.strftime('%FT%T')
-              else
-                ((val.hour + val.min + val.sec) > 0) ? val.strftime('%d/%m/%Y %l:%M%P') : val.strftime('%d/%m/%Y')
-              end
-            when nil
-              ''
+            if v['type'] == 'date'
+              val.strftime('%F')
+            elsif v['type'] == 'datetime'
+              val.strftime('%FT%T')
             else
-              val.to_s
+              ((val.hour + val.min + val.sec) > 0) ? val.strftime('%d/%m/%Y %l:%M%P') : val.strftime('%d/%m/%Y')
+            end
+          when nil
+            ''
+          else
+            val.to_s
           end
 
           case v.name
             when 'input'
               v['value'] = val
             when 'select'
-              v.css('option').each do |option|
-                if val == option['value'] || (option['value'].nil? && option.content == val)
-                  option['selected'] = 'selected'
-                end
+              if v.css('option').any? { |option|
+                  if val == option['value'] || (option['value'].nil? && option.content == val)
+                    option['selected'] = 'selected'
+                  end
+                }
+              else
+                v << document.create_element("option", val, selected: 'selected') unless val.blank?
               end
             when 'textarea'
               v.content = val
           end
         end
       end
-      (doc.nil?) ? str : Nokogiri::HTML::Builder.with(doc).to_html
+      (document.nil?) ? str : Nokogiri::HTML::Builder.with(document).to_html
     end
 
   end

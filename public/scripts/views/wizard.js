@@ -340,13 +340,15 @@ $( function () {
       this.model.set({currentPage: this.pages['mailing_contact']})
     },
     saveRole: function () {
-      _.each(['residential_contact', 'mailing_contact'], function (contact_type) {
-        if (this.model.get('role').get(contact_type) && this.model.get('role').get(contact_type).isEmpty()) {
-          this.model.get('role').set(contact_type, null, {silent: true})
-        }
-      }, this)
-      this.close()
-      this.options.onComplete(this.model.get('role'))      
+      setTimeout(_.bind(function () {
+        _.each(['residential_contact', 'mailing_contact'], function (contact_type) {
+          if (this.model.get('role').get(contact_type) && this.model.get('role').get(contact_type).isEmpty()) {
+            this.model.get('role').set(contact_type, null, {silent: true})
+          }
+        }, this)
+        this.close()
+        this.options.onComplete(this.model.get('role'))    
+      }, this), 100)
     }
 	})
   
@@ -488,14 +490,12 @@ $( function () {
   Ts.WizardViews.ContactForm = Ts.WizardViews.GenericForm.extend({
 		templateId: 'wizard:create_contact_form_template',
     initialize: function () {
-      window.form = this
       this._super('initialize', arguments)
       this.model.on('change', this.checkValidity, this)
     },
     renderTemplate: function () {
       this._super('renderTemplate', arguments)
       this.$("[name=state]").combobox()
-      this.$("[name=country]").combobox()
     },
     checkValidity: function () {
       if (this.model.hasRequired()) {

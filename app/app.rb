@@ -2,7 +2,7 @@
 # Dir.glob(File.join(File.dirname(__FILE__), 'lib/*/**/*.rb')) { |f| require f }
 
 module Tombstone
-  VERSION = '1.0.4'
+  VERSION = '1.0.5'
   
   class << self
     attr_accessor :config
@@ -12,14 +12,10 @@ module Tombstone
     register Padrino::Rendering
     register Padrino::Mailer
     register Padrino::Helpers
-    
+
     configure do
-      set :log, Logger.new(nil, 'weekly')
-    end
-    configure :development, :production do
-      set :log, Logger.new(STDOUT, 'weekly')
-    end
-    configure do
+      logger = Logger.new(STDOUT, 'weekly')
+      logger.level = Logger::WARN
       disable :show_exceptions
       use Rack::Session::Sequel, :db => Sequel::Model.db, :table_name => :session, :expire_after => 60 * 60 * 24 * 7
       use Rack::Lock
@@ -32,7 +28,7 @@ module Tombstone
       Permissions.map = config[:roles]
       LDAP.servers = [*config[:ldap][:servers]]
       LDAP.domain = config[:ldap][:domain]
-      LDAP.logger = log
+      LDAP.logger = logger
 
       if environment != :spec
         Models = ObjectSpace.each_object(::Class).to_a.select { |k| k < BaseModel || k == BaseModel }.each do |m|

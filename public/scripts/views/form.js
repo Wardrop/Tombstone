@@ -723,7 +723,7 @@ $( function () {
 			return this
 		},
     renderPhotoEditor: function () {
-      var section = new Ts.FormViews.Section({title: 'Location', name: 'place'})
+      var section = new Ts.FormViews.Section({title: 'Photos', name: 'place'})
       var photosEditor = new Ts.FormViews.PhotosEditor({photos: this.allocationData.photos, place_id: this.allocationData.place_id})
       section.body.push(photosEditor.render().el)
       section.divClass = 'v_padded'

@@ -32,7 +32,7 @@ module Tombstone
           Mail.deliver({
             from: Tombstone.config[:email][:from],
             to: recipient,
-            subject: subject,
+            subject: "Tombstone: #{subject}",
             body: render
           })
         end

@@ -94,7 +94,7 @@ end
           <% else
             @allocation.interments.each_with_index do |interment, idx|
             %>
-              <a href="<%= "#{url(:interment_view, interment.id)}" %>">View Interment #<%= idx+1 %></a>
+              <a href="<%= "#{url(:interment_view, interment.id)}" %>">View Interment #<%= idx+1 %></a><%= ', ' if @allocation.interments.length > (idx+1) %>
             <%
             end
           end %>
