@@ -58,7 +58,7 @@ module Tombstone
         banner: flash[:banner]
       }
       
-      User.current = @user = User.with_pk(session[:user_id])
+      @user = User.with_pk(session[:user_id]) || User.new(id: session[:user_id])
       BaseModel.permissions = (@user.role_permissions rescue nil)
 
       if request.content_type && request.content_type.match(%r{^application/json})

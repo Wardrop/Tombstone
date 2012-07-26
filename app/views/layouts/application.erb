@@ -55,6 +55,7 @@
     <div id="banner_info">
       <div>
         <%= print ('<small>Not logged in</small>') {
+          p @user
           "Hello, #{session[:ldap][:displayName].first} (#{@user.role ? @user.role.demodulize.titleize : 'Guest'})"
         } %>
       </div>

@@ -23,6 +23,11 @@ module Tombstone
       @ldap
     end
     
+    def before_save
+      super
+      role = 'default' unless role
+    end
+    
     def after_save
       super
       @role_permissions.role = @values[:role] unless @values[:role].to_sym == role_permissions.role
