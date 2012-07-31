@@ -8,7 +8,7 @@
         roles: { include: [:person, :residential_contact, :mailing_contact] },
         place: {},
         transactions: {},
-        photos: {:include => [:thumbnail, :thumbnail_dimensions]},
+        photos: {except: :data, include: [:thumbnail, :thumbnail_dimensions]},
         legacy_fields: {}
       })
     end

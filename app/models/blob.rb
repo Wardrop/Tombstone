@@ -3,8 +3,8 @@ module Tombstone
   class Blob < BaseModel
     set_primary_key :id
     many_to_one :place, :key => [:place_id], :class => :'Tombstone::Place'
-
-    mount_uploader :file, PhotoUploader
+    
+    # mount_uploader :file, PhotoUploader
   end
   
   class Photo < Blob

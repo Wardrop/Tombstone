@@ -3,8 +3,8 @@ module Tombstone
   App.controller :photos do
 
     get :view, :map => "photos/:place_id" do
-      @photos = Photo.filter(:place_id => params[:place_id].to_i).and(:enabled => 1).all
-      partial "photos/view"
+      photos = Photo.filter(:place_id => params[:place_id].to_i).and(:enabled => 1).all
+      partial "photos/view", :locals => {photos: photos}
     end
     
     # get :view, :map => "photos/:id/view", :provides => :html do
@@ -14,9 +14,11 @@ module Tombstone
     # end
     
     post :new, :map => "photos/:place_id", :provides => :html do
+      p request
       if params[:file]
         photo = Photo.new(:place_id => params[:place_id].to_i)
-        photo.file = params[:file]
+        photo.data = params[:file][:tmp_file].read
+        # photo.file = params[:file]
         if photo.valid?
           photo.save
         end

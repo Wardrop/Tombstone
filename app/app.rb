@@ -2,7 +2,7 @@
 # Dir.glob(File.join(File.dirname(__FILE__), 'lib/*/**/*.rb')) { |f| require f }
 
 module Tombstone
-  VERSION = '1.0.6'
+  VERSION = '1.0.7'
   
   class << self
     attr_accessor :config
@@ -58,7 +58,7 @@ module Tombstone
         banner: flash[:banner]
       }
       
-      @user = User.with_pk(session[:user_id]) || User.new(id: session[:user_id])
+      @user = User.with_pk(session[:user_id]) || User.new(id: session[:user_id]) if session[:user_id]
       BaseModel.permissions = (@user.role_permissions rescue nil)
 
       if request.content_type && request.content_type.match(%r{^application/json})

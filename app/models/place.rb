@@ -49,7 +49,7 @@ module Tombstone
       siblings = self.siblings(false).all
       unless siblings.empty?
         type.downcase! if type
-        errors.add(:type, "must be same as siblings (#{siblings[0].type.capitalize()})") unless type == siblings[0].type
+        errors.add(:type, "must be same as siblings (#{siblings[0].type.capitalize()})") unless type.casecmp(siblings[0].type) == 0
         errors.add(:name, "must be unique among siblings") unless siblings.select{ |s| s.name == name }.empty?
       end
     end

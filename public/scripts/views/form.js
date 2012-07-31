@@ -270,16 +270,18 @@ $( function () {
 				  var selected = (this.placeData[i+1]) ? this.placeData[i+1][0].parent_id : this.defaultPlaceId
 					var placeView = new Ts.FormViews.PlaceEditPicker({
             selected: selected,
-            collection: new Ts.Places(places)
+            collection: new Ts.Places(places),
+            errorBlock: this.errorBlock
           })
 					section.body.push(placeView.render().el)
 				}
 			} else {
 				var collection = new Ts.Places(this.placeData[0])
-				var placeView = new Ts.FormViews.PlaceEditPicker({collection: collection})
+				var placeView = new Ts.FormViews.PlaceEditPicker({collection: collection, errorBlock: this.errorBlock})
 				section.body.push(placeView.render().el)
 			}
 			this.$el.append(section.render().el)
+      this.$('h2').after(this.errorBlock)
 			return this
 		}
   })

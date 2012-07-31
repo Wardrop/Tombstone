@@ -56,3 +56,4 @@ end
 Sequel::Model.db << 'SET DATEFORMAT DMY'
 Sequel::Model.db << 'SET ANSI_NULLS ON'
 Sequel::Model.db << 'SET CONCAT_NULL_YIELDS_NULL OFF'
+Sequel::Model.db << 'SET TEXTSIZE 2147483647' # Required for storing binary files in SQL. Otherwise the default maximum size is 4kb.
