@@ -6,7 +6,7 @@ module Tombstone
   describe Permissions do
     map = {
       :operator => {:can_approve => true, :can_edit => false, :invalid_option => true},
-      :coordinator => {:can_approve => true, :can_edit => true, :can_delete_photos => true}
+      :coordinator => {:can_approve => true, :can_edit => true, :can_delete_files => true}
     }
     
     context "class" do
@@ -21,7 +21,7 @@ module Tombstone
       
       it "can provide all valid permission options" do
         Permissions.options.should be_a(Set)
-        Permissions.options.should include(:can_approve, :can_edit, :can_delete_photos)
+        Permissions.options.should include(:can_approve, :can_edit, :can_delete_files)
         Permissions.options.should_not include(:invalid_option)
       end
     end
@@ -40,7 +40,7 @@ module Tombstone
         perms = Permissions.new(:operator)
         perms.should respond_to(:can_approve?)
         perms.should respond_to(:can_approve!)
-        perms.should respond_to(:can_delete_photos?)
+        perms.should respond_to(:can_delete_files?)
         perms.should respond_to(:can_manage_cemeteries!)
       end
       
@@ -51,8 +51,8 @@ module Tombstone
       
       it "Generates methods for permissions the current role doesn't have" do
         perms = Permissions.new(:operator)
-        perms.should respond_to(:can_delete_photos?)
-        perms.should respond_to(:can_delete_photos!)
+        perms.should respond_to(:can_delete_files?)
+        perms.should respond_to(:can_delete_files!)
       end
       
       it "Should raise an error for permissions that don't exist" do

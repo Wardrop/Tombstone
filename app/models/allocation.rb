@@ -7,7 +7,7 @@ module Tombstone
     many_to_many :roles, :join_table => :role_association, :left_key => :allocation_id, :right_key => :role_id, :class => :'Tombstone::Role'
     many_to_one :funeral_director, :key => :funeral_director_id, :class => :'Tombstone::FuneralDirector'
     one_to_many :transactions, :key => :allocation_id
-    one_to_many :photos, :key => :place_id, :primary_key => :place_id, :class => :'Tombstone::Photo'
+    one_to_many :files, :key => :place_id, :primary_key => :place_id, :class => :'Tombstone::Blob'
     one_to_many :legacy_fields, :key => :allocation_id, :primary_key => :id, :class => :'Tombstone::LegacyField'
 
     class << self
@@ -247,7 +247,7 @@ module Tombstone
           errors.add(:status, "cannot be '#{status}' for a future interment date.")
         end
         if status == 'completed'
-          errors.add(:photos, 'must be added before an allocation can be completed.') if photos.empty?
+          errors.add(:files, 'must be added before an allocation can be completed.') if files.empty?
         end
       end
     end

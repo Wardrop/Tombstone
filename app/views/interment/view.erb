@@ -17,7 +17,7 @@ content_for :head do
       roles: { include: [:person, :residential_contact, :mailing_contact] },
       place: {},
       transactions: {},
-      photos: {except: :data, include: [:thumbnail, :thumbnail_dimensions]},
+      files: {except: [:data, :thumbnail], include: [:thumbnail_dimensions]},
       legacy_fields: {}
     })
     %>
@@ -121,12 +121,12 @@ end
   </section>
   <section>
     <h2 class="underline">Photographs</h2>
-      <div name="photos">
+      <div name="files">
         <%=
-        if @allocation.place.photos.count > 0
-          partial 'photos/view', :locals => {photos: @allocation.place.photos}
+        if @allocation.place.files.count > 0
+          partial 'files/view', :locals => {files: @allocation.place.files}
         else
-          "<small>No photos are associated with this allocation.</small>"
+          "<small>No files are associated with this allocation.</small>"
         end
         %>
       </div>

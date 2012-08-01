@@ -502,9 +502,9 @@ $( function () {
     }
   })
       
-  Ts.FormViews.PhotosEditor = Ts.View.extend({
-    attributes: {name: 'photos'},
-    templateId: 'form:photo_editor_template',
+  Ts.FormViews.FilesEditor = Ts.View.extend({
+    attributes: {name: 'files'},
+    templateId: 'form:file_editor_template',
     events: {
       'change [type=file]': 'fileChanged',
       'click .delete': 'delete'
@@ -512,8 +512,8 @@ $( function () {
     initialize: function () {
       this._super('initialize', arguments)
       this.place_id = this.options.place_id
-      this.photos = this.options.photos || []
-      this.uploadForm = $('<form action="/photos/'+this.place_id+'" method="post" target="photo_form_frame" enctype="multipart/form-data"></form>')
+      this.files = this.options.files || []
+      this.uploadForm = $('<form action="/files/'+this.place_id+'" method="post" target="file_form_frame" enctype="multipart/form-data"></form>')
     },
     render: function () {
       this.$el.html(this.template())
@@ -538,21 +538,21 @@ $( function () {
       this.indicator.css({display: 'none'})
       var result = $.parseJSON(this.$('iframe').contents().text())
       if (result) {
-        this.photos.push(result)
+        this.files.push(result)
       }
       this.render()
     },
     'delete': function (e) {
       e.stopPropagation()
       e.preventDefault()
-      if(confirm('Are you sure you want to delete this photo?')) {
+      if(confirm('Are you sure you want to delete this file?')) {
         Backbone.sync('delete', this.eventReceiver, {
           url: e.target.href,
           data: {},
           success: _.bind(function () {
-            _.each(this.photos, function (photo, idx) {
-              if (photo.id == $(e.target).data('id')) {
-                this.photos.splice(idx, 1)
+            _.each(this.files, function (file, idx) {
+              if (file.id == $(e.target).data('id')) {
+                this.files.splice(idx, 1)
               }
             }, this)
             this.render()
@@ -652,7 +652,7 @@ $( function () {
 			this.renderRoles()
 			this.renderPlaces()
       if (this.allocationData.type == 'interment' && this.allocationData.id) {
-        this.renderPhotoEditor()
+        this.renderFilesEditor()
       }
 			this.renderActions()
       this.renderLegacyPane()
@@ -724,10 +724,10 @@ $( function () {
 			this.firstSection.before(section.render().el)
 			return this
 		},
-    renderPhotoEditor: function () {
-      var section = new Ts.FormViews.Section({title: 'Photos', name: 'place'})
-      var photosEditor = new Ts.FormViews.PhotosEditor({photos: this.allocationData.photos, place_id: this.allocationData.place_id})
-      section.body.push(photosEditor.render().el)
+    renderFilesEditor: function () {
+      var section = new Ts.FormViews.Section({title: 'Files', name: 'place'})
+      var filesEditor = new Ts.FormViews.FilesEditor({files: this.allocationData.files, place_id: this.allocationData.place_id})
+      section.body.push(filesEditor.render().el)
       section.divClass = 'v_padded'
       this.$el.append(section.render().el)
     },

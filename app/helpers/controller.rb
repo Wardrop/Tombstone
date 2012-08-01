@@ -109,7 +109,7 @@ module Tombstone
           end
         end
 
-        update_photos
+        update_files
       end
     end
     
@@ -136,19 +136,19 @@ module Tombstone
       terms
     end
 
-    def update_photos
-      unless !session['new_photos'] || session['new_photos'].empty?
-        Photo.filter(:id => session['new_photos']).update(:enabled => 1)
+    def update_files
+      unless !session['new_files'] || session['new_files'].empty?
+        Blob.filter(:id => session['new_files']).update(:enabled => 1)
       end
-      unless !session['deleted_photos'] || session['deleted_photos'].empty?
-        Photo.filter(:id => session['deleted_photos']).destroy
+      unless !session['deleted_files'] || session['deleted_files'].empty?
+        Blob.filter(:id => session['deleted_files']).destroy
       end
-      reset_photos_changes
+      reset_file_changes
     end
 
-    def reset_photos_changes
-      session['new_photos'] = []
-      session['deleted_photos'] = []
+    def reset_file_changes
+      session['new_files'] = []
+      session['deleted_files'] = []
     end
     
     def json_response(obj = {})

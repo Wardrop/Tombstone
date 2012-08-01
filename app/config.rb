@@ -25,7 +25,7 @@
       :can_edit_approved => true,
       :can_edit_interred => false,
       :can_edit_completed => false,
-      :can_delete_photos => false,
+      :can_delete_files => false,
       :can_manage_cemeteries => false
     },
     :coordinator => {
@@ -41,7 +41,7 @@
       :can_edit_approved => true,
       :can_edit_interred => true,
       :can_edit_completed => true,
-      :can_delete_photos => true,
+      :can_delete_files => true,
       :can_manage_cemeteries => true
     },
     :default => {

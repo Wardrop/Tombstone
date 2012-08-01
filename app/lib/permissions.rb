@@ -16,7 +16,7 @@ module Tombstone
       :can_edit_approved,
       :can_edit_interred,
       :can_edit_completed,
-      :can_delete_photos,
+      :can_delete_files,
       :can_manage_cemeteries
     ]).freeze
     

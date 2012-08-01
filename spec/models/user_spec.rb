@@ -36,9 +36,9 @@ module Tombstone
       begin
         u.set(role: 'operator').save
         rp = u.role_permissions
-        u.role_permissions.can_delete_photos?.should == false
+        u.role_permissions.can_delete_files?.should == false
         u.set(role: 'coordinator').save
-        u.role_permissions.can_delete_photos?.should == true
+        u.role_permissions.can_delete_files?.should == true
         u.role_permissions.should be_equal(rp)
       ensure
         User['tatej'].set({:role => original_role}).save

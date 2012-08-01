@@ -4,7 +4,7 @@ module Tombstone
     many_to_one :parent, :class => self, :key => :parent_id
     one_to_many :children, :class => self, :key => :parent_id
     one_to_many :allocations, :class => :'Tombstone::Allocation', :key => :place_id
-    one_to_many :photos, :class => :'Tombstone::Photo', :key => :place_id
+    one_to_many :files, :class => :'Tombstone::Blob', :key => :place_id
     set_dataset dataset.disable_insert_output
     
     def_dataset_method(:with_child_count) do
@@ -68,10 +68,6 @@ module Tombstone
       status == 'available' \
       && children_dataset.count == 0 \
       && calculated_max_interments > allocations.count
-    end
-
-    def has_photos?
-      Photo.filter(:type_id => :place_id).and(:enabled => 1).count > 0
     end
 
     def calculated_max_interments

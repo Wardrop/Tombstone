@@ -1,0 +1,15 @@
+<div class="files">
+  <% files.each do |file| %>
+    <div class="image_container">
+      <a href="/files/<%= file.id %>" target="_blank">
+        <img src="/files/<%= file.id %>/thumbnail"
+          width="<%= Tombstone::Blob.thumbnail_dimensions[:width] %>"
+          height="<%= Tombstone::Blob.thumbnail_dimensions[:height] %>" />
+      </a>
+      <div class="info">
+        <span><%= file.name %></span>
+        <%= print('') { "<span>#{file.timestamp.strftime('%Y-%m-%d %-I:%M%P')}</span>" } %></span>
+      </div>
+    </div>
+  <% end %>
+</div>

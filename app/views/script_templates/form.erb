@@ -1,22 +1,22 @@
-<script type="text/template" id="form:photo_editor_template">
+<script type="text/template" id="form:file_editor_template">
   <div style="min-height: 3em;"><input type="file" name="file" /></div>
-  <div class="photos">
-    <? _.each(this.photos, function (photo) { ?>
+  <div class="files">
+    <? _.each(this.files, function (file) { ?>
       <div class="image_container">
-        <a href="<?= photo.file ?>" target="_blank">
-          <img src="<?= photo.thumbnail ?>" width="<?= photo.thumbnail_dimensions.width ?>" height="<?= photo.thumbnail_dimensions.height ?>" />
+        <a href="/files/<?= file.id ?>" target="_blank">
+          <img src="/files/<?= file.id ?>/thumbnail" width="<?= file.thumbnail_dimensions.width ?>" height="<?= file.thumbnail_dimensions.height ?>" />
         </a>
         <div class="info">
-          <span><?= photo.name ?></span>
-          <? if (photo.timestamp) { ?>
-            <?= '<span>'+moment(photo.timestamp).format('YYYY-MM-DD HH:mm')+'</span>' ?>
+          <span><?= file.name ?></span>
+          <? if (file.timestamp) { ?>
+            <?= '<span>'+moment(file.timestamp).format('YYYY-MM-DD HH:mm')+'</span>' ?>
           <? } ?>
         </div>
-        <a href="/photos/<?= photo.place_id+'/'+ photo.id ?>" class="delete" title="Delete photo" data-id="<?= photo.id ?>"></a>
+        <a href="/files/<?= file.id ?>" class="delete" title="Delete file" data-id="<?= file.id ?>"></a>
       </div>
     <? }) ?>
   </div>
-  <iframe name="photo_form_frame" id="photo_form_frame" style="display: none;"></iframe>
+  <iframe name="file_form_frame" id="file_form_frame" style="display: none;"></iframe>
 </script>
 
 <script type="text/template" id="form:multibutton_template">
@@ -56,7 +56,7 @@
   <span class="dropdown_button"></span>
 </script>
 
-<script type="text/template" id="form:photos_template">
+<script type="text/template" id="form:files_template">
   <div class="viewport">
     <ul>
       <? _.each(values, function (value, key) { ?>

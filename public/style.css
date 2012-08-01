@@ -1105,18 +1105,18 @@ iframe {
   overflow-x: auto;
 }
 
-.photos {
+.files {
   width:100%;
   background-color:#FFFFFF;
   padding-left: 0px;
   word-spacing: -1em;
   font-size: 1px;
 }
-.photos * {
+.files * {
   word-spacing: normal;
 }
 
-.photos > .image_container {
+.files > .image_container {
   font-size: 13px;
   position: relative;
   display: inline-block;
@@ -1124,18 +1124,18 @@ iframe {
   text-align:center;
   border: 1px solid #777;
 }
-.photos > .image_container img {
+.files > .image_container img {
   display: block;
 }
-.photos > .image_container a > img:hover {
+.files > .image_container a > img:hover {
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
   opacity: 0.9;
 }
-.photos > .image_container .info {
+.files > .image_container .info {
   display: none;
   pointer-events: none;
 }
-.photos > .image_container:hover .info {
+.files > .image_container:hover .info {
   position: absolute;
   display: block;
   bottom: 0;
@@ -1144,12 +1144,12 @@ iframe {
   background: url('images/opacity_50_black.png') repeat;
   color: white;
 }
-.photos > .image_container .info span {
+.files > .image_container .info span {
   display: block;
   padding: 3px 0;
 }
 
-.photos > .image_container .delete {
+.files > .image_container .delete {
   position: absolute;
   top: 0;
   right: 0;
@@ -1158,7 +1158,7 @@ iframe {
   width: 46px;
   background: url('images/delete_corner.png') no-repeat center center;
 }
-.photos > .image_container .delete:hover {
+.files > .image_container .delete:hover {
   background: url('images/delete_corner_hover.png') no-repeat center center;
 }
 

@@ -1,0 +1,22 @@
+<% content_for :head do %>
+  <script type="application/json" id="json:allocation_data">
+    $( function () {
+      $('.image_container .delete').click( function () {
+        $.ajax
+        return false;
+      })
+    })
+  </script>
+<% end %>
+<% files.each do |file| %>
+<div class="image_container">
+    <img src="/files/<%= file.id %>/thumbnail"
+      width="<%= Tombstone::Blob.thumbnail_dimensions[:width] %>"
+      height="<%= Tombstone::Blob.thumbnail_dimensions[:height] %>" />
+    <div class="info">
+      <span><%= file.name %></span>
+      <%= print('') { "<span>#{file.timestamp.strftime('%Y-%m-%d %-I:%M%P')}</span>" } %></span>
+    </div>
+    <a href="<%= url(:files_delete, :place_id => file.place_id, :id => file.id) %>" class="delete" title="Delete file"></a>
+  </div>
+<% end %>
