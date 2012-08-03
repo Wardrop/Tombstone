@@ -1,5 +1,5 @@
 <script type="text/template" id="form:file_editor_template">
-  <div style="min-height: 3em;"><input type="file" name="file" /></div>
+  <div class="padded"><input type="file" name="file" /></div>
   <div class="files">
     <? _.each(this.files, function (file) { ?>
       <div class="image_container">
@@ -8,8 +8,8 @@
         </a>
         <div class="info">
           <span><?= file.name ?></span>
-          <? if (file.timestamp) { ?>
-            <?= '<span>'+moment(file.timestamp).format('YYYY-MM-DD HH:mm')+'</span>' ?>
+          <? if (file.exif && file.exif.date_time) { ?>
+            <?= '<span>'+moment(file.exif.date_time).format('YYYY-MM-DD HH:mm')+'</span>' ?>
           <? } ?>
         </div>
         <a href="/files/<?= file.id ?>" class="delete" title="Delete file" data-id="<?= file.id ?>"></a>
@@ -22,7 +22,7 @@
 <script type="text/template" id="form:multibutton_template">
   <div class="viewport">
     <ul>
-    <? _.each(items, function (item) { ?>
+      <? _.each(items, function (item) { ?>
       	<li class="<?= item.className || '' ?>"><input type="button" name="<?= item.name ?>" value="<?= item.value ?>" data-action="<?= item.action || item.name ?>" /></li>
       <? }) ?>
     </ul>

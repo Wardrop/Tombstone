@@ -8,7 +8,7 @@
       </a>
       <div class="info">
         <span><%= file.name %></span>
-        <%= print('') { "<span>#{file.timestamp.strftime('%Y-%m-%d %-I:%M%P')}</span>" } %></span>
+        <%= print('') { "<span>#{file.exif[:date_time].strftime('%Y-%m-%d %-I:%M%P')}</span>" } %></span>
       </div>
     </div>
   <% end %>

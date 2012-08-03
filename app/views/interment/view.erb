@@ -119,17 +119,4 @@ end
       </label>
     </div>
   </section>
-  <section>
-    <h2 class="underline">Photographs</h2>
-      <div name="files">
-        <%=
-        if @allocation.place.files.count > 0
-          partial 'files/view', :locals => {files: @allocation.place.files}
-        else
-          "<small>No files are associated with this allocation.</small>"
-        end
-        %>
-      </div>
-    </div>
-  </section>
 </div>

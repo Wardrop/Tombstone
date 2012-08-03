@@ -14,7 +14,6 @@ module Tombstone
     end
     
     get :edit, :map => "#{controller}/:id/edit" do
-      reset_file_changes
       @allocation = model_class.with_pk(params[:id].to_i)
       if @allocation
         @funeral_directors = FuneralDirector.all

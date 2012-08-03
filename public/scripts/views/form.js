@@ -521,7 +521,7 @@ $( function () {
       this.$('[type=file]').after(this.indicator.addClass('loading'))
       this.$el.prepend(this.errorBlock)
       setTimeout( _.bind( function () {
-        this.$('iframe').load(_.bind(this.onLoad, this))
+        this.$('#file_form_frame').load(_.bind(this.onLoad, this))
       }, this), 50)
       this.delegateEvents()
       return this
@@ -530,17 +530,27 @@ $( function () {
       var fileInput = this.$(e.target)
       var originalParent = fileInput.parent()
       this.indicator.css({display: ''})
+      this.hideErrors()
       $(fileInput).appendTo(this.uploadForm)
       this.uploadForm.submit()
       $(fileInput).prependTo(originalParent)
     },
     onLoad: function () {
       this.indicator.css({display: 'none'})
-      var result = $.parseJSON(this.$('iframe').contents().text())
-      if (result) {
-        this.files.push(result)
+      this.$('#file_form_frame').contents().text()
+      if (this.$('#file_form_frame').contents().text()) {
+        try {
+          var result = $.parseJSON(this.$('#file_form_frame').contents().text())
+          if (result.errors) {
+            this.showErrors(result.errors)
+          } else {
+            this.files.push(result)
+            this.render()
+          }
+        } catch (e) {
+          this.showErrors("Error occured. Could not parse response from server")
+        }
       }
-      this.render()
     },
     'delete': function (e) {
       e.stopPropagation()
@@ -555,7 +565,7 @@ $( function () {
                 this.files.splice(idx, 1)
               }
             }, this)
-            this.render()
+            $(e.target).parent().remove()
           }, this)
         })
       }
@@ -572,6 +582,14 @@ $( function () {
       this.errorBlock.prependTo(this.el)
     },
     render: function () {
+      if (this.allocationData.type == 'interment' && this.allocationData.id) {
+        this.renderFilesEditor()
+      }
+      this.renderActions()
+      this.renderLegacyPane()
+      return this
+    },
+    renderActions: function () {
       var items = _(this.permittedStates.reverse()).without(['provisional', 'deleted', this.allocationData.status]).map(function (state) {
         return {name: state, value: this.stateMap[state] || state.titleize(), action: 'updateStatus'}
       }, this)
@@ -630,14 +648,19 @@ $( function () {
 				body: [multibutton.render().el, this.indicator]
 			})
 			$(this.el).append(section.render().el)
-      this.renderLegacyPane()
-      return this
 		},
     renderLegacyPane: function () {
       if (this.allocationData.legacy_fields.length == 0) return;
       this.legacy || (this.legacy = new Ts.LegacyPane({allocation: this.allocationData}))
       $('body').append(this.legacy.render().el)
     },
+    renderFilesEditor: function () {
+      var section = new Ts.FormViews.Section({title: 'Files', name: 'place'})
+      var filesEditor = new Ts.FormViews.FilesEditor({files: this.allocationData.files, place_id: this.allocationData.place_id})
+      section.body.push(filesEditor.render().el)
+      section.divClass = 'v_padded'
+      this.$el.append(section.render().el)
+    }
   })
   
   Ts.FormViews.AllocationForm = Ts.View.extend({
@@ -651,9 +674,6 @@ $( function () {
 		render: function () {
 			this.renderRoles()
 			this.renderPlaces()
-      if (this.allocationData.type == 'interment' && this.allocationData.id) {
-        this.renderFilesEditor()
-      }
 			this.renderActions()
       this.renderLegacyPane()
 			this.errorBlock.prependTo(this.$el)
@@ -724,13 +744,6 @@ $( function () {
 			this.firstSection.before(section.render().el)
 			return this
 		},
-    renderFilesEditor: function () {
-      var section = new Ts.FormViews.Section({title: 'Files', name: 'place'})
-      var filesEditor = new Ts.FormViews.FilesEditor({files: this.allocationData.files, place_id: this.allocationData.place_id})
-      section.body.push(filesEditor.render().el)
-      section.divClass = 'v_padded'
-      this.$el.append(section.render().el)
-    },
 		renderActions: function () {
 			this.multibutton = new Ts.FormViews.Multibutton(_.extend({
 				actions: {

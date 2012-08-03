@@ -13,10 +13,9 @@ gem "titleize"
 gem "ri_cal"
 gem "mail"
 gem "net-ldap"
-gem "carrierwave"
-gem "carrierwave-sequel", :require => 'carrierwave/sequel'
 gem "mime-types"
 gem "mini_magick"
+gem "exifr"
 
 group :spec do
   gem "rspec"

@@ -108,8 +108,6 @@ module Tombstone
             Notifiers::NewInterment.new(allocation, existing_allocation).send
           end
         end
-
-        update_files
       end
     end
     
@@ -136,21 +134,6 @@ module Tombstone
       terms
     end
 
-    def update_files
-      unless !session['new_files'] || session['new_files'].empty?
-        Blob.filter(:id => session['new_files']).update(:enabled => 1)
-      end
-      unless !session['deleted_files'] || session['deleted_files'].empty?
-        Blob.filter(:id => session['deleted_files']).destroy
-      end
-      reset_file_changes
-    end
-
-    def reset_file_changes
-      session['new_files'] = []
-      session['deleted_files'] = []
-    end
-    
     def json_response(obj = {})
       cache_control :'no-cache'
       if Hash === obj

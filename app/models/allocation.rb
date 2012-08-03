@@ -2,7 +2,7 @@ module Tombstone
   class Allocation < BaseModel
     set_primary_key :id
     unrestrict_primary_key
-
+    
     many_to_one :place, :key => :place_id, :class => :'Tombstone::Place'
     many_to_many :roles, :join_table => :role_association, :left_key => :allocation_id, :right_key => :role_id, :class => :'Tombstone::Role'
     many_to_one :funeral_director, :key => :funeral_director_id, :class => :'Tombstone::FuneralDirector'

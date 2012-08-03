@@ -2,11 +2,30 @@
 # Dir.glob(File.join(File.dirname(__FILE__), 'lib/*/**/*.rb')) { |f| require f }
 
 module Tombstone
-  VERSION = '1.1'
+  VERSION = '1.1.1'
   
   class << self
     attr_accessor :config
   end
+  
+  # Middleware to pad responses to avoid IE's buggy and annoying friendly error message handling.
+  class ResponsePadder
+    def initialize(app)
+      @app = app       
+    end                
+  
+    def call(env)
+      response = @app.call(env)
+      if Array === response[2] && !response[2].empty?
+        total_length = response[2].reduce(0) { |m,v| m + v.length }
+        if total_length <= 512
+          response[2] << ''.ljust(513 - total_length)
+          response[1]['Content-Length'] = '513'
+        end
+      end
+      response
+    end                
+  end 
   
   class App < Padrino::Application
     register Padrino::Rendering
@@ -19,6 +38,7 @@ module Tombstone
       disable :show_exceptions
       use Rack::Session::Sequel, :db => Sequel::Model.db, :table_name => :session, :expire_after => 60 * 60 * 24 * 7
       use Rack::Lock
+      use ResponsePadder
       
       set :config, eval(File.read(File.expand_path('../config.rb', __FILE__)))
       Tombstone.config = config
@@ -58,7 +78,7 @@ module Tombstone
         banner: flash[:banner]
       }
       
-      @user = User.with_pk(session[:user_id]) || User.new(id: session[:user_id]) if session[:user_id]
+      User.current = @user = User.with_pk(session[:user_id]) || User.new(id: session[:user_id]) if session[:user_id]
       BaseModel.permissions = (@user.role_permissions rescue nil)
 
       if request.content_type && request.content_type.match(%r{^application/json})
@@ -103,7 +123,11 @@ module Tombstone
       flash[:banner] = 'success', 'You have been logged out successfully.'
       redirect url(:login)
     end
-
+    
+    get :test do
+      halt 404, "Yay"
+    end
+    
     # after do
     #   p response.status
     #   # Sets the status code to 500 for proper handling by client-side code.
@@ -118,16 +142,17 @@ module Tombstone
     #     end
     #   end
     # end
+    
+    
 
     error do
       if env['sinatra.error']
-        if response.content_type.index(mime_type :json) == 0
-          halt 500, {error: "Server error encountered: #{env['sinatra.error'].message}"}.to_json
+        if response.content_type.index(mime_type :json) == 0 || response.content_type.index(mime_type :text) == 0
+          halt 500, {errors: "Server error encountered: #{env['sinatra.error'].message}"}.to_json
         else
           raise env['sinatra.error']
         end
       end
     end
-  
   end
 end
