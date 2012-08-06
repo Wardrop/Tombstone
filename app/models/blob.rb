@@ -29,7 +29,7 @@ module Tombstone
 
       if exif
         # Waiting for a limitation of the JSON library to be resolved before allowing all exif data which includes non-finite float values (NaN, Infinite, etc).
-        exif = {:date_time => exif[:date_time]}
+        self.exif = {:date_time => exif[:date_time]}
 
         #exif.delete :xmp # We put XMP in the too hard basket due to its character encoding difficulties.
         #exif.each_key do |k|
