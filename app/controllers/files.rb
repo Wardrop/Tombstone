@@ -60,11 +60,13 @@ module Tombstone
         if file.valid?
           file.save
         end
-      end
-      if file.errors.empty?
-        file.to_json(:include => [:thumbnail_dimensions], :except => [:data, :thumbnail])
+        if file.errors.empty?
+          file.to_json(:include => [:thumbnail_dimensions], :except => [:data, :thumbnail])
+        else
+          {errors: file.errors}.to_json
+        end
       else
-        {errors: file.errors}.to_json
+        {errors: 'No file was uploaded.'}.to_json
       end
     end
 

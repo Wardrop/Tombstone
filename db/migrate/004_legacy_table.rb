@@ -3,8 +3,8 @@ Sequel.migration do
     create_table :legacy do
       primary_key [:allocation_id, :key]
       Integer :allocation_id
-      String :key, :size => 64
-      String :value, :size => 255, :null => true
+      nvarchar :key, :size => 64
+      nvarchar :value, :size => 255, :null => true
     end
   end
   

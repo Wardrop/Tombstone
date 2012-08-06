@@ -145,6 +145,7 @@ ul.classic > li {
   z-index: 3;
 }
 #main_banner {
+  display: block;
   position: relative;
   margin: 12px 0 16px;
   font-size: 180%;

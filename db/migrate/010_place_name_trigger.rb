@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    add_column :place, :full_name, String, :size => 1024
+    add_column :place, :full_name, :nvarchar, :size => 1024
     self << "SET ANSI_NULLS ON"
     self << "SET QUOTED_IDENTIFIER ON"
     self << "

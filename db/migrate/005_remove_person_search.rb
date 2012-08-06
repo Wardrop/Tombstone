@@ -8,12 +8,12 @@ Sequel.migration do
     self << "IF OBJECT_ID('PersonSearch') IS NOT NULL DROP PROC PersonSearch"
     self << "
       CREATE PROCEDURE PersonSearch
-      	@GivenNameTerm VarChar(50) = NULL,
-        @MiddleNameTerm VarChar(50) = NULL,
-      	@SurnameTerm VarChar(50) = NULL,
+      	@GivenNameTerm NVarChar(50) = NULL,
+        @MiddleNameTerm NVarChar(50) = NULL,
+      	@SurnameTerm NVarChar(50) = NULL,
       	@DOBTerm DateTime = NULL,
         @DODTerm DateTime = NULL,
-      	@GenderTerm VarChar(50) = NULL,
+      	@GenderTerm NVarChar(50) = NULL,
         @Top Integer = 0
       AS
       BEGIN

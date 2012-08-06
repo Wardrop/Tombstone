@@ -1,7 +1,7 @@
 Sequel.migration do
   up do 
-    add_column :contact, :country, String, :size => 64
-    add_column :person, :middle_name, String, :size => 40
+    add_column :contact, :country, :nvarchar, :size => 64
+    add_column :person, :middle_name, :nvarchar, :size => 40
     self['UPDATE person SET middle_name = middle_initials']
     drop_column :person, :middle_initials
     
@@ -39,7 +39,7 @@ Sequel.migration do
   end
   
   down do
-    add_column :person, :middle_initials, String, :size => 3
+    add_column :person, :middle_initials, :nvarchar, :size => 3
     self.run 'UPDATE person SET middle_initials = middle_name'
     drop_column :contact, :country
     drop_column :person, :middle_name
