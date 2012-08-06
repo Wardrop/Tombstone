@@ -38,7 +38,6 @@ module Tombstone
         file = Blob.new(:place_id => params[:place_id].to_i)
         thumbnail = nil
         dimensions = "#{Blob.thumbnail_dimensions[:width]}x#{Blob.thumbnail_dimensions[:height]}"
-        p params[:file][:type]
         begin
           image = MiniMagick::Image.read(params[:file][:tempfile])
           image.format('jpg') unless params[:file][:type] =~ /(jpe?g|gif|png)$/
@@ -48,7 +47,7 @@ module Tombstone
           image.crop("#{dimensions}+0+0")
           thumbnail = image.write(StringIO.new).string
         rescue MiniMagick::Error, MiniMagick::Invalid => e
-          puts "Could process file as image: #{e.message}"
+          puts "DEBUG: Could not process file as image: #{e.message}"
         end
         file.set(
           data: params[:file][:tempfile].rewind && params[:file][:tempfile].read,

@@ -28,14 +28,17 @@ module Tombstone
       end
 
       if exif
-        exif.delete :xmp # We put XMP in the too hard basket due to its character encoding difficulties.
-        exif.each_key do |k|
-          if Float === exif[k] && exif[k].nan?
-            exif[k] = nil
-          elsif String === exif[k]
-            exif[k].encode! Encoding::UTF_8, :undef => :replace
-          end
-        end
+        # Waiting for a limitation of the JSON library to be resolved before allowing all exif data which includes non-finite float values (NaN, Infinite, etc).
+        exif = {:date_time => exif[:date_time]}
+
+        #exif.delete :xmp # We put XMP in the too hard basket due to its character encoding difficulties.
+        #exif.each_key do |k|
+        #  if Float === exif[k] && exif[k].nan?
+        #    exif[k] = nil
+        #  elsif String === exif[k]
+        #    exif[k].encode! Encoding::UTF_8, :undef => :replace
+        #  end
+        #end
       end
       super
     end
