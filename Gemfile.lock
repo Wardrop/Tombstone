@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/flori/json.git
+  revision: b594588898b0267c84fc38baec5a5d7727ca0a7e
+  branch: replace-nan
+  specs:
+    json (1.7.4)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -90,6 +97,7 @@ DEPENDENCIES
   activesupport
   exifr
   htmlentities
+  json!
   mail
   mime-types
   mini_magick

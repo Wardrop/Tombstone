@@ -1,5 +1,6 @@
 source :rubygems
 
+gem "json", :git => 'https://github.com/flori/json.git', :branch => 'replace-nan'
 gem 'rack', ">= 1.4.1"
 gem "activesupport", :require => ['active_support', 'active_support/time']
 gem 'rake'

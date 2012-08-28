@@ -252,6 +252,7 @@ $( function () {
       this.model.get('role').on('change', this.roleChanged, this)
       this.showPersonPage()
       this.roleChanged()
+      window.r = this.model
     },
     render: function () {
       this._super('render', arguments)
@@ -270,9 +271,9 @@ $( function () {
       if (role.get('mailing_contact')) {
         role.get('mailing_contact').off('validityChange', this.updateUI).on('validityChange', this.updateUI, this)
       }
-      if(role.get('residential_contact') &&
-          role.get('mailing_contact') &&
-          role.get('residential_contact').get('id') == role.get('mailing_contact').get('id')
+      if(role.get('residential_contact') && role.get('residential_contact').get('id') &&
+         role.get('mailing_contact') && role.get('mailing_contact').get('id') &&
+         role.get('residential_contact').get('id') == role.get('mailing_contact').get('id')
       ) {
         role.set('mailing_contact', role.get('residential_contact'))
       }

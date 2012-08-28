@@ -135,7 +135,7 @@ module Tombstone
       end
 
       def valid_states
-        Interment.awaiting_action_states + ['completed', 'deleted']
+        Interment.awaiting_action_states + ['completed', 'deleted', 'legacy']
       end
 
       def awaiting_action_states
