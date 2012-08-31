@@ -33,8 +33,8 @@
 <script type="text/template" id="form:legacy_pane">
   <div class="bar"></div>
   <div class="show">
-    <div class="title">Legacy Data (#<?= allocation.id ?>)<a href="#" class="close" title="Close"></a></div>
-    <div class="rowed wide view" style="margin: 12px">
+    <div class="title">Legacy Data (#<?= allocation.id ?>)<a href="javascript:;" class="close" title="Close"></a></div>
+    <div class="rowed wide view">
       <? _.each(allocation.legacy_fields, function (row) { ?>
         <div class="row">
           <span><?= row.key ?></span>

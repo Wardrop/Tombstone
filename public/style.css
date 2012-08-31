@@ -251,7 +251,6 @@ ul.classic > li {
   background: white;
   border-left: 1px solid #c0c0c0;
   box-shadow: 0px 0px 20px rgba(0,0,0, 0.12);
-  padding-top: 48px;
   z-index: 100;
 }
 #legacy_pane .title {
@@ -263,6 +262,7 @@ ul.classic > li {
   top: 0;
   right: 0px;
   left: -1px;
+  height: 46px;
 }
 #legacy_pane .bar {
   font-size: 140%;
@@ -309,8 +309,14 @@ ul.classic > li {
   opacity: 0.8;
 }
 
-#legacy_pane .show {
+#legacy_pane .show > .rowed {
   overflow: auto;
+  position: absolute;
+  top: 46px;
+  bottom: 0;
+  left: 10px;
+  right: 0;
+  padding: 6px 0;
 }
 
 h1 .heading_float, h2 .heading_float, h3 .heading_float {
