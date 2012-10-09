@@ -15,7 +15,7 @@ Sequel::Model.db = case Padrino.env
   when :production then
     Sequel.connect({
       adapter: 'tinytds',
-      host: 'trcsql02.trc.local',
+      host: 'trcsql01.trc.local',
       user: 'TRC\tombstone_user',
       password: '10Pippl$ah',
       database: 'Tombstone_Prod'
