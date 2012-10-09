@@ -1,3 +1,4 @@
+
 Sequel.datetime_class = DateTime
 Sequel.default_timezone = :local
 # TinyTds::Client.default_query_options[:timezone] = :utc
@@ -11,7 +12,8 @@ Sequel::Model.raise_on_typecast_failure = true
 Sequel::Model.raise_on_save_failure = true
 Sequel::Model.json_serializer_opts[:naked] = true
 
-Sequel::Model.db = case Padrino.env
+p PADRINO_ENV
+Sequel::Model.db = case PADRINO_ENV.to_sym
   when :production then
     Sequel.connect({
       adapter: 'tinytds',

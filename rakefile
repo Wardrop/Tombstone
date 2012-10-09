@@ -1,3 +1,11 @@
+PADRINO_ENV = ENV["PADRINO_ENV"] ||= ENV["RACK_ENV"] ||= "development"  unless defined?(PADRINO_ENV)
+
+require 'logger'
+require 'bundler/setup'
+Bundler.require(:default, PADRINO_ENV)
+
+require_relative 'config/database'
+
 db = Sequel::Model.db
 db.loggers << Logger.new(STDOUT)
 
@@ -9,12 +17,12 @@ namespace :db do
 
     # Recreate the database tables
     db.drop_table(*db.tables)
-    Sequel::Migrator.run(db, File.expand_path('../../db/migrate', __FILE__))
+    Sequel::Migrator.run(db, File.expand_path('../db/migrate', __FILE__))
   end
   
   task :migrate, :version do |v|
     Sequel.extension :migration
-    Sequel::Migrator.apply(db, File.expand_path('../../db/migrate', __FILE__), (v) ? v.to_i : nil)
+    Sequel::Migrator.apply(db, File.expand_path('../db/migrate', __FILE__), (v) ? v.to_i : nil)
   end
   
   desc "Populates the database with dummy data"
