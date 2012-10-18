@@ -12,7 +12,6 @@ Sequel::Model.raise_on_typecast_failure = true
 Sequel::Model.raise_on_save_failure = true
 Sequel::Model.json_serializer_opts[:naked] = true
 
-p PADRINO_ENV
 Sequel::Model.db = case PADRINO_ENV.to_sym
   when :production then
     Sequel.connect({

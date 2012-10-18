@@ -45,7 +45,7 @@ module Tombstone
           },
           name: proc { |v,o|
             v = wildcard_value(v)
-            "([PERSON].[TITLE]+' '+[PERSON].[GIVEN_NAME]+' '+[PERSON].[SURNAME]) LIKE #{@db.literal(v)} OR
+            "([PERSON].[GIVEN_NAME]+' '+[PERSON].[SURNAME]) LIKE #{@db.literal(v)} OR
             ([ALLOCATION].[ALTERNATE_RESERVEE]) LIKE #{@db.literal(v)}" 
           },
           address: proc { |v,o|
