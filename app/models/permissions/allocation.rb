@@ -49,7 +49,7 @@ module Tombstone
           permissions.can_edit_interred!
         when 'completed'
           permissions.can_edit_completed!
-        when
+        when 'deleted'
           permissions.can_edit_deleted!
         end
       end
