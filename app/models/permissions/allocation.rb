@@ -29,7 +29,8 @@ module Tombstone
       
       def before_save
         super
-        if self.changed_columns.include? :status
+        
+        if self.column_changed?(:status)
           case self.status
           when 'approved'
             permissions.can_approve!
@@ -42,7 +43,7 @@ module Tombstone
           end
         end
         
-        case self.status
+        case self.initial_value(:status)
         when 'approved'
           permissions.can_edit_approved!
         when 'interred'

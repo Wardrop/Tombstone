@@ -20,4 +20,6 @@ gem "exifr"
 
 group :spec do
   gem "rspec"
+  gem "rerun"
+  gem "rb-fsevent"
 end
