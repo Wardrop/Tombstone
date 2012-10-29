@@ -3,9 +3,8 @@ module Tombstone
   module Notifiers
     class Base
       
-      def initialize(changed_allocation, existing_allocation)
-        @changed_allocation = changed_allocation
-        @existing_allocation = existing_allocation
+      def initialize(allocation)
+        @allocation = allocation
       end
       
       def template
@@ -39,7 +38,7 @@ module Tombstone
       end
       
       def allocation_url
-        URI.join(Tombstone.config[:base_url], "/#{@changed_allocation.type}/#{@changed_allocation.id}")
+        URI.join(Tombstone.config[:base_url], "/#{@allocation.type}/#{@allocation.id}")
       end
     
     protected

@@ -11,7 +11,7 @@ module Tombstone
       end
       
       def subject
-        "New interment has been created (##{@changed_allocation.id})"
+        "New interment has been created (##{@allocation.id})"
       end
       
     end

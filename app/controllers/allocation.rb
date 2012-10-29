@@ -77,6 +77,7 @@ module Tombstone
         allocation.set({status: params['status']})
         if allocation.valid?
           allocation.save
+          Notifiers::ChangedStatus.new(allocation).send
           flash[:banner] = ['success', "Status of #{controller.capitalize} ##{params[:id]} was updated successfully."]
         end
       end
@@ -99,9 +100,9 @@ module Tombstone
           else
             allocation.set(status: 'deleted').save(:status)
           end
+          Notifiers::ChangedStatus.new(allocation).send
           flash[:banner] = ["success", "#{controller.capitalize} was deleted successfully."]
         rescue => e
-          p e
           flash[:banner] = ["error", "Error occured while deleting #{controller} ##{params[:id]}. The error was: \n#{e.message}"]
         end
       end

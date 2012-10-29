@@ -17,11 +17,6 @@ module Tombstone
           [k, v]
         } ]
         
-        begin
-          existing_allocation = allocation.clone.refresh
-        rescue Sequel::Error => e
-          existing_allocation = nil
-        end
         allocation.set_valid_only(values)
         allocation.save(validate: false)
 
@@ -76,8 +71,6 @@ module Tombstone
           if allocation.errors.empty?
             if !request.GET.has_key?('confirm') && allocation.has_warnings?
               raise Sequel::Rollback
-            else
-              allocation.save(validate: false)
             end
           else
             raise Sequel::Rollback
@@ -85,27 +78,25 @@ module Tombstone
         elsif allocation.errors.empty? && allocation.valid?
           if !request.GET.has_key?('confirm') && allocation.has_warnings?
             raise Sequel::Rollback
-          else
-            allocation.save
           end
         else
           raise Sequel::Rollback
         end
         
-        if existing_allocation
-          if allocation.status != existing_allocation.status
-            if existing_allocation.status == 'provisional' && allocation.status != 'deleted'
-              Notifiers::NewInterment.new(allocation, existing_allocation).send
-            elsif allocation.status == 'approved'
-              Notifiers::ChangedStatus.new(allocation, existing_allocation).send
-            end
-          end
-          unless allocation.interment_date == existing_allocation.interment_date
-            Notifiers::ChangedIntermentDate.new(allocation, existing_allocation).send
+        if allocation.new?
+          if allocation.status != 'provisonal'
+            Notifiers::NewInterment.new(allocation).send
           end
         else
-          if allocation.status != 'provisonal'
-            Notifiers::NewInterment.new(allocation, existing_allocation).send
+          if allocation.previous_changes.nil? || (allocation.previous_changes[:status].first == 'provisional' && allocation.status != 'deleted')
+            Notifiers::NewInterment.new(allocation).send
+          else
+            if allocation.previous_changes[:status]
+              Notifiers::ChangedStatus.new(allocation).send
+            end
+            unless allocation.previous_changes[:interment_date].first == allocation.interment_date
+              Notifiers::ChangedIntermentDate.new(allocation).send
+            end
           end
         end
       end

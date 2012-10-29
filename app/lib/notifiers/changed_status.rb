@@ -11,7 +11,7 @@ module Tombstone
       end
       
       def subject
-        "Status of #{@changed_allocation.type.titleize} ##{@changed_allocation.id} has changed from #{@changed_allocation.status.titleize} to #{@existing_allocation.status.titleize}"
+        "Status of #{@allocation.type.titleize} ##{@allocation.id} has changed from #{@allocation.previous_changes[:status].first.titleize} to #{@allocation.status.titleize}"
       end
       
     end

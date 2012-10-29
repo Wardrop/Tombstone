@@ -57,7 +57,7 @@ module Tombstone
     end
     
     def name
-      "#{title} #{given_name} #{middle_name} #{surname}"
+      "#{title} #{given_name}#{middle_name.blank? ? '' : ' '+middle_name} #{surname}"
     end
     
     def validate

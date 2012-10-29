@@ -11,7 +11,7 @@ module Tombstone
       end
       
       def subject
-        "Interment Date of #{@changed_allocation.type.titleize} ##{@changed_allocation.id} has changed"
+        "Interment Date for #{@allocation.type.titleize} ##{@allocation.id} has changed"
       end
       
     end
