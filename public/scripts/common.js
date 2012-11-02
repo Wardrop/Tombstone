@@ -68,9 +68,8 @@ $( function () {
   }
   
   $('input.tooltip').livequery( function () {
-    var gravity = $(this).data('gravity')
-    if(!gravity) gravity = 'w'
-    $(this).tipsy({trigger: 'focus', opacity: 1, gravity: gravity});
+    var gravity = $(this).data('gravity') || 'w'
+    $(this).tipsy({trigger: 'hover', opacity: 1, gravity: gravity});
   })
   $('input[placeholder]').livequery( function () {
     $(this).placeholder();

@@ -57,7 +57,7 @@ end
       <% @allocation.place.ancestors.reverse.push(@allocation.place).each do |place| %>
         <div class="row">
           <span><%= place.type.demodulize.titleize %></span>
-          <div><%= place.name %></div>
+          <div><a href="<%= url :place_index, id: place.id %>"><%= place.name %></a></div>
         </div>
       <% end %>
       </div>

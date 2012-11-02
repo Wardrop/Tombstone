@@ -1,20 +1,17 @@
 <%
-@document[:title] = 'Create Places'
+@document[:title] = "View Place ##{@place.id}"
 content_for :head do
 %>
   <script type="text/javascript">
     $( function () {
       var multibutton = new Ts.FormViews.Multibutton({
-        values: {manage: 'Manage', print: 'Print'},
+        items: [{name: 'manage', value: 'Manage'}, {name: 'print', value: 'Print'}],
         actions: {
           manage: function () {
-            window.location = <%= url("/place?place_id=#{@place.id}").to_json %>
+            window.location = <%= url("/place/manage?place_id=#{@place.id}").to_json %>
           },
           print: function () {
             window.print()
-          },
-          'default': function () {
-            alert('This function is not currently implemented.')
           }
         }
       })
@@ -63,6 +60,20 @@ end
         <%= @place.ancestors.reduce("") { |memo| memo << "</div>" } %>
       <% else %>
         <small>root</small>
+      <% end %>
+    </div>
+    <div class="row">
+      <span class="align_top">Allocations</span>
+      <% if @place.allocations.empty? %>
+        <span style="vertical-align: top;"><small>none</small></span>
+      <% else %>
+        <ul style="vertical-align: top;">
+          <% @place.allocations.each do |alloc| %>
+            <li <%= 'style="text-decoration: line-through"' if alloc.status == 'deleted' %>>
+              <a href="<%= url :"#{alloc.type}_view", id: alloc.id %>"><%= alloc.type.titleize %> #<%= alloc.id %></a>
+            </li>
+          <% end %>
+        </ul>
       <% end %>
     </div>
   </section>

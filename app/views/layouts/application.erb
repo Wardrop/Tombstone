@@ -36,7 +36,7 @@
     $( function () {
       <%
       actions = [{title: 'Logout', href: url(:logout)}]
-      actions << {title: 'Manage Places', href: url('/place')} if @user && @user.role_permissions.can_manage_cemeteries?
+      actions << {title: 'Manage Places', href: url('/place/manage')} if @user && @user.role_permissions.can_manage_cemeteries?
       %>
       var logged_in = <%= (!!session[:user_id]).to_json %>
       var multilink = new Ts.FormViews.Multilink({

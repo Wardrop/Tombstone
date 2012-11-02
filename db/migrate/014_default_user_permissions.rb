@@ -7,7 +7,7 @@ Sequel.migration do
     self[:user].insert(:id => 'adrians', :role => 'coordinator')
     self[:user].insert(:id => 'megank', :role => 'coordinator')
     self[:user].insert(:id => 'amandar', :role => 'coordinator')
-    self[:user].insert(:id => 'ttu', :role => 'supervisor')
+    self[:user].insert(:id => 'ttu', :role => 'operator')
   end
   
   down do

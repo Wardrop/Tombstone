@@ -267,7 +267,7 @@ $( function () {
 			var section = new Ts.FormViews.Section({title: 'Place Editor', name: 'place'})
 			if (this.defaultPlaceId) {
 				for (var i = 0; places = this.placeData[i]; i++) {
-				  var selected = (this.placeData[i+1]) ? this.placeData[i+1][0].parent_id : this.defaultPlaceId
+				  var selected = (this.placeData[i+1] && this.placeData[i+1].length > 0) ? this.placeData[i+1][0].parent_id : this.defaultPlaceId
 					var placeView = new Ts.FormViews.PlaceEditPicker({
             selected: selected,
             collection: new Ts.Places(places),
@@ -298,7 +298,6 @@ $( function () {
       this._super('initialize', arguments)
       this.collection.on('reset', function () {
         this.render()
-        this.selectPlace()
       }, this)
       this.render()
     },
@@ -495,6 +494,7 @@ $( function () {
       var parentId = (place && place.get('parent_id')) || this.collection.at(0).get('parent_id') || 0
       this.collection.fetch({
         url: '/place/'+parentId+'/children',
+        data: {},
         success: _.bind(function () {
           this.selectPlace(placeId)
         }, this)

@@ -1,9 +1,13 @@
 module Tombstone
   App.controller :place do
     
-    get :index do
+    get :manage, :map => "/place/manage" do
       @place = Place.with_pk(params['place_id']) if params['place_id']
       render 'place/manage'
+    end
+    
+    get :index do
+      redirect to('/place/manage')
     end
     
     get :index, :with => :id do
