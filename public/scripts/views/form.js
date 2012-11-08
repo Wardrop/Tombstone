@@ -317,7 +317,7 @@ $( function () {
     renderChildPicker: function (places, options) {
       options = options || {}
       var selectedPlace = this.collection.get(this.$(':selected').val())
-      if (places.length == 0 && selectedPlace.get('child_count') > 0) {
+      if (selectedPlace && places.length == 0 && selectedPlace.get('child_count') > 0) {
         this.indicator.css({display: ''}).attr({
           'class': 'indicator warning',
           title: selectedPlace.get('type').demodulize().titleize() +

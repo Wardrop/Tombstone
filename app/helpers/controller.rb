@@ -88,7 +88,7 @@ module Tombstone
             Notifiers::NewInterment.new(allocation).send
           end
         else
-          if allocation.previous_changes.nil? || (allocation.previous_changes[:status].first == 'provisional' && allocation.status != 'deleted')
+          if allocation.previous_changes.nil? || (allocation.previous_changes[:status] && allocation.previous_changes[:status].first == 'provisional' && allocation.status != 'deleted')
             Notifiers::NewInterment.new(allocation).send
           else
             if allocation.previous_changes[:status]

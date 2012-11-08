@@ -6,7 +6,7 @@ Ts.Model = Backbone.Model.extend({
   },
   serverValidate: function (callbacks) {
     this.errors = {}
-    Backbone.sync('read', this, {
+    return Backbone.sync('read', this, {
       url: this.urlRoot+'/validate',
       success: _.bind( function (data, textStatus, jqXHR) {
         if(data.valid) {
@@ -37,7 +37,7 @@ Ts.Model = Backbone.Model.extend({
     if (method != 'create') {
       options.url = model.url + '/' + model.get('id')
     }
-    Backbone.sync(method, model, options);
+    return Backbone.sync(method, model, options);
   },
   valid: function (value) {
     if (value == undefined) {

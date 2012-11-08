@@ -1368,8 +1368,8 @@
 
     // Don't process data on a non-GET request.
     if (params.type !== 'GET' && !Backbone.emulateJSON) {
-      params.processData = false;
       if (options.data) {
+        params.processData = false;
         params.contentType = 'application/json';
         options.data = JSON.stringify(options.data)
       }
