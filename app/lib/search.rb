@@ -43,6 +43,38 @@ module Tombstone
               end
             end rescue nil
           },
+          created: proc { |v,o|
+            v = strict_value(v)
+            begin
+              date = Date.strptime(v, '%d/%m/%Y')
+              case o
+              when ':'
+                "[ALLOCATION].[CREATED_AT] >= #{@db.literal(date.strftime('%d/%m/%Y'))} AND [ALLOCATION].[CREATED_AT] < #{@db.literal((date + 1).strftime('%d/%m/%Y'))}"
+              when '>'
+                "[ALLOCATION].[CREATED_AT] > #{@db.literal(date.strftime('%d/%m/%Y'))}"
+              when '<'
+                "[ALLOCATION].[CREATED_AT] < #{@db.literal(date.strftime('%d/%m/%Y'))}"
+              end
+            rescue
+              "[ALLOCATION].[CREATED_BY] LIKE #{@db.literal(v)}"
+            end
+          },
+          modified: proc { |v,o|
+            v = strict_value(v)
+            begin
+              date = Date.strptime(v, '%d/%m/%Y')
+              case o
+              when ':'
+                "[ALLOCATION].[MODIFIED_AT] >= #{@db.literal(date.strftime('%d/%m/%Y'))} AND [ALLOCATION].[MODIFIED_AT] < #{@db.literal((date + 1).strftime('%d/%m/%Y'))}"
+              when '>'
+                "[ALLOCATION].[MODIFIED_AT] > #{@db.literal(date.strftime('%d/%m/%Y'))}"
+              when '<'
+                "[ALLOCATION].[MODIFIED_AT] < #{@db.literal(date.strftime('%d/%m/%Y'))}"
+              end
+            rescue
+              "[ALLOCATION].[MODIFIED_BY] LIKE #{@db.literal(v)}"
+            end
+          },
           name: proc { |v,o|
             v = wildcard_value(v)
             "([PERSON].[GIVEN_NAME]+' '+[PERSON].[SURNAME]) LIKE #{@db.literal(v)} OR

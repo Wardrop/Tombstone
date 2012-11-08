@@ -171,6 +171,7 @@ module Tombstone
       end
       Allocation.valid_alert_statuses.last
     end
+    
 
     def calculate_alert_status(valid_alert_statuses, hours_thresholds, interment_date, reverse=false)
       thresholds_reached = hours_thresholds.find_all{|threshold| self.has_alert_been_reached(threshold, interment_date, reverse)}
@@ -189,15 +190,25 @@ module Tombstone
     
     def check_warnings
       super
-      overlapping = self.class.
-        exclude(primary_key_hash).
-        exclude(status: 'deleted').
-        where("interment_date >= ? AND interment_date <= ?",
-              (interment_date.to_time - self.class.interment_duration).to_datetime,
-              interment_date_end)
-        overlapping.all.any? do |allocation|
-        if allocation.place.cemetery == place.cemetery
-          warnings.add :interment_date, "overlaps with one or more other interments in the same cemetery."
+      if interment_date
+        overlapping = self.class.
+          exclude(primary_key_hash).
+          exclude(status: 'deleted').
+          where("interment_date >= ? AND interment_date <= ?",
+                (interment_date.to_time - self.class.interment_duration).to_datetime,
+                interment_date_end)
+          overlapping.all.any? do |allocation|
+          if allocation.place.cemetery == place.cemetery
+            warnings.add :interment_date, "overlaps with one or more other interments in the same cemetery."
+          end
+        end
+        
+        warnings.add(:interment_date, "is in the past.") { interment_date >= DateTime.now }
+        interment_day = interment_date.strftime('%A')
+        if ['Saturday', 'Sunday'].include? interment_day
+          warnings.add(:interment_date, "falls on a #{interment_day}.")
+        elsif not (8..17).include? interment_date.hour
+          warnings.add(:interment_date, "falls outside of work hours.")
         end
       end
       
@@ -207,14 +218,6 @@ module Tombstone
         deceased.person.role_by_type('reservee').allocations_dataset.exclude(place_id: place_id).each do |res|
           warnings.add :deceased, "has a reservation for another place. Reservation ID is ##{res.id}."
         end
-      end
-
-      warnings.add(:interment_date, "is in the past.") { interment_date >= DateTime.now }
-      interment_day = interment_date.strftime('%A')
-      if ['Saturday', 'Sunday'].include? interment_day
-        warnings.add(:interment_date, "falls on a #{interment_day}.")
-      elsif not (8..17).include? interment_date.hour
-        warnings.add(:interment_date, "falls outside of work hours.")
       end
       
     end
