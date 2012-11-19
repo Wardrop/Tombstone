@@ -48,7 +48,7 @@ content_for :head do %>
   </section>
   <section id="search_results">
     <h3 class="underline">
-      Results
+      Results <sup><%= "#{@records.length}#{'+' if @records.length >= settings.config[:search_record_limit]} records found"%></sup>
       <div class="heading_float order_options">
         <%
         if @search_class

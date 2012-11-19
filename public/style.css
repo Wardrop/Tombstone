@@ -118,7 +118,10 @@ ul.classic > li {
   list-style: disc inside;
   padding-left: 16px;
 }
-
+sup {
+  color: grey;
+  font-size: 60%;
+}
 
 #container {
   text-align: left;
@@ -151,10 +154,6 @@ ul.classic > li {
   font-size: 180%;
   background: url('images/logo_icon.png') no-repeat 30px center;
   padding: 32px 0 32px 142px;
-}
-#main_banner sup {
-  color: grey;
-  font-size: 60%;
 }
 #print_banner {
   display: none;
