@@ -1,10 +1,20 @@
 <script type="text/template" id="wizard:wizard_template">
   <div class="overlay_container <?= this.options.className ?>">
     <div class="heading">
-      <h2 class="underline"><?= data.title ?></h2>
+      <div class="inner">
+        <h2 class="underline"><?= data.title ?></h2>
+      </div>
     </div>
     <div class="body">
       <div class="page"></div>
+    </div>
+    <div class="footer">
+      <div class="inner">
+        <div class="content">
+          <input name="cancel" type="button" value="Cancel" class="light close" />
+          <input name="ok" type="button" value="OK" />
+        </div>
+      </div>
     </div>
   </div>
 </script>
@@ -12,7 +22,9 @@
 <script type="text/template" id="wizard:role_wizard_template">
   <div class="overlay_container <?= this.options.className ?>">
     <div class="heading">
-      <h2 class="underline"><?= data.title ?></h2>
+      <div class="inner">
+        <h2 class="underline"><?= data.title ?></h2>
+      </div>
     </div>
     <div class="body">
       <ul class="menu pane" style="width: 25%">
@@ -29,8 +41,12 @@
       <div class="page pane" style="width: 75%"></div>
     </div>
     <div class="footer">
-      <input name="cancel" type="button" value="Cancel" class="close" />
-      <input name="ok" type="button" value="OK" />
+      <div class="inner">
+        <div class="content">
+          <input name="cancel" type="button" value="Cancel" class="light close" />
+          <input name="ok" type="button" value="OK" />
+        </div>
+      </div>
     </div>
   </div>
 </script>
@@ -43,10 +59,6 @@
     <li><?= warning ?></li>
   <? }) ?>
   </ul>
-  <div class="v_padded">
-    <input type="button" value="Continue" class="warning" data-action="confirm" />
-    <input type="button" value="Cancel" class="light close" />
-  </div>
 </script>
 
 <script type="text/template" id="wizard:place_form_template">

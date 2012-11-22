@@ -121,8 +121,8 @@ $( function () {
 			this.$el.css({display: '', 'margin-right': $('body').css('marginRight')})
 			this.$el.children().detach()
       this.$el.append(this.template({data: this.model.toJSON()}))
-      if (this.options.showCloseButton) $('<a class="close" href="javascript:void(0)" title="Close"></a>').appendTo(this.$('.heading'))
-      if (this.options.showBackButton) $('<a class="back" href="javascript:void(0)" title="Go Back"></a>').appendTo(this.$('.heading'))
+      if (this.options.showCloseButton) $('<a class="close" href="javascript:void(0)" title="Close"></a>').appendTo(this.$('.heading > .inner'))
+      if (this.options.showBackButton) $('<a class="back" href="javascript:void(0)" title="Go Back"></a>').appendTo(this.$('.heading > .inner'))
       this.$('.body').prepend(this.indicator)
       this.$('.body').prepend(this.errorBlock)
 			this.renderPage()
@@ -263,7 +263,7 @@ $( function () {
     roleChanged: function () {
       this.updateUI()
       var role = this.model.get('role')
-      role.on('change:person', this.personChanged, this)
+      role.off('change:person', this.personChanged, this).on('change:person', this.personChanged, this)
       role.get('person').off('validityChange', this.updateUI).on('validityChange', this.updateUI, this)
       if (role.get('residential_contact')) {
         role.get('residential_contact').off('validityChange', this.updateUI).on('validityChange', this.updateUI, this)
@@ -313,6 +313,7 @@ $( function () {
         self.model.get('role').set($(this).data('model'), null)
       })
       this.updateUI()
+      this.$('.role_wizard').animate({scrollTop: 0}, 150)
     },
     deleteModel: function (key) {
       var target = this.$('ul.menu > li[data-model='+key+']')

@@ -67,17 +67,17 @@ input[type=submit].disabled:hover, input[type=button].disabled:hover, input[type
 input[type=submit]:hover, input[type=button]:hover, input[type=reset]:hover, a.button:hover {
   background: #5499d6;
 }
+.warning input[type=submit], .warning input[type=button], .warning input[type=reset], .warning a.button {
+  background: #d98416;
+}
+.warning input[type=submit]:hover, .warning input[type=button]:hover, .warning input[type=reset]:hover, .warning a.button:hover {
+  background: #e5962e;
+}
 input[type=submit].light, input[type=button].light, input[type=reset].light, a.button.light {
   background: #626262;
 }
 input[type=submit].light:hover, input[type=button].light:hover, input[type=reset].light:hover, a.button.light:hover {
   background: #777;
-}
-input[type=submit].warning, input[type=button].warning, input[type=reset].warning, a.button.warning {
-  background: #d98416;
-}
-input[type=submit].warning:hover, input[type=button].warning:hover, input[type=reset].warning:hover, a.button.warning:hover {
-  background: #e5962e;
 }
 
 form {
@@ -891,63 +891,86 @@ a.row_button:hover {
 .overlay_container {
   position: absolute;
   left: 50%;
-  top: 8%;
-  margin-left: -300px;
-  width: 600px;
-  max-height: 84%;
+  top: 10%;
+  margin-left: -450px;
+  width: 888px;
+  max-height: 76%;
   display: block;
-  border: 8px solid #2980cc;
+  border: 6px solid #2980cc;
   z-index: 101;
   background: white;
   box-shadow: 0px 0px 30px rgba(0,0,0,0.2);
   overflow-y: auto;
   overflow-x: hidden;
+  box-sizing: content-box;
 }
-.overlay_container.role_wizard {
-  margin-left: -450px;
-  width: 900px;
+.overlay_container > .heading, .overlay_container > .footer {
+  position:absolute;
+	left:-6px;
+	right: -6px;
+	height: 0px;
+	overflow: auto; /* required for IE not to clip */
 }
 .overlay_container > .heading {
-  position: relative;
+  top:-40px;
+}
+.overlay_container > .footer {
+	bottom: 0;
+}
+.overlay_container > .heading > .inner, .overlay_container > .footer > .inner  {
+  position:fixed;
+	width: 900px;
+	border: 6px solid #2980cc;
+	border-top: none;
+}
+.overlay_container > .heading > .inner {
   text-align: left;
   background: #2980cc;
   color: white;
-  padding: 3px 0 12px 0;
+  border-bottom: none;
+  padding: 10px 0;
+  height: 40px;
 }
-.overlay_container > .footer {
+.overlay_container > .footer > .inner {
+  background: white;
+}
+.overlay_container > .footer > .inner > .content {
   text-align: right;
   border-top: 1px solid #bbb;
-  padding: 8px 12px;
+  padding: 6px 12px;
 }
-.overlay_container.warning {
-  border: 8px solid #d98416;
+.overlay_container.warning,
+.overlay_container.warning > .heading > .inner,
+.overlay_container.warning > .footer > .inner {
+  border-color: #d98416;
 }
-.overlay_container.warning > .heading {
+.overlay_container.warning > .heading > .inner {
   background: #d98416;
 }
-.overlay_container > .heading > h2 {
+
+.overlay_container > .heading h2 {
   width: 100%;
   margin: 0 0 0 12px;
   border: none;
   padding: 0;
 }
-.overlay_container > .heading > a.close {
+.overlay_container > .heading a.close {
   position: absolute;
-  top: -8px;
+  top: 0;
   bottom: 0;
   right: 0;
   width: 36px;
   background: url('images/close.png') no-repeat center center;
 }
-.overlay_container > .heading > a.back {
+.overlay_container > .heading a.back {
   position: absolute;
-  top: -8px;
+  top: -6px;
   bottom: 0;
   right: 36px;
   width: 36px;
   background: url('images/back.png') no-repeat center center;
 }
-.overlay_container > .heading > a.close:hover, .overlay_container > .heading > a.back:hover {
+.overlay_container > .heading a.close:hover, .overlay_container > .heading a.back:hover {
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
   opacity: 0.8;
 }
@@ -957,7 +980,6 @@ a.row_button:hover {
   position: relative;
   height: auto;
   width: 100%;
-  box-sizing: border-box;
 }
 .overlay_container > .body .pane {
   position: relative;
