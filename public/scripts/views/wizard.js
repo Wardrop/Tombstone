@@ -160,6 +160,9 @@ $( function () {
   })
   
   Ts.WizardViews.WarningOverlay = Ts.WizardViews.Wizard.extend({
+    events: _.extend({}, Ts.WizardViews.Wizard.prototype.events, {
+      'click [name=ok]:not(.disabled)': 'confirm'
+		}),
     initialize: function () {
       this._super('initialize', arguments)
       this.options.showCloseButton = false
