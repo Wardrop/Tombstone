@@ -105,7 +105,8 @@ $( function () {
 		events: {
 			'click .close' : 'close',
       'click .back' : 'goBack',
-			'click' : 'closeOnBlur'
+			'click' : 'closeOnBlur',
+			'click [name=ok]:not(.disabled)': 'confirm'
 		},
 		initialize: function () {
 		  this._super('initialize', arguments)
@@ -160,9 +161,6 @@ $( function () {
   })
   
   Ts.WizardViews.WarningOverlay = Ts.WizardViews.Wizard.extend({
-    events: _.extend({}, Ts.WizardViews.Wizard.prototype.events, {
-      'click [name=ok]:not(.disabled)': 'confirm'
-		}),
     initialize: function () {
       this._super('initialize', arguments)
       this.options.showCloseButton = false
@@ -202,11 +200,12 @@ $( function () {
       })
       this.model.set({currentPage: placeForm})
     },
-    savePlace: function (place) {
+    confirm: function () {
+      var place = this.model.get('place')
       place.save({}, {
         success: _.bind( function (model, x, y) {
 				  this.close()
-          this.onComplete(this.model.get('place'))
+          this.onComplete(place)
 				}, this)
       })
     }
@@ -234,8 +233,7 @@ $( function () {
       'click ul.menu > li:not(.disabled) .delete' : function (e) {
         e.stopPropagation()
         this.deleteModel($(e.target).parents('li:first').data('model'))
-      },
-      'click [name=ok]:not(.disabled)': 'saveRole'
+      }
 		}),
     initialize: function () {
       this._super('initialize', arguments)
@@ -344,7 +342,7 @@ $( function () {
       this.pages['mailing_contact'] = new Ts.WizardViews.ContactPage({wizard: this, contact_type: 'mailing'})
       this.model.set({currentPage: this.pages['mailing_contact']})
     },
-    saveRole: function () {
+    confirm: function () {
       setTimeout(_.bind(function () {
         _.each(['residential_contact', 'mailing_contact'], function (contact_type) {
           if (this.model.get('role').get(contact_type) && this.model.get('role').get(contact_type).isEmpty()) {
