@@ -65,7 +65,7 @@ module Tombstone
           end
         end
 
-        if allocation.status == 'provisional'
+        if ['provisional', 'legacy'].include? allocation.status
           allocation.valid?
           allocation.errors.select!{ |k,v| k == :place }
           if allocation.errors.empty?
@@ -94,8 +94,10 @@ module Tombstone
             if allocation.previous_changes[:status]
               Notifiers::ChangedStatus.new(allocation).send
             end
-            unless allocation.previous_changes[:interment_date].first == allocation.interment_date
-              Notifiers::ChangedIntermentDate.new(allocation).send
+            if allocation.previous_changes[:interment_date]
+              if allocation.previous_changes[:interment_date].first != allocation.interment_date
+                Notifiers::ChangedIntermentDate.new(allocation).send
+              end
             end
           end
         end
