@@ -158,14 +158,17 @@ module Tombstone
   protected
     
     def conditions_sql(prefix = nil)
+      rejected_terms = []
       conditions_str = @conditions.map { |term|
         condition = instance_exec(term[:value], term[:operator], &self.class.searchable[term[:field]])
         if condition
           "(#{condition})"
         else
-          @conditions.reject! { |v| v == term }
+          rejected_terms << term
+          nil
         end
       }.select { |v| v }.join(' AND ')
+      @conditions.reject! { |v| rejected_terms.include? v }
       if conditions_str.empty?
         ""
       else

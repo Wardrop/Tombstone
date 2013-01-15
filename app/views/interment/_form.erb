@@ -19,9 +19,9 @@
     <%=
     begin
       if @allocation.place
-        @allocation.place.ancestors(true).reverse.map { |place| place.siblings.naked.all }
+        @allocation.place.ancestors(true).reverse.map { |place| place.siblings.available_only.or(:place__id => place.id).with_natural_order.naked.all }
       else
-        [Tombstone::Place.filter(:parent_id => nil).available_only.order(:name).naked.all]
+        [Tombstone::Place.filter(:parent_id => nil).available_only.order(:name).with_natural_order.naked.all]
       end
     end.to_json
     %>

@@ -26,10 +26,11 @@ module Tombstone
 
     def_dataset_method(:available_only) do
       allocation_filter = Allocation.select(:place_id).exclude(status: 'deleted').group(:place_id)
-        filter(:place__status => 'available').
-        left_join(allocation_filter.as(:allocation), :allocation__place_id => :place__id).
-        filter(allocation__place_id: nil).
-        distinct
+      
+      dataset = filter(:place__status => 'available').
+      left_join(allocation_filter.as(:allocation), :allocation__place_id => :place__id).
+      filter(allocation__place_id: nil).
+      distinct
     end
 
     class << self
