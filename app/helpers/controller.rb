@@ -65,7 +65,7 @@ module Tombstone
           end
         end
 
-        if ['provisional', 'legacy'].include? allocation.status
+        if allocation.status == 'provisional'
           allocation.valid?
           allocation.errors.select!{ |k,v| k == :place }
           if allocation.errors.empty?
