@@ -92,7 +92,7 @@ module Tombstone
       end
 
       def valid_states
-        ['approved', 'deleted']
+        ['legacy', 'approved', 'deleted']
       end
     end
 
