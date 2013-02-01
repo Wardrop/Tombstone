@@ -27,14 +27,18 @@ module Tombstone
     # Follows business rules to determine whether the given status is allowed based on the current state of the allocation
     def status_allowed(state)
       allowed_states = case status
+      when 'legacy'
+        ['deleted']
       when 'provisional'
-        ['pending', 'approved']
+        ['pending', 'approved', 'deleted']
       when 'pending'
-        ['approved']
+        ['approved', 'deleted']
       when 'approved'
-        ['interred']
+        ['interred', 'deleted']
       when 'interred'
-        ['completed']
+        ['completed', 'deleted']
+      when 'completed'
+        ['deleted']
       else
         []
       end
@@ -67,6 +71,7 @@ module Tombstone
     def check_warnings
       roles.each do |role|
         warnings.add(role.type, "does not have an associated contact") unless role.residential_contact || role.mailing_contact
+        warnings.add(role.type, "does not have a date of birth") unless (role.person.date_of_birth rescue nil)
       end
     end
 
@@ -223,11 +228,6 @@ module Tombstone
     end
 
     def validate
-      existing_status = self.class.with_pk(id).status
-      if ['deleted', 'completed'].include?(existing_status)
-        errors.add(:Interment, "of status 'deleted' or 'completed' cannot be modified.")
-      end
-        
       if status != 'deleted'
         super
         if errors[:place].empty?

@@ -75,9 +75,9 @@ $( function () {
     $(this).placeholder();
   })
   
-  $(document).on('click', 'section > h2.underline', function () {
+  $(document).on('click', 'section:not(.noprint) > h2.underline', function () {
     $(this).next().slideToggle(150);
-  }).on('mouseover', 'section > h2.underline', function () {
+  }).on('mouseover', 'section:not(.noprint) > h2.underline', function () {
     $(this).css({cursor: 'pointer'}).attr('title', 'Click to show/hide')
   })
   

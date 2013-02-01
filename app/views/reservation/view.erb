@@ -25,6 +25,11 @@ content_for :head do
     @allocation.permitted_states.to_json
     %>
   </script>
+  <script type="application/json" id="json:permissions">
+    <%=
+    @allocation.permissions.to_hash.to_json
+    %>
+  </script>
 <%
 end
 %>

@@ -579,6 +579,7 @@ $( function () {
       this._super('initialize', arguments)
       this.allocationData = $('#json\\:allocation_data').parseJSON() || {}
       this.permittedStates = $('#json\\:permitted_states').parseJSON() || []
+      this.permissions = $('#json\\:permissions').parseJSON() || {}
       this.errorBlock.prependTo(this.el)
     },
     render: function () {
@@ -590,17 +591,15 @@ $( function () {
       return this
     },
     renderActions: function () {
-      var items = _(this.permittedStates.reverse()).without(['provisional', 'deleted', this.allocationData.status]).map(function (state) {
+      var items = _(this.permittedStates.reverse()).without([this.allocationData.status]).map(function (state) {
         return {name: state, value: this.stateMap[state] || state.titleize(), action: 'updateStatus'}
       }, this)
       if (items.length > 0) items[items.length - 1].className = 'with_bottom_divider'
-      if (this.allocationData.type == 'interment' && this.allocationData.status != 'deleted') items.push({name: 'multiple_interment', value: 'Multiple Interment'})
-      if (this.allocationData.type == 'reservation' && this.allocationData.status != 'deleted' && this.allocationData.interments.length == 0) items.push({name: 'inter', value: 'Inter'})
-      if (this.allocationData.status != 'deleted' && this.allocationData.status != 'completed') {
-        items.push(
-          {name: 'edit', value: 'Edit'},
-          {name: 'delete', value: 'Delete'}
-        )
+      if (this.allocationData.type == 'interment' && this.allocationData.status != 'deleted') {
+        items.push({name: 'multiple_interment', value: 'Multiple Interment'})
+      }
+      if (this.permissions["can_edit_"+this.allocationData.status] == true) {
+        items.push({name: 'edit', value: 'Edit'})
       }
       items.push({name: 'print', value: 'Print'})
       

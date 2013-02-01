@@ -9,7 +9,7 @@
         <%= record.type.demodulize.titleize %> for
         <%= print {
           (main_role) ?
-            "#{main_role.person.title} #{main_role.person.given_name} #{main_role.person.surname}" :
+            "#{main_role.person.title} #{main_role.person.given_name} #{main_role.person.middle_name ? '<small>'+main_role.person.middle_name+'</small>' : ''} #{main_role.person.surname}" :
             (record.alternate_reservee) ?
               record.alternate_reservee :
               "<small>"+(record.type == 'interment' ? 'No deceased' : 'No reservee')+"</small>"

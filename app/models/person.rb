@@ -6,7 +6,7 @@ module Tombstone
     
     class << self
       def valid_titles
-        ['Mr', 'Ms', 'Mrs', 'Miss', 'Sir', 'Lady', 'Doctor', 'Director', 'Executor', 'Manager']
+        ['Mr', 'Ms', 'Mrs', 'Miss', 'Sir', 'Lady', 'Doctor', 'Director', 'Executor', 'Manager', 'Unknown']
       end
       
       def search(hash, limit = 50)
@@ -64,9 +64,9 @@ module Tombstone
       super
       validates_includes self.class.valid_titles, :title
       validates_min_length 2, [:given_name, :surname]
-      validates_presence [:date_of_birth, :gender]
-      validates_includes ['male', 'female'], :gender
-      errors.add(:date_of_birth, "must not be in the future") { date_of_birth <= Date.today }
+      validates_presence [:gender]
+      validates_includes ['male', 'female', 'unknown'], :gender
+      errors.add(:date_of_birth, "must not be in the future") { date_of_birth <= Date.today } if date_of_birth
       errors.add(:date_of_death, "must not be in the future") { date_of_death <= Date.today } if date_of_death
     end
     

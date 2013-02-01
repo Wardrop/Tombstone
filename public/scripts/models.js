@@ -69,7 +69,7 @@ Ts.Person = Ts.Model.extend({
 		date_of_birth: null,
 		date_of_death: null
 	},
-  required: ['title', 'surname', 'given_name', 'gender', 'date_of_birth'],
+  required: ['title', 'surname', 'given_name', 'gender'],
   urlRoot: '/person'
 })
 

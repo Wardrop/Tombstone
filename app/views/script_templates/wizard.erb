@@ -420,6 +420,7 @@
         <option>Director</option>
         <option>Executor</option>
         <option>Manager</option>
+        <option>Unknown</option>
       </select>
     </label>
   	<label>
@@ -436,9 +437,12 @@
   	</label>
   	<div class="row">
   		<span>Gender</span>
-  		<label><input type="radio" name="gender" value="male" />Male</label>
-  		&nbsp;
-  		<label><input type="radio" name="gender" value="female" />Female</label>
+  		<select type="text" name="gender">
+        <option value=""></option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="unknown">Unknown</option>
+      </select>
   	</div>
     <label>
   		<span>Date of Birth</span>
