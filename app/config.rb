@@ -64,7 +64,7 @@ config = {
   }
 }
 
-if PADRINO_ENV = 'demo'
+if PADRINO_ENV == 'demo'
   config[:ldap] = {
     servers: ['localhost'],
     domain: 'tombstone.local',
