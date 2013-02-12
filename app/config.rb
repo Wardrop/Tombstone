@@ -1,4 +1,4 @@
-{
+config = {
   search_record_limit: 250,
   base_url: 'http://tombstone.trc.local', # The primary URL at which tombstone is accessible. Used for links in email notifications.
   email: {
@@ -63,3 +63,14 @@
     }
   }
 }
+
+if PADRINO_ENV = 'demo'
+  config[:ldap] = {
+    servers: ['localhost'],
+    domain: 'tombstone.local',
+    username: 'tombstone',
+    password: 'Passw0rd'
+  }
+end
+
+config

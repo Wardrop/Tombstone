@@ -56,6 +56,14 @@ Sequel::Model.db = case PADRINO_ENV.to_sym
       password: '10Pippl$ah',
       database: 'Tombstone_Migration'
     })
+  when :demo then
+    Sequel.connect({
+      adapter: 'tinytds',
+      host: 'localhost',
+      user: 'tombstone\tombstone',
+      password: 'Passw0rd',
+      database: 'Tombstone_Demo'
+    })
 end
 
 Sequel::Model.db << 'SET DATEFORMAT DMY'

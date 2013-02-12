@@ -15,6 +15,7 @@ Bundler.require(:default, PADRINO_ENV)
 Padrino::Logger::Config[:production]  = { :log_level => :info, :stream => :stdout, :log_static => false }
 Padrino::Logger::Config[:test]        = { :log_level => :info, :stream => :stdout, :log_static => false }
 Padrino::Logger::Config[:development] = { :log_level => :devel, :stream => :stdout, :log_static => false }
+Padrino::Logger::Config[:demo]        = { :log_level => :devel, :stream => :stdout, :log_static => false }
 Padrino::Logger::Config[:spec]        = { :log_level => :devel, :stream => :stdout, :log_static => false }
 
 
