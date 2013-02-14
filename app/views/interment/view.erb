@@ -6,10 +6,9 @@ end
 content_for :head do
 %>
   <script type="text/javascript">
-  $(function () {
+    $(function () {
       (new Ts.FormViews.AllocationView({el: $('#interment_view')[0]})).render().el
     })
-    
   </script>
   <script type="application/json" id="json:allocation_data">
     <%=

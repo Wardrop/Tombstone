@@ -598,6 +598,9 @@ $( function () {
       if (this.allocationData.type == 'interment' && this.allocationData.status != 'deleted') {
         items.push({name: 'multiple_interment', value: 'Multiple Interment'})
       }
+      if (this.allocationData.type == 'reservation' && this.allocationData.status != 'deleted' && this.allocationData.interments.length == 0) {
+        items.push({name: 'inter', value: 'Inter'})
+      }
       if (this.permissions["can_edit_"+this.allocationData.status] == true) {
         items.push({name: 'edit', value: 'Edit'})
       }
