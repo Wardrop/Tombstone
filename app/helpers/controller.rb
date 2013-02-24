@@ -129,10 +129,11 @@ module Tombstone
 
     def json_response(obj = {})
       cache_control :'no-cache'
+      content_type(:json, :charset => 'utf-8')
       if Hash === obj
         obj[:errors] = nil if obj[:errors] && obj[:errors].empty?
         obj[:warnings] = nil if obj[:warnings] && obj[:warnings].empty?
-        self.response.status = 500 if obj[:errors] || obj[:warnings] 
+        response.status = 500 if obj[:errors] || obj[:warnings] 
       end
       obj.to_json
     end
