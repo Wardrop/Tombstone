@@ -15,6 +15,9 @@ module Tombstone
             v = integer_value(v)
             (v) ? "[ALLOCATION].[ID] = #{@db.literal(v)}" : nil
           },
+          type: proc { |v,o|
+            (v) ? "[ALLOCATION].[TYPE] = #{@db.literal(v)}" : nil
+          },
           dob: proc { |v,o|
             v = strict_value(v)
             begin
