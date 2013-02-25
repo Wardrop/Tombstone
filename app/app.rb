@@ -127,25 +127,8 @@ module Tombstone
     get :test do
       halt 404, "Yay"
     end
-    
-    # after do
-    #   p response.status
-    #   # Sets the status code to 500 for proper handling by client-side code.
-    #   if response.status == 200 && response.content_type.index(mime_type :json) == 0
-    #     begin
-    #       parsed = JSON.parse(response.body.read)
-    #       if Hash === parsed && parsed.has_key?('success') && !parsed['success']
-    #         response.status = 500
-    #       end
-    #     rescue JSON::ParserError => e
-    #       
-    #     end
-    #   end
-    # end
-    
-    
 
-    error do
+    error StandardError do
       if env['sinatra.error']
         if response.content_type.index(mime_type :json) == 0 || response.content_type.index(mime_type :text) == 0
           halt 500, {errors: "Server error encountered: #{env['sinatra.error'].message}"}.to_json
