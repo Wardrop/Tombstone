@@ -139,7 +139,7 @@ module Tombstone
     
     # Takes a plot name with optional range. Returns an array of generated names if range exists and is valid, otherwise
     # returns an error string when invalid. Returns nil if there are no square brackets in the string.
-    # Error handling is made verbose as to guide to the user.
+    # Error handling is made verbose as to guide the user.
     def parse_place_name(name)
       if name =~ /[\[\]]/
         if name.scan(/[\[\]]/).length > 2
@@ -150,9 +150,9 @@ module Tombstone
           'Invalid range specified. Must be in the form [\w..\w] or [\w...\w] where "\w" is one or more word '+
             'characters (e.g. numbers, letters).'
         else
-          full, before, from, type, to, after = name.match(/(.*)\[(\w+)([.]{2,3})(\w+)\](.*)/).to_a
+          full, before, from, to, after = name.match(/(.*)\[(\w+)[.]{2}(\w+)\](.*)/).to_a
           begin
-            range = Range.new(from, to, (type.length == 3)).to_a
+            range = Range.new(from, to).to_a
             range.map! { |v| "#{before}#{v}#{after}" }
           rescue ArgumentError => e
             'Invalid range specified.'

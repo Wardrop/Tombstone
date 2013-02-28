@@ -2,7 +2,7 @@
 # Dir.glob(File.join(File.dirname(__FILE__), 'lib/*/**/*.rb')) { |f| require f }
 
 module Tombstone
-  VERSION = '1.3.1'
+  VERSION = '1.3.2'
   
   class << self
     attr_accessor :config
