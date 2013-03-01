@@ -107,11 +107,12 @@ $( function () {
       'click .back' : 'goBack',
 			'click' : 'closeOnBlur',
 			'click [name=ok]:not(.disabled)': function (e) { 
-			  // Wrapped in a setTimeout because of some of the timing of events in vendor libraries. It's annoying as hell,
+			  // Wrapped in a setTimeout to counter the mistiming of events in vendor libraries. It's annoying as hell,
 			  // but this is the easiest fix.
-        setTimeout( function (self, e) {
-          self.confirm(e)
-        }, 80, this, e)
+			  obj = this
+        setTimeout( function () {
+          obj.confirm(e)
+        }, 80)
 			}
 		},
 		initialize: function () {
