@@ -67,7 +67,7 @@ module Tombstone
         else
           flash[:banner] = 'error', 'You must login to use this application.'
           referrer = URI.escape(request.fullpath, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
-          redirect("#{url(:login)}?referrer=#{referrer}", 303)
+          redirect "#{url(:login)}?referrer=#{referrer}", 303
         end
       end
       
@@ -100,7 +100,7 @@ module Tombstone
     end
     
     post :login do
-      redirect :index if session[:authenticated]
+      redirect :index, 303 if session[:authenticated]
       user_id = LDAP.parse_username(params['username'])
       user = User.with_pk(user_id) || User.new(id: user_id)
       begin
@@ -108,7 +108,7 @@ module Tombstone
           flash[:banner] = 'success', "You have been logged in successfully."
           session[:user_id] = user_id
           session[:ldap] = user.ldap.user_details
-          redirect(params['referrer'] || url(:index))
+          redirect params['referrer'] || url(:index), 303
         else
           @document[:banner] = 'error', 'Invalid username or password.'
         end
@@ -121,7 +121,7 @@ module Tombstone
     get :logout do
       session.clear
       flash[:banner] = 'success', 'You have been logged out successfully.'
-      redirect url(:login)
+      redirect url(:login), 303
     end
     
     get :test do
