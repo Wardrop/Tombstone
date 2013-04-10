@@ -67,7 +67,7 @@ module Tombstone
         else
           flash[:banner] = 'error', 'You must login to use this application.'
           referrer = URI.escape(request.fullpath, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
-          redirect("#{url(:login)}?referrer=#{referrer}")
+          redirect("#{url(:login)}?referrer=#{referrer}", 303)
         end
       end
       
