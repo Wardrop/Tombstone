@@ -40,11 +40,13 @@ module Tombstone
         dimensions = "#{Blob.thumbnail_dimensions[:width]}x#{Blob.thumbnail_dimensions[:height]}"
         begin
           image = MiniMagick::Image.read(params[:file][:tempfile])
-          image.format('jpg') unless params[:file][:type] =~ /(jpe?g|gif|png)$/
-          image.colorspace('RGB')
-          image.resize("#{dimensions}^")
-          image.gravity('center')
-          image.crop("#{dimensions}+0+0")
+          image.combine_options do |c|
+            c.format('jpg') unless params[:file][:type] =~ /(jpe?g|gif|png)$/
+            c.colorspace('RGB')
+            c.resize("#{dimensions}^")
+            c.gravity('center')
+            c.crop("#{dimensions}+0+0")
+          end
           thumbnail = image.write(StringIO.new).string
         rescue MiniMagick::Error, MiniMagick::Invalid => e
           puts "DEBUG: Could not process file as image: #{e.message}"

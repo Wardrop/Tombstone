@@ -1,7 +1,7 @@
 The status of <%= @allocation.type.titleize %> #<%= @allocation.id %> was changed by <%= @allocation.modified_by %> from <%= @allocation.previous_changes[:status].first.titleize %> to <%= @allocation.status.titleize %>.
 
 Deceased: <%= print { @allocation.role_by_type('deceased').person.name } %>.
-Cemetery: <%= @allocation.place.description %>.
+Cemetery: <%= @allocation.place.full_name %>.
 Interment Type: <%= print { @allocation.interment_type.titleize } %>.
 Interment Date: <%= print { @allocation.interment_date } %>.
 

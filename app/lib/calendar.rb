@@ -12,7 +12,7 @@ module Tombstone
             event.description self.full_description(interment)
             event.dtstart interment.interment_date.set_tzid(:floating)
             event.dtend interment.interment_date_end.set_tzid(:floating)
-            event.location interment.place.description
+            event.location interment.place.full_name
             event.dtstamp DateTime.now.set_tzid(:floating)
             event.add_comment self.format_comments(interment)
             event.organizer "noreply@tombstone.trc.qld.gov.au"
@@ -44,7 +44,7 @@ module Tombstone
     end
 
     def format_short_event_description(interment)
-      self.format_status_and_deceased(interment) << " - " << interment.place.description
+      self.format_status_and_deceased(interment) << " - " << interment.place.full_name
     end
 
     def format_event_description(interment)

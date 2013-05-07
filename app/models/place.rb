@@ -76,7 +76,7 @@ module Tombstone
     end
 
     def description
-      self.ancestors(true, 0).reverse.map{|p| p.name}.join(' - ')
+      self.full_name
     end
 
     def cemetery
