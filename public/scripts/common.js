@@ -47,6 +47,11 @@ Ts = function () {
 /**** Common Page Behaviours ****/
 
 $( function () {
+  $('input.tooltip').livequery( function () {
+    var gravity = $(this).data('gravity') || 'w'
+    $(this).tipsy({trigger: 'hover', opacity: 1, gravity: gravity});
+  })
+  
   $('[autofocus]').focus()
   
   // Enable jQuery datepicker on all date and datetime fields.
@@ -67,13 +72,7 @@ $( function () {
     })
   }
   
-  $('input.tooltip').livequery( function () {
-    var gravity = $(this).data('gravity') || 'w'
-    $(this).tipsy({trigger: 'hover', opacity: 1, gravity: gravity});
-  })
-  $('input[placeholder]').livequery( function () {
-    $(this).placeholder();
-  })
+  
   
   $(document).on('click', 'section:not(.noprint) > h2.underline', function () {
     $(this).next().slideToggle(150);
