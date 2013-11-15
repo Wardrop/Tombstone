@@ -21,7 +21,7 @@ Sequel::Model.db = case PADRINO_ENV.to_sym
       host: 'sql02.msc.local',
       user: 'MSC\tombstone_user',
       password: '10Pippl$ah',
-      database: 'Tombstone'
+      database: 'Tombstone_Prod'
     })
   when :test then
     Sequel.connect({
