@@ -78,6 +78,9 @@ module Tombstone
         banner: flash[:banner]
       }
       
+      # If the base URL is not hard-coced in the configuration, set it dynamically on the first request.
+      Tombstone.config[:base_url] ||= URI.join(request.base_url, env['SCRIPT_NAME']).to_s
+      
       User.current = @user = User.with_pk(session[:user_id]) || User.new(id: session[:user_id]) if session[:user_id]
       BaseModel.permissions = (@user.role_permissions rescue nil)
 
