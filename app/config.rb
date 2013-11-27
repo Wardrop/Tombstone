@@ -1,6 +1,6 @@
 config = {
   search_record_limit: 250,
-  base_url: 'http://tombstone.trc.local', # The primary URL at which tombstone is accessible. Used for links in email notifications.
+  base_url: nil, # Set to `nil` to have it dynamically set at runtime.
   email: {
     from: 'noreply@tombstone.trc.local',
     delivery_method: :sendmail

@@ -18,7 +18,7 @@ Installation
 
 Migrations
 ----------
-SQL migrations are located in the root of the application in the /db directory. To run, use the _sequel_ command line
+SQL migrations are located in the root of the application in the /db directory. To run, use the *sequel* command line
 tool. As an example:
 
 ```sequel -m /db "tinytds://server.trc.local/database?username=username&password=password"
@@ -28,8 +28,8 @@ encode them, so for example, the backslash would become %5C.
 
 Mail
 ----
-Sendmail (or something sendmail-compatible) is required for email capability, such as notifications. If it's not installed, attempts to email will likely
-result in a "broken pipe" error or something similar.
+Sendmail (or something sendmail-compatible) is required for email capability, such as notifications. If it's not
+installed, attempts to email will likely result in a "broken pipe" error or something similar.
 
 Other Notes
 -----------
