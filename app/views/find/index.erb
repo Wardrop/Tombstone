@@ -50,17 +50,22 @@ content_for :head do %>
   </section>
   <section id="search_results">
     <h3 class="underline">
-      Results <sup><%= "#{@records.length}#{'+' if @records.length >= settings.config[:search_record_limit]} records found"%></sup>
+      <%
+      uri = URI(request.url)
+      uri.query = URI.encode_www_form(request.GET.merge('export' => 'true', 'record_limit' => 9999999))
+      %>
+      Results <sup><%= "#{@records.length}#{'+' if @records.length >= settings.config[:search_record_limit]} records found (<a href='#{uri.to_s}'>export</a>)"%></sup>
       <div class="heading_float order_options">
         <%
         if @search_class
-          base = URI(url('find'))
           %>Order By:<%
+          uri = URI(request.url)
           @search_class.sortable.each do |k,v|
             k = k.to_s
             order_dir = (params['order_by'] == k && params['order_dir'] == 'asc') ? 'desc' : 'asc'
+            uri.query = URI.encode_www_form(request.GET.merge('order_by' => k, 'order_dir' => order_dir))
             %>
-            <a class="<%= params['order_by'] == k ? params['order_dir'] : '' %>" href="<%= base.query = URI.encode_www_form(params.merge('order_by' => k, 'order_dir' => order_dir)); base.to_s %>"><%= k.demodulize.titleize %></a>
+            <a class="<%= params['order_by'] == k ? params['order_dir'] : '' %>" href="<%= uri.to_s %>"><%= k.demodulize.titleize %></a>
             <%
           end
         end
