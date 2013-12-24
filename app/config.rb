@@ -2,12 +2,12 @@ config = {
   search_record_limit: 250,
   base_url: nil, # Set to `nil` to have it dynamically set at runtime.
   email: {
-    from: 'noreply@tombstone.trc.local',
+    from: 'noreply@tombstone.msc.local',
     delivery_method: :sendmail
   },
   ldap: {
-    servers: ['ldap.trc.local', 'trc.local'], # An array of LDAP servers
-    domain: 'trc.local',
+    servers: ['msc.local'], # An array of LDAP servers
+    domain: 'msc.local',
     username: 'tombstone_user',
     password: '10Pippl$ah'
   },
