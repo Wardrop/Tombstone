@@ -26,16 +26,16 @@ Sequel::Model.db = case PADRINO_ENV.to_sym
   when :test then
     Sequel.connect({
       adapter: 'tinytds',
-      host: 'trcsql02.trc.local',
-      user: 'TRC\tombstone_user',
+      host: 'sql04.msc.local',
+      user: 'MSC\tombstone_user',
       password: '10Pippl$ah',
       database: 'Tombstone_Test'
     })
   when :development then
     Sequel.connect({
       adapter: 'tinytds',
-      host: 'trcsql02.trc.local',
-      user: 'TRC\tombstone_user',
+      host: 'sql04.msc.local',
+      user: 'MSC\tombstone_user',
       password: '10Pippl$ah',
       database: 'Tombstone_Dev',
       loggers: [Logger.new(nil)]
@@ -43,18 +43,10 @@ Sequel::Model.db = case PADRINO_ENV.to_sym
   when :spec then
     Sequel.connect({
       adapter: 'tinytds',
-      host: 'trcsql02.trc.local',
-      user: 'TRC\tombstone_user',
+      host: 'sql04.msc.local',
+      user: 'MSC\tombstone_user',
       password: '10Pippl$ah',
       database: 'Tombstone_Spec'
-    })
-  when :migration then
-    Sequel.connect({
-      adapter: 'tinytds',
-      host: 'trcsql02.trc.local',
-      user: 'TRC\tombstone_user',
-      password: '10Pippl$ah',
-      database: 'Tombstone_Migration'
     })
   when :demo then
     Sequel.connect({

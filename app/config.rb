@@ -6,7 +6,7 @@ config = {
     delivery_method: :sendmail
   },
   ldap: {
-    servers: ['msc.local'], # An array of LDAP servers
+    servers: ['dc01.msc.local', 'dc02.msc.local'], # An array of LDAP servers
     domain: 'msc.local',
     username: 'tombstone_user',
     password: '10Pippl$ah'
