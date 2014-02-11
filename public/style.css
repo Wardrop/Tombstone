@@ -157,16 +157,6 @@ sup {
 }
 #print_banner {
   display: none;
-  position: relative;
-  margin: 0;
-  font-size: 180%;
-  padding: 32px 0 32px;
-  vertical-align: middle;
-}
-#print_banner img {
-  top: 0;
-  right: 0;
-  position: absolute;
 }
 #navigation_bar {
   width: 100%;

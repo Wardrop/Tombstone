@@ -1,7 +1,10 @@
 @media print {
   body {
-    font-size: 70%;
+    zoom: 80%;
     background: none;
+  }
+  @page {
+    margin: 8% 6%;
   }
   .noprint {
     display: none;
@@ -11,12 +14,32 @@
     box-shadow: none;
     width: 100%;
     margin-bottom: 0;
+    padding: 0;
   }
   #main_banner {
     display: none;
   }
   #print_banner {
+    display: table;
+    width: 100%;
+    position: relative;
+    margin: 0;
+    font-size: 180%;
+    vertical-align: middle;
+  }
+  #print_banner span {
+    display: table-cell;
+    vertical-align: middle;
+  }
+  #print_banner img {
+    display: table-cell;
+    float: right;
+    vertical-align: middle;
+  }
+  #print_banner:after {
     display: block;
+    content: ' ';
+    clear: both;
   }
   #banner_info {
     display: none;
