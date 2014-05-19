@@ -8,7 +8,11 @@ module Tombstone
       file = Blob.with_pk(params[:id].to_i)
       if file
         disposition = (file.content_type =~ /^image\//) ? 'inline' : 'attachment'
-        response.headers.merge!('Content-Disposition' => "#{disposition}; filename=#{file.name}", 'Content-Type' => file.content_type)
+        response.headers.merge!(
+          'Content-Disposition' => "#{disposition}; filename=#{file.name}",
+          'Content-Type' => file.content_type,
+          'Content-Length' => file.data.length
+        )
         file.data
       else
         halt 404
@@ -20,8 +24,13 @@ module Tombstone
       file = Blob.with_pk(params[:id].to_i)
       if file
         last_modified(file.modified_at || file.created_at)
-        response.headers.merge!('Content-Disposition' => "inline; filename=#{file.name}", 'Content-Type' => 'image')
-        file.thumbnail || open('public/images/generic_file.png').read
+        retval = file.thumbnail || open('public/images/generic_file.png').read
+        response.headers.merge!(
+          'Content-Disposition' => "#{disposition}; filename=#{file.name}",
+          'Content-Type' => 'image',
+          'Content-Length' => retval.length
+        )
+        retval
       else
         halt 404
       end
