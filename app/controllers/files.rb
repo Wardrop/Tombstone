@@ -26,7 +26,7 @@ module Tombstone
         last_modified(file.modified_at || file.created_at)
         retval = file.thumbnail || open('public/images/generic_file.png').read
         response.headers.merge!(
-          'Content-Disposition' => "#{disposition}; filename=#{file.name}",
+          'Content-Disposition' => "inline; filename=#{file.name}",
           'Content-Type' => 'image',
           'Content-Length' => retval.length
         )
