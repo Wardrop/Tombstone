@@ -6,27 +6,21 @@ module Tombstone
     one_to_many :allocations, :class => :'Tombstone::Allocation', :key => :place_id
     one_to_many :files, :class => :'Tombstone::Blob', :key => :place_id
     set_dataset dataset.disable_insert_output
-    
+
     def_dataset_method(:with_child_count) do
       left_join(
         Place.group(:parent_id).select{[count(parent_id).as(child_count), :parent_id___child_parent_id]},
         :child_parent_id => :place__id
       )
     end
-        
+
     def_dataset_method(:with_natural_order) do
-      select_append("
-        CASE
-        	WHEN (isNumeric([place].[name]) = 1)
-        	  THEN CAST([place].[name] as integer)
-        	ELSE
-        	  2147483647
-        	END as [NATURAL_ORDER]".lit).order(:NATURAL_ORDER.asc, :name.asc)
+      select_append("ISNULL (TRY_PARSE([place].[name] as Integer), 2147483647) as [NATURAL_ORDER]".lit).order(:NATURAL_ORDER.asc, :name.asc)
     end
 
     def_dataset_method(:available_only) do
       allocation_filter = Allocation.select(:place_id).exclude(status: 'deleted').group(:place_id)
-      
+
       dataset = filter(:place__status => 'available').
       left_join(allocation_filter.as(:allocation), :allocation__place_id => :place__id).
       filter(allocation__place_id: nil).
@@ -126,17 +120,17 @@ module Tombstone
     def next_available
       column_string = self.class.dataset.columns.map { |v| "[#{v}]"}.join(', ')
       aliased_column_string = self.class.dataset.columns.map { |v| "p.[#{v}]"}.join(', ')
-      place = self.db["   
+      place = self.db["
         WITH PlaceChildren (#{column_string}, LEVEL, [ORDER])
         AS
         (
-        -- Anchor member definition   
+        -- Anchor member definition
         	SELECT #{column_string}, 0 as LEVEL, CAST(RIGHT('0000000' + CAST(id as nvarchar),7) as nvarchar) as [ORDER]
         	FROM [PLACE]
         	WHERE status = 'available'
         		AND parent_id = :parent_id
         	UNION ALL
-              
+
         -- Recursive member definition
         	SELECT #{aliased_column_string}, LEVEL + 1, CAST(([ORDER] + RIGHT('0000000' + CAST(p.id as nvarchar),7)) as nvarchar)
         	FROM [PLACE] as p
@@ -145,7 +139,7 @@ module Tombstone
         	WHERE p.status = 'available'
         		AND p.parent_id = a.id
         )
-        
+
         -- Statement that executes the CTE
         SELECT TOP 1 #{column_string}
         FROM PlaceChildren
