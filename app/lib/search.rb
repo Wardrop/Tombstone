@@ -1,7 +1,7 @@
 
 module Tombstone
   class Search
-    
+
     class << self
       def searchable
         {
@@ -80,8 +80,11 @@ module Tombstone
           },
           name: proc { |v,o|
             v = wildcard_value(v)
-            "([PERSON].[GIVEN_NAME]+' '+[PERSON].[SURNAME]) LIKE #{@db.literal(v)} OR
-            ([ALLOCATION].[ALTERNATE_RESERVEE]) LIKE #{@db.literal(v)}" 
+            "[PERSON].[GIVEN_NAME] LIKE #{@db.literal(v)} OR
+            [PERSON].[SURNAME] LIKE #{@db.literal(v)} OR
+            ([PERSON].[GIVEN_NAME]+' '+[PERSON].[SURNAME]) LIKE #{@db.literal(v)} OR
+            ([PERSON].[GIVEN_NAME]+' '+[PERSON].[MIDDLE_NAME]+' '+[PERSON].[SURNAME]) LIKE #{@db.literal(v)} OR
+            ([ALLOCATION].[ALTERNATE_RESERVEE]) LIKE #{@db.literal(v)}"
           },
           address: proc { |v,o|
             v = wildcard_value(v)
@@ -111,7 +114,7 @@ module Tombstone
           }
         }
       end
-      
+
       def sortable
         {
           :plot => :place__name,
@@ -128,11 +131,11 @@ module Tombstone
         }
       end
     end
-    
+
     def initialize
       @db = self.class.const_get(:MODEL).db
     end
-    
+
     # Takes an array of hashes, where each hash is a search condition consisting of the :field, :operator and :value.
     # An optional array of field/direction pairs can also be provided to set sorting, e.g. [['name', 'desc'], ['id', 'asc']]
     # Returns a dataset corresponding to the Model associated with the current class.
@@ -144,22 +147,22 @@ module Tombstone
       @limit = limit
       dataset
     end
-    
+
     def wildcard_value(value)
       (value =~ /^"(.*)"$/) ? $1 : "%#{value}%"
     end
-    
+
     def strict_value(value)
       (value =~ /^"(.*)"$/) ? $1 : value
     end
-    
+
     def integer_value(value)
       match = /^"?([0-9]+)"?$/.match(value)
       match && match[0]
     end
-    
+
   protected
-    
+
     def conditions_sql(prefix = nil)
       rejected_terms = []
       conditions_str = @conditions.map { |term|
@@ -179,10 +182,10 @@ module Tombstone
       end
     end
   end
-  
+
   class AllocationSearch < Search
     MODEL = Allocation
-    
+
     def dataset
       pk_join = [*MODEL.primary_key].reduce({}) { |memo, k| memo[k] = k; memo }
       MODEL.select_all(MODEL.table_name).
@@ -192,9 +195,9 @@ module Tombstone
         order_by(*@order).
         limit(@limit)
     end
-    
+
   protected
-    
+
     def searchable_dataset
       @db["
         SELECT DISTINCT [ALLOCATION].[ID]
@@ -207,7 +210,7 @@ module Tombstone
         #{conditions_sql("WHERE")}
       "]
     end
-    
+
     def sortable_dataset
       @db["
         SELECT [ROLE_ASSOCIATION].[ALLOCATION_ID] as [ID], [ROLE].[TYPE] as [ROLE], [PERSON].[SURNAME], [PERSON].[GIVEN_NAME]
@@ -218,19 +221,19 @@ module Tombstone
     end
 
   end
-  
+
   class PersonSearch < Search
     MODEL = Person
-    
+
     def dataset
       pk_join = [*MODEL.primary_key].reduce({}) { |memo, k| memo[k] = k; memo }
       MODEL.select_all(MODEL.table_name).
         join(searchable_dataset, pk_join).
         order_by(*@order.map { |field, dir| (dir == :asc) ? field.to_sym.asc : field.to_sym.desc })
     end
-    
+
   protected
-    
+
     def searchable_dataset
       @db["
         SELECT DISTINCT [PERSON].[ID]
@@ -241,7 +244,7 @@ module Tombstone
       "]
     end
   end
-  
+
   class PlaceSearch < Search
     MODEL = Place
 
@@ -260,7 +263,7 @@ module Tombstone
           },
           name: proc { |v,o|
             v = wildcard_value(v)
-            "[PLACE].[NAME] LIKE #{@db.literal(v)}" 
+            "[PLACE].[NAME] LIKE #{@db.literal(v)}"
           },
           full_name: proc { |v,o|
             v = wildcard_value(v)
@@ -276,7 +279,7 @@ module Tombstone
           }
         }
       end
-      
+
       def sortable
         {
           :name => :name,
@@ -292,7 +295,7 @@ module Tombstone
         }
       end
     end
-    
+
     def dataset
       pk_join = [*MODEL.primary_key].reduce({}) { |memo, k| memo[k] = k; memo }
       MODEL.select_all(MODEL.table_name).where(conditions_sql).

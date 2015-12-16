@@ -18,7 +18,7 @@ Sequel::Model.db = case PADRINO_ENV.to_sym
   when :production then
     Sequel.connect({
       adapter: 'tinytds',
-      host: 'sql02.msc.local',
+      host: 'sql08.msc.local',
       user: 'MSC\tombstone_user',
       password: '10Pippl$ah',
       database: 'Tombstone_Prod'
