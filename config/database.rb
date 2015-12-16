@@ -26,7 +26,7 @@ Sequel::Model.db = case PADRINO_ENV.to_sym
   when :test then
     Sequel.connect({
       adapter: 'tinytds',
-      host: 'sql04.msc.local',
+      host: 'sql08.msc.local',
       user: 'MSC\tombstone_user',
       password: '10Pippl$ah',
       database: 'Tombstone_Test'
@@ -34,7 +34,7 @@ Sequel::Model.db = case PADRINO_ENV.to_sym
   when :development then
     Sequel.connect({
       adapter: 'tinytds',
-      host: 'sql04.msc.local',
+      host: 'sql08.msc.local',
       user: 'MSC\tombstone_user',
       password: '10Pippl$ah',
       database: 'Tombstone_Dev',
@@ -43,7 +43,7 @@ Sequel::Model.db = case PADRINO_ENV.to_sym
   when :spec then
     Sequel.connect({
       adapter: 'tinytds',
-      host: 'sql04.msc.local',
+      host: 'sql08.msc.local',
       user: 'MSC\tombstone_user',
       password: '10Pippl$ah',
       database: 'Tombstone_Spec'
