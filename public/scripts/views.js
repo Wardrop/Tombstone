@@ -43,7 +43,7 @@ $( function () {
               this.showErrors(parsed)
             }
           } else {
-            this.showErrors("Server error encountered during '"+method+"' operation: "+errorThrown+" \n"+jqXHR.responseText)
+            this.showErrors("Server error encountered during '"+method+"' operation ("+errorThrown+"): "+jqXHR.responseText)
           }
         } else {
           this.showErrors("Client error encountered during '"+method+"' operation: "+errorThrown)
@@ -92,7 +92,7 @@ $( function () {
         model: new Ts.Wizard({title: "Warnings"}),
         'class': 'warning',
         onConfirm: _.bind(function () {
-          this.el.action = this.el.action+'?confirm'
+          if(!this.el.action.match(/\?confirm$/)) this.el.action = this.el.action+'?confirm'
           this.submit()
           // this.$('section > [name=actions] > .multibutton li.selected').click()
         }, this)
@@ -109,7 +109,7 @@ $( function () {
           this.errorBlock.append($('<li />').text(error))
         }, this)
       }
-      
+
       this.errorBlock.css({display: 'none'}).slideDown(300)
       if(this.options.scrollToErrors) {
         this.errorBlock.scrollTo(300, -10);

@@ -1,4 +1,3 @@
-
 module Tombstone
   class Person < BaseModel
     set_primary_key :id

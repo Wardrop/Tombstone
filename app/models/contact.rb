@@ -6,18 +6,18 @@ module Tombstone
     one_to_many :roles_with_mailing_contact, {:key => :mailing_contact_id, :class => :'Tombstone::Role'}
     one_to_many :funeral_directors_with_residential_contact, {:key => :residential_contact_id, :class => :'Tombstone::FuneralDirector'}
     one_to_many :funeral_directors_with_mailing_contact, {:key => :mailing_contact_id, :class => :'Tombstone::FuneralDirector'}
-    
+
     class << self
       def valid_states
         ['ACT', 'NT', 'NSW', 'QLD', 'SA', 'TAS', 'VIC', 'WA']
       end
     end
-    
+
     # Whether or not this contact is shared between people.
     def shared?
       Role.filter({residential_contact_id: id, mailing_contact_id: id}.sql_or).select(:person_id).distinct.count > 1
     end
-    
+
     def validate
       super
       validates_min_length 5, :street_address # Shortest possible street address would be something like a single-residence street, e.g Tu St

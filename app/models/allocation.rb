@@ -79,7 +79,7 @@ module Tombstone
 
   class Reservation < Allocation
     set_dataset dataset.filter(:type => 'reservation')
-    one_to_many :interments, :primary_key => :place_id, :key => :place_id, :class => 'Tombstone::Interment', :conditions => {status: 'deleted'}.sql_negate
+    one_to_many :interments, :primary_key => :place_id, :key => :place_id, :class => 'Tombstone::Interment', :conditions => Sequel.negate(status: 'deleted')
     
     
     # def initialize
@@ -103,7 +103,7 @@ module Tombstone
 
     def validate
       super
-      if errors[:place].empty?
+      unless errors.on(:place)
         errors.add(:place, "is unavailable") unless place.allows_reservation?(self)
       end
       
@@ -111,7 +111,7 @@ module Tombstone
         errors.add(:reservee, "must be either a person or an alternate reservee (i.e. family name), not both.")
       end
       
-      if errors[:reservee].empty?
+      unless errors.on(:reservee)
         role = role_by_type('reservee')
         if role && role.person.roles_by_type('reservee', self.class.exclude(primary_key_hash(true).sql_expr)).count > 0
           errors.add(:reservee, "cannot be used as the selected person already has a reservation.")
@@ -128,7 +128,7 @@ module Tombstone
 
   class Interment < Allocation
     set_dataset dataset.filter(:type => 'interment')
-    one_to_one :reservation, :primary_key => :place_id, :key => :place_id, :class => 'Tombstone::Reservation', :conditions => {status: 'deleted'}.sql_negate
+    one_to_one :reservation, :primary_key => :place_id, :key => :place_id, :class => 'Tombstone::Reservation', :conditions => Sequel.negate(status: 'deleted')
     
     class << self
       def valid_roles
@@ -230,10 +230,10 @@ module Tombstone
     def validate
       if status != 'deleted'
         super
-        if errors[:place].empty?
+        unless errors.on(:place)
           errors.add(:place, "is unavailable") unless place.allows_interment?(self)
         end
-        if errors[:deceased].empty?
+        unless errors.on(:deceased)
           role = role_by_type('deceased')
           if role.person.roles_by_type('deceased', self.class.exclude(primary_key_hash(true))).count > 0
             errors.add(:deceased, "cannot be used as the selected person is already deceased.")
@@ -246,7 +246,7 @@ module Tombstone
         validates_presence [:advice_received_date, :interment_date]
         validates_includes self.class.valid_interment_types, :interment_type
         errors.add(:advice_received_date, "cannot be be in the future") { advice_received_date.to_date <= Date.today }
-        if errors[:interment_date].empty? && interment_date > DateTime.now && ['interred', 'completed'].include?(status)
+        if errors.on(:interment_date).nil? && interment_date > DateTime.now && ['interred', 'completed'].include?(status)
           errors.add(:status, "cannot be '#{status}' for a future interment date.")
         end
         if status == 'completed'

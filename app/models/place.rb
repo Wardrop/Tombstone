@@ -39,7 +39,7 @@ module Tombstone
       errors.add(:name, "cannot contain less than or greater than character (ie. > or <)") { !name.include?('>') && !name.include?('<') }
       validates_min_length 1, :type
       validates_includes self.class.valid_states, :status
-      validates_not_string :max_interments
+      validates_schema_types :max_interments
       errors.add(:parent, "does not exist") if !parent_id.nil? && parent.nil?
       siblings = self.siblings(false).all
       unless siblings.empty?

@@ -1,24 +1,22 @@
 module Tombstone
-  App.controller :calendar do
+  Root.controller '/calendar' do
 
-    get :index, :provides => :html do
-      render "calendar/index"
+    get '/' do
+      render :'calendar/index'
     end
 
-    get :events, :provides => :json do
-      start_date_time = Time.at(params['start'].to_i).to_datetime unless params['start'].nil?
-      end_date_time = Time.at(params['end'].to_i).to_datetime unless params['end'].nil?
+    get '/events', :media_type => 'application/json' do
+      start_date_time = Time.at(request.GET['start'].to_i).to_datetime unless request.GET['start'].nil?
+      end_date_time = Time.at(request.GET['end'].to_i).to_datetime unless request.GET['end'].nil?
       json_response Calendar.new.events(start_date_time, end_date_time)
     end
 
-    get :ics do
-      attachment 'interments.ics'
-      content_type 'text/calendar'
-      expires 20
-      cache_control :no_cache, :no_store, :must_revalidate
+    get '/ics' do
+      response['Content-Disposition'] = 'filename="interments.ics"'
+      response['Content-Type'] = 'text/calendar'
+      response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
       Calendar.new.iCal.export
     end
+    
   end
 end
-
-

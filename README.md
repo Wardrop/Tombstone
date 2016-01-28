@@ -6,9 +6,10 @@ Requirements
 * FreeTDS 0.9.x or later is required to compile the required gem 'tiny_tds'. At the time of writing, 0.9.x was not
   available via apt-get. In this case, download the latest and most stable 0.9.x branch and compile. Configure with:
   ./configure --enable-msdblib. FreeTDS 0.8.x will not work. Note, libsybdb5 is required at runtime by tiny_tds.
-  Install with: sudo apt-get install libsybdb5. Note, check freetds `/etc/freetds.conf` and ensure the text size setting is commented out if set.
+  Install with: sudo apt-get install libsybdb5.
+  ** For development on OS X using homebrew, install using `brew install freetds --with-msdblib`
 * imagemagick is required for thumbnail generation (apt-get install imagemagick or brew install imagemagick)
-  
+
 Installation
 ------------
 1) Get a copy of the files by either copying and pasting, or pushing/pulling from git.
@@ -35,6 +36,6 @@ Other Notes
 -----------
 Because of how the permissions model has been implemented, this application is not thread safe; it was a trade-off that
 was made to allow for a simpler permissions model. Simultaneous processes are fine, but a single multithreaded process
-can cause permission inconsistancies. Rack::Lock is therefore being used to ensure thread safety, but this effectively
+can cause permission inconsistencies. Rack::Lock is therefore being used to ensure thread safety, but this effectively
 prevents any potential performance gain by multithreading. This should not be a performance bottleneck though, as the
 only advantage of multi-threading over multi-process is that it uses less memory.

@@ -39,12 +39,13 @@
     <div class="padded">
       <label>
         <span>Director</span>
-        <%= select_tag(:funeral_director,
-          :collection => @funeral_directors,
-          :fields => [:name, :id],
-          :selected => @allocation.funeral_director_id,
-          :include_blank => ''
-        ) %>
+        <!-- TODO: Fix up default selected option: @allocation.funeral_director_id -->
+        <select name="funeral_director_id">
+          <option></option>
+          <% @funeral_directors.each do |director| %>
+            <option value="<%= director.id %>"><%= director.name %></option>
+          <% end %>
+        </select>
       </label>
       <label>
         <span>Director Name</span>
@@ -75,11 +76,13 @@
     <div class="padded">
       <label>
         <span>Interment Type</span>
-        <%= select_tag(:interment_type,
-          :options => Tombstone::Interment.valid_interment_types.map{|v| [v.demodulize.titleize, v]},
-          :selected => @allocation.interment_type,
-          :include_blank => ''
-        ) %>
+        <!-- TODO: Fix up default selected option: @allocation.interment_type -->
+        <select name="interment_type">
+          <option></option>
+          <% Tombstone::Interment.valid_interment_types.map{|v| [v.demodulize.titleize, v]}.each do |name, value| %>
+            <option value="<%= value %>"><%= name %></option>
+          <% end %>
+        </select>
       </label>
       <label>
         <span>Advice Received Date</span>

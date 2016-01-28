@@ -1,54 +1,54 @@
 require_relative '../spec_helper'
 
 module Tombstone
-  
+
   describe Allocation do
     it "is configured correctly" do
       alloc = Allocation.with_pk(1)
       alloc.type.should == 'reservation'
     end
-    
+
     it "has a place" do
       alloc = Allocation.with_pk(2)
       alloc.place.should be_a(Place)
     end
-    
+
     it "has many roles" do
       alloc = Allocation.with_pk(2)
       alloc.roles.should be_a(Array)
       alloc.roles.length.should >= 2
       alloc.roles[0].should be_a(Role)
     end
-    
+
     it "has a funeral director" do
       alloc = Allocation.with_pk(3)
       alloc.funeral_director.should be_a(FuneralDirector)
     end
-    
+
     it "has many transactions" do
       alloc = Allocation.with_pk(3)
       alloc.transactions.should be_a(Array)
       alloc.transactions[0].should be_a(Transaction)
     end
-    
+
     it "auto-increments ID if none given" do
       max_id = Allocation.order(:id.desc).first.id
       new_alloc = Allocation.new.set(type: 'reservation').save(:validate => false)
       new_alloc.id.should == max_id+1
     end
-    
+
     it "can filter roles by types" do
       alloc = Allocation.with_pk(2)
       alloc.roles_by_type('reservee').should be_a(Array)
       alloc.roles_by_type('reservee').first.should be_a(Role)
       alloc.roles_by_type(:reservee).first.type.should == 'reservee'
     end
-    
+
     it "can get a single role by type" do
       alloc = Allocation.with_pk(2)
       alloc.role_by_type('reservee').should be_a(Role)
     end
-    
+
     describe "regression tests" do
       example "roles by type does not effect roles dataset" do
         alloc = Allocation.with_pk(2)
@@ -57,24 +57,24 @@ module Tombstone
       end
     end
   end
-  
+
   describe Reservation do
     it "only returns reservations" do
       Reservation.all.each { |r| r.type.should == 'reservation' }
     end
-    
+
     it "defaults type on creation" do
       reservation = Reservation.new({}).save(validate: false)
       reservation.type.should == 'reservation'
       reservation.delete
     end
   end
-  
+
   describe Interment do
     it "only returns interments" do
       Interment.all.each { |r| r.type.should == 'interment' }
     end
-    
+
     it "defaults type on creation" do
       interment = Interment.new({}).save(validate: false)
       interment.type.should == 'interment'

@@ -1,6 +1,6 @@
 <%
-@document[:title] = "View Reservation ##{@allocation.id}"
-@document[:page_heading] = print("Reservation ##{@allocation.id}") do
+document[:title] = "View Reservation ##{@allocation.id}"
+document[:page_heading] = print("Reservation ##{@allocation.id}") do
   "Reservation for #{@allocation.role_by_type('reservee').person.name.titleize}"
 end
 content_for :head do
@@ -44,7 +44,7 @@ end
       <div id="<%= type %>_section" class="padded" name="<%= type %>">
         <%=
         if value.is_a? Tombstone::Role
-          partial 'shared/role_view', :locals => {role: value}
+          render :'../shared/role_view', :locals => {role: value}
         else
           "<div class='row'>
             <span>Alternate Reservee</span>
@@ -62,7 +62,7 @@ end
       <% @allocation.place.ancestors.reverse.push(@allocation.place).each do |place| %>
         <div class="row">
           <span><%= place.type.demodulize.titleize %></span>
-          <div><a href="<%= url :place_index, id: place.id %>"><%= place.name %></a></div>
+          <div><a href="<%= absolute "/place/#{place.id}" %>"><%= place.name %></a></div>
         </div>
       <% end %>
       </div>
@@ -95,11 +95,11 @@ end
           %>
             <small>none</small>
           <% elsif @allocation.interments.length == 1 %>
-            <a href="<%= "#{url(:interment_view, @allocation.interments.first.id)}" %>">View Interment</a>
+            <a href="<%= absolute "/interment/#{@allocation.interments.first.id}" %>">View Interment</a>
           <% else
             @allocation.interments.each_with_index do |interment, idx|
             %>
-              <a href="<%= "#{url(:interment_view, interment.id)}" %>">View Interment #<%= idx+1 %></a><%= ', ' if @allocation.interments.length > (idx+1) %>
+              <a href="<%= absolute "/interment/#{interment.id}" %>">View Interment #<%= idx+1 %></a><%= ', ' if @allocation.interments.length > (idx+1) %>
             <%
             end
           end %>

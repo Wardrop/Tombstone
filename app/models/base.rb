@@ -17,7 +17,7 @@ module Tombstone
     def check_warnings; end
     
     def validate
-      validates_not_string self.class.datetime_columns
+      validates_schema_types self.class.datetime_columns
     end
     
     def set_valid_only(hash)

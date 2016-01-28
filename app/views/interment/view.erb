@@ -1,6 +1,6 @@
 <%
-@document[:title] = "View Interment ##{@allocation.id}"
-@document[:page_heading] = print("Interment ##{@allocation.id}") do
+document[:title] = "View Interment ##{@allocation.id}"
+document[:page_heading] = print("Interment ##{@allocation.id}") do
   "Interment of #{@allocation.role_by_type('deceased').person.name.titleize}"
 end
 content_for :head do
@@ -39,7 +39,7 @@ end
     <section>
       <h2 class="underline"><%= role.type.demodulize.titleize %></h2>
       <div id="<%= role.type %>_section" class="padded" name="<%= role.type %>">
-        <%= partial 'shared/role_view', :locals => {role: role} %>
+        <%= render :'../shared/role_view', :locals => {role: role} %>
       </div>
     </section>
   <% end %>
@@ -49,7 +49,7 @@ end
     <% @allocation.place.ancestors.reverse.push(@allocation.place).each do |place| %>
       <div class="row">
         <span><%= place.type.demodulize.titleize %></span>
-        <div><a href="<%= url :place_index, id: place.id %>"><%= place.name %></a></div>
+        <div><a href="<%= absolute "/place/#{place.id}" %>"><%= place.name %></a></div>
       </div>
     <% end %>
     </div>
@@ -105,7 +105,7 @@ end
       <label>
         <span>Reservation</span>
         <div>
-          <%= print { "<a href='#{url(:reservation_view, @allocation.reservation.id)}'>View Reservation</a>" } %>
+          <%= print { "<a href='" + absolute("/reservation/#{@allocation.reservation.id}") + "'>View Reservation</a>" } %>
         </div>
       </label>
       <div class="row" style="height: 16px;"></div>

@@ -1,25 +1,3 @@
-
-/**** IE8 Specific Fixes ***/
-
-// Fixes undefined console issues
-if (typeof console == 'undefined') {
-  window.console = {log: function () {}}
-}
-
-// Fixes an atroshious bug where the value of an empty input element can become a hybrid string/null object.
-(function() {
-  try {
-    var builtInInputValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").get;
-  
-    Object.defineProperty(HTMLInputElement.prototype, "value", {
-      get: function() {
-        var possiblyBad = builtInInputValue.call(this);
-        return possiblyBad === "" ? "" : possiblyBad;
-      }
-    });
-  } catch (e) {}
-})();
-
 /**** Tombstone object initializer ****/
 
 Ts = function () {

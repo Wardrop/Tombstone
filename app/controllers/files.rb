@@ -1,56 +1,46 @@
 require 'stringio'
 
 module Tombstone
-
-  App.controller :files do
+  Root.controller '/files' do
     
-    get :view, :map => "files/:id" do
-      file = Blob.with_pk(params[:id].to_i)
+    get "/:id" do |id|
+      response['Cache-Control'] = 'max-age=3600, public'
+      file = Blob.with_pk(id.to_i)
       if file
+        response['Last-Modified'] = (file.modified_at || file.created_at).rfc822
         disposition = (file.content_type =~ /^image\//) ? 'inline' : 'attachment'
-        response.headers.merge!(
-          'Content-Disposition' => "#{disposition}; filename=#{file.name}",
-          'Content-Type' => file.content_type,
-          'Content-Length' => file.data.length
-        )
+        response['Content-Disposition'] = "#{disposition}; filename=#{file.name}"
+        response['Content-Type'] = file.content_type
         file.data
       else
         halt 404
       end
     end
     
-    get :thumbnail, :map => "files/:id/thumbnail" do
-      expires 3600, :public
-      file = Blob.with_pk(params[:id].to_i)
+    get "/:id/thumbnail" do |id|
+      response['Cache-Control'] = 'max-age=3600, public'
+      file = Blob.with_pk(id.to_i)
       if file
-        last_modified(file.modified_at || file.created_at)
-        retval = file.thumbnail || open('public/images/generic_file.png').read
-        response.headers.merge!(
-          'Content-Disposition' => "inline; filename=#{file.name}",
-          'Content-Type' => 'image',
-          'Content-Length' => retval.length
-        )
-        retval
+        response['Last-Modified'] = (file.modified_at || file.created_at).rfc822
+        response.headers.merge!('Content-Disposition' => "inline; filename=#{file.name}", 'Content-Type' => 'image')
+        file.thumbnail || open('../public/images/generic_file.png').read
       else
         halt 404
       end
     end
     
-    # get :for_place, :map => "files/for_place/:place_id" do
-    #   files = Blob.filter(:place_id => params[:place_id].to_i).and(:enabled => 1).all
-    #   partial "files/view", :locals => {files: files}
-    # end
-    
     # Action must provide text content-type or else IE9 prompts for download, regardless of the content-disposition.
-    post :new, :map => "files/:place_id", :provides => :text do
-      if params[:file]
-        file = Blob.new(:place_id => params[:place_id].to_i)
+    post "/:place_id" do |place_id|
+      response['Content-Type'] = "text/plain"
+      upload = request.POST['file']
+      if upload
+        file = Blob.new(:place_id => place_id.to_i)
         thumbnail = nil
         dimensions = "#{Blob.thumbnail_dimensions[:width]}x#{Blob.thumbnail_dimensions[:height]}"
         begin
-          image = MiniMagick::Image.read(params[:file][:tempfile])
+          image = MiniMagick::Image.read(upload[:tempfile])
+          image.format('jpg') unless upload[:type] =~ /(jpe?g|gif|png)$/
           image.combine_options do |c|
-            c.format('jpg') unless params[:file][:type] =~ /(jpe?g|gif|png)$/
             c.colorspace('RGB')
             c.resize("#{dimensions}^")
             c.gravity('center')
@@ -61,10 +51,10 @@ module Tombstone
           puts "DEBUG: Could not process file as image: #{e.message}"
         end
         file.set(
-          data: params[:file][:tempfile].rewind && params[:file][:tempfile].read,
-          size: params[:file][:tempfile].size,
-          name: params[:file][:filename],
-          content_type: params[:file][:type],
+          data: upload[:tempfile].rewind && upload[:tempfile].read,
+          size: upload[:tempfile].size,
+          name: upload[:filename],
+          content_type: upload[:type],
           thumbnail: thumbnail
         )
         if file.valid?
@@ -80,8 +70,8 @@ module Tombstone
       end
     end
 
-    delete :delete, :map => "files/:id", :provides => :json do
-      file = Blob.with_pk(params[:id])
+    delete "/:id", media_type: "application/json" do |id|
+      file = Blob.with_pk(id.to_i)
       file ? file.destroy : halt(404)
       json_response
     end

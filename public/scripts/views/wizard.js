@@ -397,7 +397,8 @@ $( function () {
         if (v) formValues[k] = v
       })
       if (formValues.given_name || formValues.middle_name || formValues.surname || formValues.date_of_birth || formValues.date_of_death) {
-        this.people.fetch({
+        if(this.fetchXhr) { this.fetchXhr.abort() }
+        this.fetchXhr = this.people.fetch({
           url: '/person/search',
           data: formValues,
           success: _.bind(function (collection) {

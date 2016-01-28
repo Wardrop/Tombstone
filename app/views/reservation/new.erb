@@ -1,5 +1,5 @@
 <%
-@document[:title] = 'Create Reservation'
+document[:title] = 'Create Reservation'
 content_for :head do
 %>
   <script type="text/javascript">
@@ -15,4 +15,4 @@ content_for :head do
     })
   </script>
 <% end %>
-<%= partial 'reservation/form'%>
+<%= render :form %>

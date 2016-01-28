@@ -20,7 +20,7 @@ module Tombstone
       end
       
       def email_addresses_for_role(role)
-        ldap = LDAP.new(Tombstone.config[:ldap][:username], Tombstone.config[:ldap][:password])
+        ldap = LDAP.new(Tombstone::CONFIG[:ldap][:username], Tombstone::CONFIG[:ldap][:password])
         ldap.user_details_for(Tombstone::User.filter(role: role.to_s).naked.all.map! { |v| v[:id] }).map! do |v|
           v[:mail][0]
         end
@@ -29,7 +29,7 @@ module Tombstone
       def send
         [*to].each do |recipient|
           Mail.deliver({
-            from: Tombstone.config[:email][:from],
+            from: Tombstone::CONFIG[:email][:from],
             to: recipient,
             subject: "Tombstone: #{subject}",
             body: render
@@ -38,7 +38,7 @@ module Tombstone
       end
       
       def allocation_url
-        URI.join(Tombstone.config[:base_url], "/#{@allocation.type}/#{@allocation.id}")
+        URI.join(Tombstone::CONFIG[:base_url], "/#{@allocation.type}/#{@allocation.id}")
       end
     
     protected
@@ -58,7 +58,7 @@ module Tombstone
       end
       
       def render
-        ERB.new(File.read("app/views/email/#{template}.erb")).result(binding)
+        ERB.new(File.read("views/email/#{template}.erb")).result(binding)
       end
       
     end

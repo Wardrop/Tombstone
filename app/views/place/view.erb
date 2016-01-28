@@ -1,5 +1,5 @@
 <%
-@document[:title] = "View Place ##{@place.id}"
+document[:title] = "View Place ##{@place.id}"
 content_for :head do
 %>
   <script type="text/javascript">
@@ -55,7 +55,7 @@ end
       <% if @place.parent
         @place.ancestors.reverse.each do |ancestor| %>
           <div class="hierarchy" style="vertical-align: top;">
-            <a href="<%= url :place_index, :id => ancestor.id %>"><%= ancestor.name %></a>
+            <a href="<%= absolute "/place/#{ancestor.id}" %>"><%= ancestor.name %></a>
         <% end %>
         <%= @place.ancestors.reduce("") { |memo| memo << "</div>" } %>
       <% else %>
@@ -70,7 +70,7 @@ end
         <ul style="vertical-align: top;">
           <% @place.allocations.each do |alloc| %>
             <li <%= 'style="text-decoration: line-through"' if alloc.status == 'deleted' %>>
-              <a href="<%= url :"#{alloc.type}_view", id: alloc.id %>"><%= alloc.type.titleize %> #<%= alloc.id %></a>
+              <a href="<%= absolute "/#{alloc.type}/#{alloc.id}" %>"><%= alloc.type.titleize %> #<%= alloc.id %></a>
             </li>
           <% end %>
         </ul>

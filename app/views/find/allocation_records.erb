@@ -17,7 +17,7 @@
       </span>
       <span style="float: right; margin-right: 32px;"><%= print { record.place.full_name } %></span>
       <div style="clear: both;"></div>
-      <a class="goto" href="<%= url :"#{record.type.downcase}_view", :id => record.id %>" title="View record"></a>
+      <a class="goto" href="<%= absolute "/#{record.type.downcase}/#{record.id}" %>" title="View record"></a>
     </div>
     <div class="details">
       <div class="left rowed">

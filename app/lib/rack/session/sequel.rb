@@ -52,23 +52,21 @@ module Rack
       def with_lock(env, default=nil)
         @mutex.lock if env['rack.multithread']
         yield
-      rescue
-        default
       ensure
         @mutex.unlock if @mutex.locked?
       end
 
     private
       def setup_database
-        (@default_options[:db] || ::Sequel.connect(@default_options[:db_uri])).tap do |db|
-          db.create_table @default_options[:table_name] do
-            #primary_key :id
-            String :sid, :null => false, :primary_key => true
-            text :session, :null => false
-            DateTime :created_at, :null => false
-            DateTime :updated_at
-          end unless db.table_exists?(@default_options[:table_name])
-        end
+        db = @default_options[:db] || ::Sequel.connect(@default_options[:db_uri])
+        db.create_table @default_options[:table_name] do
+          #primary_key :id
+          String :sid, :null => false, :primary_key => true
+          text :session, :null => false
+          DateTime :created_at, :null => false
+          DateTime :updated_at
+        end unless db.table_exists?(@default_options[:table_name])
+        db
       end
 
       def _put(sid, session)

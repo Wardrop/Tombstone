@@ -1,4 +1,4 @@
-<% @document[:breadcrumb] = [['', '/'], ['Login', '/login']] %>
+<% document[:breadcrumb] = [['', '/'], ['Login', '/login']] %>
 <div class="v_padded">
   <form method="post" action='/login' class="rowed">
     <label>
@@ -13,6 +13,6 @@
       <span></span>
       <input type="submit" name="login" value="Login" />
     </label>
-    <input type="hidden" name="referrer" value="<%= params['referrer'] %>">
+    <input type="hidden" name="referrer" value="<%= request.params['referrer'] %>">
   </form>
 </div>

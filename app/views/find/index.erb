@@ -1,5 +1,5 @@
 <%
-@document[:title] = 'Find'
+document[:title] = 'Find'
 content_for :head do %>
   <script type="text/javascript">
     $( function () {
@@ -54,7 +54,7 @@ content_for :head do %>
       uri = URI(request.url)
       uri.query = URI.encode_www_form(request.GET.merge('export' => 'true', 'record_limit' => 9999999))
       %>
-      Results <sup><%= "#{@records.length}#{'+' if @records.length >= settings.config[:search_record_limit]} records found (<a href='#{uri.to_s}'>export</a>)"%></sup>
+      Results <sup><%= "#{@records.length}#{'+' if @records.length >= Tombstone::CONFIG[:search_record_limit]} records found (<a href='#{uri.to_s}'>export</a>)"%></sup>
       <div class="heading_float order_options">
         <%
         if @search_class
@@ -62,10 +62,10 @@ content_for :head do %>
           uri = URI(request.url)
           @search_class.sortable.each do |k,v|
             k = k.to_s
-            order_dir = (params['order_by'] == k && params['order_dir'] == 'asc') ? 'desc' : 'asc'
+            order_dir = (request.GET['order_by'] == k && request.GET['order_dir'] == 'asc') ? 'desc' : 'asc'
             uri.query = URI.encode_www_form(request.GET.merge('order_by' => k, 'order_dir' => order_dir))
             %>
-            <a class="<%= params['order_by'] == k ? params['order_dir'] : '' %>" href="<%= uri.to_s %>"><%= k.demodulize.titleize %></a>
+            <a class="<%= request.GET['order_by'] == k ? request.GET['order_dir'] : '' %>" href="<%= uri.to_s %>"><%= k.demodulize.titleize %></a>
             <%
           end
         end
@@ -79,18 +79,18 @@ content_for :head do %>
       else
         case @records[0]
         when Tombstone::Allocation
-          partial 'find/allocation_records', :locals => {records: @records}
+          render :'find/allocation_records', :locals => {records: @records}
         when Tombstone::Person
-          partial 'find/person_records', :locals => {records: @records}
+          render :'find/person_records', :locals => {records: @records}
         when Tombstone::Place
-          partial 'find/place_records', :locals => {records: @records}
+          render :'find/place_records', :locals => {records: @records}
         else
           halt 500, "No view has been configured for the model class `#{@records[0].class}`"
         end
       end
       %>
     </div>
-    <% if @records.length == Tombstone.config[:search_record_limit] %>
+    <% if @records.length == Tombstone::CONFIG[:search_record_limit] %>
       <div class="padded" style="text-align: center;">
         <small>Search results capped at 250 records.</small>
       </div>

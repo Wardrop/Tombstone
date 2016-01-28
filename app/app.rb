@@ -1,144 +1,56 @@
+require 'yaml'
+require 'bundler/setup'
+Bundler.require(:default)
 
-# Dir.glob(File.join(File.dirname(__FILE__), 'lib/*/**/*.rb')) { |f| require f }
+require_relative 'helpers'
 
 module Tombstone
-  VERSION = '1.3.7'
-  
-  class << self
-    attr_accessor :config
-  end
-  
-  # Middleware to pad responses to avoid IE's buggy and annoying friendly error message handling.
-  class ResponsePadder
-    def initialize(app)
-      @app = app       
-    end                
-  
-    def call(env)
-      response = @app.call(env)
-      if Array === response[2] && !response[2].empty?
-        total_length = response[2].reduce(0) { |m,v| m + v.length }
-        if total_length <= 512
-          response[2] << ''.ljust(513 - total_length)
-          response[1]['Content-Length'] = '513'
-        end
-      end
-      response
-    end                
-  end 
-  
-  class App < Padrino::Application
-    register Padrino::Rendering
-    register Padrino::Mailer
-    register Padrino::Helpers
+  DIR = File.dirname(__FILE__)
+  VERSION = '1.4'
 
-    configure do
-      logger = Logger.new(STDOUT, 'weekly')
-      logger.level = Logger::WARN
-      disable :show_exceptions
-      use Rack::Session::Sequel, :db => Sequel::Model.db, :table_name => :session, :expire_after => 60 * 60 * 24 * 7
-      use Rack::Lock
-      use ResponsePadder
-      
-      set :config, eval(File.read(File.expand_path('../config.rb', __FILE__)))
-      Tombstone.config = config
-      Mail.defaults do
-        delivery_method Tombstone.config[:email][:delivery_method]
-      end
-      Permissions.map = config[:roles]
-      LDAP.servers = [*config[:ldap][:servers]]
-      LDAP.domain = config[:ldap][:domain]
-      LDAP.logger = logger
+  c = YAML.load_file("#{DIR}/config.yml")
+  CONFIG = c[ENV['RACK_ENV']] || c['default']
 
-      if environment != :spec
-        Models = ObjectSpace.each_object(::Class).to_a.select { |k| k < BaseModel || k == BaseModel }.each do |m|
-          if m.name
-            model_name = m.name.split('::').last
-            m.send(:include, ModelPermissions.const_get(model_name)) if ModelPermissions.const_defined? model_name
-          end
-        end
-      end
-    end
-    
-    before do
-      if request.path_info != url(:login) && request.path_info != url(:logout) && session[:user_id].nil?
-        if request.accept.include?(mime_type :json)
-          halt 401, 'You must login to use this application.'.to_json
-        else
-          flash[:banner] = 'error', 'You must login to use this application.'
-          referrer = URI.escape(request.fullpath, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
-          redirect "#{url(:login)}?referrer=#{referrer}", 303
-        end
-      end
-      
-      @document = {
-        title: 'Tombstone',
-        scripts: [],
-        breadcrumb: true,
-        banner: flash[:banner]
-      }
-      
-      # If the base URL is not hard-coced in the configuration, set it dynamically on the first request.
-      Tombstone.config[:base_url] ||= URI.join(request.base_url, env['SCRIPT_NAME']).to_s
-      
-      User.current = @user = User.with_pk(session[:user_id]) || User.new(id: session[:user_id]) if session[:user_id]
-      BaseModel.permissions = (@user.role_permissions rescue nil)
+  db = Sequel.connect(CONFIG[:db].merge adapter: 'tinytds')
+  Sequel.extension :core_extensions
+  Sequel.extension :migration
+  Sequel::Migrator.run(db, File.expand_path('../db/migrations/', File.dirname(__FILE__)))
 
-      if request.content_type && request.content_type.match(%r{^application/json})
-        body = request.body.read
-        unless body.empty?
-          params.merge!(JSON.parse(body))
-        end
-        request.body.rewind
-      end
-    end
-    
-    get :index do
-      @calendar = Calendar.new
-      render :index
-    end
-    
-    get :login do
-      render 'login'
-    end
-    
-    post :login do
-      redirect :index, 303 if session[:authenticated]
-      user_id = LDAP.parse_username(params['username'])
-      user = User.with_pk(user_id) || User.new(id: user_id)
-      begin
-        if user.authenticate(params['password'])
-          flash[:banner] = 'success', "You have been logged in successfully."
-          session[:user_id] = user_id
-          session[:ldap] = user.ldap.user_details
-          redirect params['referrer'] || url(:index), 303
-        else
-          @document[:banner] = 'error', 'Invalid username or password.'
-        end
-      rescue => e
-        @document[:banner] = 'error', e.message
-      end
-      prepare_form(render('login'), values: params.reject{|k,v| k == 'password'})
-    end
-    
-    get :logout do
-      session.clear
-      flash[:banner] = 'success', 'You have been logged out successfully.'
-      redirect url(:login), 303
-    end
-    
-    get :test do
-      halt 404, "Yay"
-    end
+  Sequel::Model.db = db
+  Sequel.datetime_class = DateTime
+  Sequel.default_timezone = :local
+  Sequel::Dataset::TIMESTAMP_FORMAT = "'%Y-%m-%dT%H:%M:%S%N%z'"
+  Sequel::Model.plugin :validation_helpers
+  Sequel::Model.plugin :json_serializer
+  Sequel::Model.plugin :tactical_eager_loading
+  Sequel::Model.plugin :serialization
+  Sequel::Model.plugin :lazy_attributes
+  Sequel::Model.plugin :dirty
+  Sequel::Model.plugin :blacklist_security
+  Sequel::Model.raise_on_typecast_failure = true
+  Sequel::Model.raise_on_save_failure = true
+  Sequel::Model.json_serializer_opts[:naked] = true
+  Sequel::Model.db << 'SET DATEFORMAT DMY'
+  Sequel::Model.db << 'SET ANSI_NULLS ON'
+  Sequel::Model.db << 'SET CONCAT_NULL_YIELDS_NULL OFF'
+  Sequel::Model.db << 'SET TEXTSIZE 2147483647' # Required for storing binary files in SQL. Otherwise the default maximum size is 4kb.
 
-    error StandardError do
-      if env['sinatra.error']
-        if response.content_type.index(mime_type :json) == 0 || response.content_type.index(mime_type :text) == 0
-          halt 500, {errors: "Server error encountered: #{env['sinatra.error'].message}"}.to_json
-        else
-          raise env['sinatra.error']
-        end
+  require_pattern "#{DIR}/models/**/*.rb", "#{DIR}/lib/**/*.rb", "#{DIR}/refinements/**/*.rb"
+
+  Mail.defaults { delivery_method CONFIG[:email][:delivery_method] }
+  Permissions.map = CONFIG[:roles]
+  LDAP.servers = [*CONFIG[:ldap][:servers]]
+  LDAP.domain = CONFIG[:ldap][:domain]
+  LDAP.logger = Logger.new(STDOUT)
+
+  if ENV['RACK_ENV'] != 'spec'
+    Models = ObjectSpace.each_object(::Class).to_a.select { |k| k < BaseModel || k == BaseModel }.each do |m|
+      if m.name
+        model_name = m.name.split('::').last
+        m.send(:include, ModelPermissions.const_get(model_name)) if ModelPermissions.const_defined? model_name
       end
     end
   end
+
+  require_pattern "#{DIR}/controllers/**/*.rb"
 end

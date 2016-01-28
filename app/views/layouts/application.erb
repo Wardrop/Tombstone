@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title><%= @document[:title] %></title>
+  <title><%= document[:title] %></title>
   <link rel="stylesheet" href="<%= url "/reset.css" %>" />
   <link rel="stylesheet" href="<%= url "/scripts/vendor/jquery-ui/smoothness/jquery-ui-1.8.21.custom.css" %>" />
   <link rel="stylesheet" href="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.css' %>" />
@@ -19,22 +19,22 @@
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-1.8.21.custom.min.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery.ui.datepicker-en-AU.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.js' %>"></script>
-  <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-combobox.js' %>"></script>  
+  <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-combobox.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/underscore.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/backbone.custom.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/common.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/views.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/models.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/collections.js' %>"></script>
-  <% @document[:scripts].each do |file| %>
+  <% document[:scripts].each do |file| %>
     <script type="text/javascript" src="<%= url "/scripts/#{file}" %>"></script>
   <% end %>
   <%= yield_content :head %>
   <script type="text/javascript">
     $( function () {
       <%
-      actions = [{title: 'Logout', href: url(:logout)}]
-      actions << {title: 'Manage Places', href: url('/place/manage')} if @user && @user.role_permissions.can_manage_cemeteries?
+      actions = [{title: 'Logout', href: absolute('/logout')}]
+      actions << {title: 'Manage Places', href: absolute('/place/manage')} if env['tombstone.user'] && env['tombstone.user'].role_permissions.can_manage_cemeteries?
       %>
       var logged_in = <%= (!!session[:user_id]).to_json %>
       var multilink = new Ts.FormViews.Multilink({
@@ -53,23 +53,23 @@
     <div id="banner_info">
       <div>
         <%= print ('<small>Not logged in</small>') {
-          "Hello, #{session[:ldap][:displayName].first} (#{@user.role ? @user.role.demodulize.titleize : 'Guest'})"
+          "Hello, #{session[:ldap][:displayName].first} (#{env['tombstone.user'].role ? env['tombstone.user'].role.demodulize.titleize : 'Guest'})"
         } %>
       </div>
     </div>
-    <div id="main_banner">MSC Tombstone <sup><%= settings.environment.to_s.titleize %></sup></div>
+    <div id="main_banner">MSC Tombstone <sup><%= ENV['RACK_ENV'].to_s.titleize %></sup></div>
     <div id="print_banner">
-      <span><%= @document[:page_heading] %></span><img src="<%= url 'images/msc_logo.png' %>" />
+      <%= document[:page_heading] %><img src="<%= url 'images/msc_logo.png' %>" />
     </div>
     <%=
-    if @document[:breadcrumb].is_a? Array
-      '<div id="navigation_bar">'+build_breadcrumb(@document[:breadcrumb])+'</div>'
-    elsif @document[:breadcrumb] == true
+    if document[:breadcrumb].is_a? Array
+      '<div id="navigation_bar">'+build_breadcrumb(document[:breadcrumb])+'</div>'
+    elsif document[:breadcrumb] == true
       '<div id="navigation_bar">'+build_breadcrumb+'</div>'
     end
     %>
-    <% if @document[:banner] %>
-    <div class="padded message_banner <%= @document[:banner][0] %>"><%= @document[:banner][1] %><a class="close" onclick="$(this).parent().remove()" title="Click to close"></a></div>
+    <% if document[:banner] %>
+    <div class="padded message_banner <%= document[:banner][0] %>"><%= document[:banner][1] %><a class="close" onclick="$(this).parent().remove()" title="Click to close"></a></div>
     <% end %>
     <%= yield %>
   </div>

@@ -4,7 +4,7 @@
       <span style="float: left;"><%= record.full_name %></span>
       <span style="float: right; margin-right: 32px;"><%= print { record.type.demodulize.titleize } %></span>
       <div style="clear: both;"></div>
-      <a class="goto" href="<%= url(:place_index, :id => record.id) %>" title="View record"></a>
+      <a class="goto" href="<%= absolute "/place/#{record.id}" %>" title="View record"></a>
     </div>
     <div class="details">
       <div class="left rowed wide">

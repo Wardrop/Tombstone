@@ -1,5 +1,5 @@
 <%
-@document[:title] = "Edit Interment ##{@allocation.id}"
+document[:title] = "Edit Interment ##{@allocation.id}"
 content_for :head do
 %>
   <script type="text/javascript">
@@ -15,4 +15,4 @@ content_for :head do
     })
   </script>
 <% end %>
-<%= partial 'interment/form' %>
+<%= render :form %>

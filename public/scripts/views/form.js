@@ -18,7 +18,7 @@ $( function () {
       return this
     }
   })
-  
+
   Ts.FormViews.AutostretchTextInput = Ts.View.extend({
     events: {
       'keyup input': 'inputChanged'
@@ -35,7 +35,7 @@ $( function () {
       span.text($(e.target).val())
     }
   })
-  
+
   Ts.LegacyPane = Ts.View.extend({
     templateId: 'form:legacy_pane',
     width: 500,
@@ -65,7 +65,7 @@ $( function () {
       $('body').animate({'margin-right': 0}, this.duration)
     }
   })
-  
+
   Ts.FormViews.RoleBlock = Ts.View.extend({
     templateId: 'form:role_block_template',
     events: {
@@ -146,7 +146,7 @@ $( function () {
       this.render()
     }
   })
-  
+
   Ts.FormViews.Multibutton = Ts.View.extend({
     tagName: 'span',
     className: 'multibutton',
@@ -180,7 +180,7 @@ $( function () {
         this.selectItem($(this.options.selected, this.$('li')).first().parent())
       }
       this.hideList()
-      
+
   		return this
     },
     toggleList: function () {
@@ -248,7 +248,7 @@ $( function () {
       if (e.keyCode == 27) this.hideList();
     }
   })
-  
+
   Ts.FormViews.Multilink = Ts.FormViews.Multibutton.extend({
     templateId: 'form:multilink_template',
     events: {
@@ -256,7 +256,7 @@ $( function () {
       'click li': function (e) { this.selectItem(e.currentTarget) }
     }
   })
-  
+
   Ts.FormViews.PlaceForm = Ts.View.extend({
     initialize: function () {
       this._super('initialize', arguments)
@@ -285,7 +285,7 @@ $( function () {
 			return this
 		}
   })
-  
+
   Ts.FormViews.PlacePicker = Ts.View.extend({
     tagName: 'label',
     className: 'placepicker',
@@ -378,7 +378,7 @@ $( function () {
                 return true
               }
             })
-            
+
             lastPickerView.$el.change()
           } else {
             this.indicator.attr({
@@ -392,7 +392,7 @@ $( function () {
       return this
     }
   })
-  
+
   Ts.FormViews.PlaceEditPicker = Ts.FormViews.PlacePicker.extend({
     events: {
       change: function () { this.selectPlace() },
@@ -501,7 +501,7 @@ $( function () {
       })
     }
   })
-      
+
   Ts.FormViews.FilesEditor = Ts.View.extend({
     attributes: {name: 'files'},
     templateId: 'form:file_editor_template',
@@ -571,7 +571,7 @@ $( function () {
       }
     }
   })
-  
+
   Ts.FormViews.AllocationView = Ts.View.extend({
     stateMap: {provisional: 'Provision', pending: 'Pend', approved: 'Approve',
                interred: 'Inter', completed: 'Complete', deleted: 'Delete'},
@@ -605,7 +605,7 @@ $( function () {
         items.push({name: 'edit', value: 'Edit'})
       }
       items.push({name: 'print', value: 'Print'})
-      
+
       var multibutton = new Ts.FormViews.Multibutton({
         selected: '[name=edit]',
         items: items,
@@ -643,7 +643,7 @@ $( function () {
           }
         }
       })
-          
+
 			var section = new Ts.FormViews.Section({
 				title: 'Actions',
         className: 'noprint',
@@ -664,7 +664,7 @@ $( function () {
       this.$el.append(section.render().el)
     }
   })
-  
+
   Ts.FormViews.AllocationForm = Ts.View.extend({
 		initialize: function () {
 		  this._super('initialize', arguments)

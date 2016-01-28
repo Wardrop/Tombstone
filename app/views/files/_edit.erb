@@ -17,6 +17,6 @@
       <span><%= file.name %></span>
       <%= print('') { "<span>#{file.timestamp.strftime('%Y-%m-%d %-I:%M%P')}</span>" } %></span>
     </div>
-    <a href="<%= url(:files_delete, :place_id => file.place_id, :id => file.id) %>" class="delete" title="Delete file"></a>
+    <a href="<%= absolute "/files/#{file.id}" %>" class="delete" title="Delete file"></a>
   </div>
 <% end %>

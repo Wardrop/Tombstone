@@ -1,29 +1,32 @@
 module Tombstone
-  App.helpers do
+  module Helpers
 
+    def json_response(obj = {})
+      response['Cache-Control'] = 'no-cache'
+      if Hash === obj
+        obj[:errors] = nil if obj[:errors] && obj[:errors].empty?
+        obj[:warnings] = nil if obj[:warnings] && obj[:warnings].empty?
+        response.status = 500 if obj[:errors] || obj[:warnings] 
+      end
+      obj.to_json
+    end
+    
     def include_script_views(*names)
       names.each do |name|
-        @document[:scripts] << "views/#{name}.js"
+        document[:scripts] << "views/#{name}.js"
         content_for :head do
-          render("script_templates/#{name}", :layout => false)
+          render(File.expand_path("views/script_templates/#{name}").to_sym, :layout => false)
         end
       end
     end
 
-    def build_breadcrumb(segments = nil)
-      if segments.nil?
-        route_name = route.named.to_s.sub(Regexp.new(/^#{route.controller}_/), '')
-        segments = []
-        segments << ['', "/"]
-        segments << [
-            route.controller.demodulize.titleize,
-            request.path_info.slice(/^\/#{route.controller}(.*(?=\/#{route_name})|.*)/)
-        ]
-        segments << [route_name.demodulize.titleize, request.path_info] unless route_name == 'index'
-      end
-      segments.map { |title, uri|
-        "<a href='#{url uri}' class='breadcrumb #{(title.empty?) ? 'home' : ''}'>#{title}</a>"
-      }.join('<span class="breadcrumb div">/</span>')
+    def build_breadcrumb(segments = nil)  
+      uri = ''
+      request.matched_path.gsub(/^\/+/, '').split(/\/+/).map { |segment|
+        uri = File.join(uri, segment)
+        title = segment.gsub('_',' ').titleize
+        "<a href='#{absolute uri}' class='breadcrumb'>#{title}</a>"
+      }.unshift("<a href='#{absolute '/'}' class='breadcrumb home'></a>").join('<span class="breadcrumb div">/</span>')
     end
 
     # Renders field data, handling nil values and formatting of objects such as Dates.

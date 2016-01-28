@@ -1,9 +1,9 @@
-<% @document[:breadcrumb] = false %>
+<% document[:breadcrumb] = false %>
 <div id="navigation_bar">
-  <a href="<%= url :find_index %>" class="action find">Find</a>
-  <a href="<%= url :interment_new %>" class="action burial">New Burial</a>
-  <a href="<%= url :reservation_new %>" class="action reservation">New Reservation</a>
-  <a href="<%= url :calendar_index %>" class="action calendar">Calendar</a>
+  <a href="<%= absolute '/find' %>" class="action find">Find</a>
+  <a href="<%= absolute '/interment' %>" class="action burial">New Burial</a>
+  <a href="<%= absolute '/reservation' %>" class="action reservation">New Reservation</a>
+  <a href="<%= absolute '/calendar' %>" class="action calendar">Calendar</a>
 </div>
 <div class="inline_layout align_top">
   <div style="width: 48%">
@@ -17,7 +17,7 @@
           <%= interment.id %> -
           <%= print { "#{deceased_role.person.title} #{deceased_role.person.given_name} #{deceased_role.person.surname}" } %> -
           <%= print { interment.status.capitalize } %>
-          <a class="goto <%= interment.alert_status %>" href="<%= url :"#{interment.type.downcase}_view", :id => interment.id %>" title="View record"></a>
+          <a class="goto <%= interment.alert_status %>" href="<%= absolute "/#{interment.type.downcase}/#{interment.id}" %>" title="View record"></a>
         </div>
       <% end %>
     </div>
@@ -44,7 +44,7 @@
               <br />
               <%= print { interment.interment_date.strftime("%-I:%M%P") } %> at
               <%= print { interment.place.cemetery.name } %>
-              <a class="goto <%=interment.alert_status%>" href="<%= url :"#{interment.type.downcase}_view", :id => interment.id %>" title="View record"></a>
+              <a class="goto <%=interment.alert_status%>" href="<%= absolute "/#{interment.type.downcase}/#{interment.id}" %>" title="View record"></a>
             </div>
           <% end %>
         </div>
