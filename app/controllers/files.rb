@@ -2,7 +2,7 @@ require 'stringio'
 
 module Tombstone
   Root.controller '/files' do
-    
+
     get "/:id" do |id|
       response['Cache-Control'] = 'max-age=3600, public'
       file = Blob.with_pk(id.to_i)
@@ -16,7 +16,7 @@ module Tombstone
         halt 404
       end
     end
-    
+
     get "/:id/thumbnail" do |id|
       response['Cache-Control'] = 'max-age=3600, public'
       file = Blob.with_pk(id.to_i)
@@ -28,7 +28,7 @@ module Tombstone
         halt 404
       end
     end
-    
+
     # Action must provide text content-type or else IE9 prompts for download, regardless of the content-disposition.
     post "/:place_id" do |place_id|
       response['Content-Type'] = "text/plain"
@@ -41,7 +41,7 @@ module Tombstone
           image = MiniMagick::Image.read(upload[:tempfile])
           image.format('jpg') unless upload[:type] =~ /(jpe?g|gif|png)$/
           image.combine_options do |c|
-            c.colorspace('RGB')
+            c.colorspace('sRGB')
             c.resize("#{dimensions}^")
             c.gravity('center')
             c.crop("#{dimensions}+0+0")
@@ -77,5 +77,3 @@ module Tombstone
     end
   end
 end
-
-
