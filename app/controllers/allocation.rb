@@ -76,7 +76,7 @@ module Tombstone
       else
         allocation.set({status: request.POST['status']})
         if request.POST['status'] == 'deleted' || allocation.valid?
-          allocation.save
+          allocation.save(validate: false)
           Notifiers::ChangedStatus.new(allocation).send
           flash[:banner] = ['success', "Status of #{type.capitalize} ##{id} was updated successfully."]
         end
@@ -176,8 +176,6 @@ module Tombstone
             end
           end
         end
-
-        p request.query_string
 
         if allocation.status == 'provisional'
           allocation.valid?
