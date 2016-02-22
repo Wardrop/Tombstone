@@ -16,6 +16,7 @@ module Tombstone
       :can_delete_approved,
       :can_delete_interred,
       :can_delete_completed,
+      :can_delete_deleted,
       :can_edit_legacy,
       :can_edit_provisional,
       :can_edit_pending,
@@ -26,31 +27,31 @@ module Tombstone
       :can_delete_files,
       :can_manage_cemeteries
     ]).freeze
-    
+
     class << self
       attr_reader :options
       attr_accessor :map
     end
-    
+
     attr_accessor :role
-    
+
     def initialize(role = nil)
       @role = (role) ? role.to_sym : :default
       define_permission_methods
     end
-    
+
     attr_reader :role
     def role=(role)
       @role = role.to_sym
       define_permission_methods
     end
-    
+
     def to_hash
       @perms
     end
-    
+
   private
-  
+
     def define_permission_methods
       @perms = self.class.map[@role.to_sym] || {}
       self.class.options.each do |permission|
@@ -62,10 +63,10 @@ module Tombstone
         end
       end
     end
-    
+
   end
-  
+
   class PermissionsError < StandardError
-    
+
   end
 end

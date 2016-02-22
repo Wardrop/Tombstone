@@ -13,7 +13,7 @@
       :username: 'tombstone_user'
       :password: '10Pippl$ah'
     :roles:
-      :operator:
+      :operator: &operator
         :can_create: true
         :can_edit: true
         :can_delete: true
@@ -26,6 +26,7 @@
         :can_delete_approved: false
         :can_delete_interred: false
         :can_delete_completed: false
+        :can_delete_deleted: false
         :can_edit_legacy: true
         :can_edit_provisional: true
         :can_edit_pending: true
@@ -35,28 +36,23 @@
         :can_edit_deleted: false
         :can_delete_files: false
         :can_manage_cemeteries: false
-      :coordinator:
-        :can_create: true
-        :can_edit: true
-        :can_delete: true
+      :coordinator: &coordinator
+        <<: *operator
         :can_approve: true
         :can_inter: true
         :can_complete: true
-        :can_delete_legacy: false
-        :can_delete_provisional: true
-        :can_delete_pending: true
         :can_delete_approved: true
         :can_delete_interred: true
         :can_delete_completed: true
-        :can_edit_legacy: true
-        :can_edit_provisional: true
-        :can_edit_pending: true
-        :can_edit_approved: true
         :can_edit_interred: true
         :can_edit_completed: true
-        :can_edit_deleted: false
         :can_delete_files: true
         :can_manage_cemeteries: true
+      :admin:
+        <<: *coordinator
+        :can_delete_legacy: true
+        :can_delete_deleted: true
+        :can_edit_deleted: true
       :default:
     :db:
       :host: 'sql08.msc.local'

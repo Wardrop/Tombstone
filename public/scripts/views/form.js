@@ -604,6 +604,9 @@ $( function () {
       if (this.permissions["can_edit_"+this.allocationData.status] == true) {
         items.push({name: 'edit', value: 'Edit'})
       }
+      if (this.allocationData.status == 'deleted' && this.permissions["can_delete_deleted"] == true) {
+        items.push({name: 'delete', value: 'Admin Delete'})
+      }
       items.push({name: 'print', value: 'Print'})
 
       var multibutton = new Ts.FormViews.Multibutton({

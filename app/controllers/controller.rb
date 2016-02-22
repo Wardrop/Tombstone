@@ -56,16 +56,16 @@ module Tombstone
 
     error PermissionsError do |e|
       error_message = "Permissions error: #{e.message}"
-      if response.content_type =~ %r{^application/json} || response.content_type =~ %r{^plain/text}
+      if request.content_type == 'application/json'
         halt 500, {errors: e.message}.to_json
       else
         halt 500, "Permissions error: #{e.message}"
       end
-      true
     end
 
     error StandardError do |e|
-      if response.content_type =~ %r{^application/json} || response.content_type =~ %r{^plain/text}
+      if request.content_type == 'application/json'
+        STDERR.puts "#{e.backtrace.first}: #{e.message} (#{e.class})", e.backtrace.drop(1).map{|s| "\t#{s}"}
         halt 500, {errors: e.message}.to_json
       else
         raise e

@@ -1,6 +1,6 @@
 module Tombstone
   module ModelPermissions
-    
+
     module Allocation
       # Returns an array of states permitted for the current allocation.
       def permitted_states
@@ -23,7 +23,7 @@ module Tombstone
           else
             true
           end
-          
+
           unpermitted = []
           unpermitted << 'approved' unless permissions.can_approve?
           unpermitted << 'interred' unless permissions.can_inter?
@@ -33,10 +33,10 @@ module Tombstone
           permitted.select! { |v| status_allowed(v) }
         end
       end
-      
+
       def before_save
         super
-        
+
         if self.column_changed?(:status)
           case self.status
           when 'approved'
@@ -49,7 +49,7 @@ module Tombstone
             permissions.can_delete!
           end
         end
-        
+
         case self.initial_value(:status)
         when 'legacy'
           permissions.can_edit_legacy!
@@ -67,7 +67,7 @@ module Tombstone
           permissions.can_edit_deleted!
         end
       end
-      
+
       def before_destroy
         super
         case self.status
@@ -83,9 +83,11 @@ module Tombstone
           permissions.can_delete_interred!
         when 'completed'
           permissions.can_delete_completed!
+        when 'deleted'
+          permissions.can_delete_deleted!
         end
       end
     end
-    
+
   end
 end

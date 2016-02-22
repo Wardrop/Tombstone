@@ -90,8 +90,9 @@ module Tombstone
         flash[:banner] = ["error", "Could not delete #{type} ##{id} as it does not exist."]
       else
         begin
-          if allocation.status == 'provisional'
+          if ['provisional', 'deleted'].include? allocation.status
             model.db.transaction do
+              allocation.legacy_fields_dataset.delete
               allocation.transactions_dataset.delete
               allocation.roles_dataset.delete
               allocation.remove_all_roles
@@ -99,8 +100,8 @@ module Tombstone
             end
           else
             allocation.set(status: 'deleted').save(:status)
+            Notifiers::ChangedStatus.new(allocation).send
           end
-          Notifiers::ChangedStatus.new(allocation).send
           flash[:banner] = ["success", "#{type.capitalize} was deleted successfully."]
         rescue => e
           flash[:banner] = ["error", "Error occured while deleting #{type} ##{id}. The error was: \n#{e.message}"]
