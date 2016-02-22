@@ -75,7 +75,7 @@ module Tombstone
         response[:errors] = "Could not edit status of #{type} ##{id} as it does not exist."
       else
         allocation.set({status: request.POST['status']})
-        if allocation.valid?
+        if request.POST['status'] == 'deleted' || allocation.valid?
           allocation.save
           Notifiers::ChangedStatus.new(allocation).send
           flash[:banner] = ['success', "Status of #{type.capitalize} ##{id} was updated successfully."]
