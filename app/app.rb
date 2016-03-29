@@ -27,6 +27,7 @@ module Tombstone
   Sequel::Model.plugin :lazy_attributes
   Sequel::Model.plugin :dirty
   Sequel::Model.plugin :blacklist_security
+  Sequel::Model.plugin :string_stripper
   Sequel::Model.raise_on_typecast_failure = true
   Sequel::Model.raise_on_save_failure = true
   Sequel::Model.json_serializer_opts[:naked] = true
