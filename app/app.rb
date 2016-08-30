@@ -11,7 +11,7 @@ module Tombstone
   c = YAML.load_file("#{DIR}/config.yml")
   CONFIG = c[ENV['RACK_ENV']] || c['default']
 
-  db = Sequel.connect(CONFIG[:db].merge adapter: 'tinytds')
+  db = Sequel.connect(CONFIG[:db])
   Sequel.extension :core_extensions
   Sequel.extension :migration
   Sequel::Migrator.run(db, File.expand_path('../db/migrations/', File.dirname(__FILE__)))
