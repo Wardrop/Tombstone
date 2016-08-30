@@ -3,15 +3,15 @@
     :search_record_limit: 250
     :base_url: ~ # Set to `nil` to have it dynamically set at runtime.
     :email:
-      :from: 'noreply@tombstone.msc.local'
+      :from: 'noreply@tombstone.localhost'
       :delivery_method: !ruby/symbol sendmail
     :ldap:
       :servers:
-        - 'dc01.msc.local'
-        - 'dc03.msc.local'
-      :domain: 'msc.local'
+        - 'dc01.domain.local'
+        - 'dc02.domain.local'
+      :domain: 'domain.local'
       :username: 'tombstone_user'
-      :password: '10Pippl$ah'
+      :password: ''
     :roles:
       :operator: &operator
         :can_create: true
@@ -55,35 +55,39 @@
         :can_edit_deleted: true
       :default:
     :db:
-      :host: 'sql08.msc.local'
-      :user: 'MSC\tombstone_user'
-      :password: '10Pippl$ah'
+      :adapter: 'tinytds'
+      :host: 'mssqlserver.local'
+      :user: 'tombstone_user'
+      :password: ''
       :database: 'Tombstone_Prod'
   test:
     <<: *default
     :db:
-      :host: 'sql08.msc.local'
-      :user: 'MSC\tombstone_user'
-      :password: '10Pippl$ah'
+      :adapter: 'tinytds'
+      :host: 'mssqlserver.local'
+      :user: 'tombstone_user'
+      :password: ''
       :database: 'Tombstone_Test'
   development:
     <<: *default
     :db:
-      :host: 'sql08.msc.local'
-      :user: 'MSC\tombstone_user'
-      :password: '10Pippl$ah'
+      :adapter: 'mysql'
+      :host: 'mssqlserver.local'
+      :user: 'tombstone_user'
+      :password: ''
       :database: 'Tombstone_Dev'
   spec:
     <<: *default
     :db:
       :adapter: 'tinytds'
-      :host: 'sql08.msc.local'
-      :user: 'MSC\tombstone_user'
-      :password: '10Pippl$ah'
+      :host: 'mssqlserver.local'
+      :user: 'tombstone_user'
+      :password: ''
       :database: 'Tombstone_Spec'
   demo:
     <<: *default
     :db:
+      :adapter: 'tinytds'
       :host: 'localhost'
       :user: 'tombstone\tombstone'
       :password: 'Passw0rd'
