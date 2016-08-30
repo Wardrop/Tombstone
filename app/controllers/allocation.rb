@@ -73,6 +73,8 @@ module Tombstone
       response = {errors: allocation.errors, redirectTo: "./#{id}"}
       if allocation.nil?
         response[:errors] = "Could not edit status of #{type} ##{id} as it does not exist."
+      elsif allocation.status == request.POST['status']
+        flash[:banner] = ['success', "Status of #{type.capitalize} ##{id} was updated successfully."]
       else
         allocation.set({status: request.POST['status']})
         if request.POST['status'] == 'deleted' || allocation.valid?

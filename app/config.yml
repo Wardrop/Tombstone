@@ -8,7 +8,7 @@
     :ldap:
       :servers:
         - 'dc01.msc.local'
-        - 'dc02.msc.local'
+        - 'dc03.msc.local'
       :domain: 'msc.local'
       :username: 'tombstone_user'
       :password: '10Pippl$ah'
