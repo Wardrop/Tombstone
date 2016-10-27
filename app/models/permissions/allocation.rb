@@ -4,7 +4,7 @@ module Tombstone
     module Allocation
       # Returns an array of states permitted for the current allocation.
       def permitted_states
-        if ['completed', 'deleted'].include? status
+        if 'deleted' == status
           []
         else
           can_delete = case self.status

@@ -101,7 +101,7 @@ module Tombstone
               allocation.destroy
             end
           else
-            allocation.set(status: 'deleted').save(:status)
+            allocation.set(status: 'deleted').save(columns: [:status])
             Notifiers::ChangedStatus.new(allocation).send
           end
           flash[:banner] = ["success", "#{type.capitalize} was deleted successfully."]

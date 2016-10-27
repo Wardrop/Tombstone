@@ -1,6 +1,6 @@
 module Tombstone
   class Sequel::Model::Errors
-    # Override method to support taking a block which is only executed if the field doesn't currently have any erorrs.
+    # Override method to support taking a block which is only executed if the field doesn't currently have any errors.
     # Also adds support for multiple error messages.
     def add(att, *msg)
       fetch(att){self[att] = []}

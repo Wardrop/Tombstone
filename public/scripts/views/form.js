@@ -605,7 +605,7 @@ $( function () {
         items.push({name: 'edit', value: 'Edit'})
       }
       if (this.allocationData.status == 'deleted' && this.permissions["can_delete_deleted"] == true) {
-        items.push({name: 'delete', value: 'Admin Delete'})
+        items.push({name: 'delete', value: 'Permanently Delete'})
       }
       items.push({name: 'print', value: 'Print'})
 
