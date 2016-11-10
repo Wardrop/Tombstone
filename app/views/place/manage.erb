@@ -12,7 +12,7 @@ content_for :head do
     begin
       if @place
         places = @place.ancestors(true).reverse
-        places.map { |place| place.siblings.naked.all } << @place.children
+        places.map { |place| place.siblings.with_natural_order.naked.all } << @place.children
       else
         [Tombstone::Place.filter(:parent_id => nil).order(:name).naked.all]
       end

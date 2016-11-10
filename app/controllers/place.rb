@@ -1,15 +1,15 @@
 module Tombstone
   Root.controller '/place' do
-    
+
     get '/manage', 1 do
       @place = Place.with_pk(request.GET['place_id']) if request.GET['place_id']
       render :'place/manage'
     end
-    
+
     get '/' do
       redirect absolute('/place/manage')
     end
-    
+
     get '/:id' do |id|
       @place = Place.with_pk(id)
       if @place
@@ -18,11 +18,11 @@ module Tombstone
         halt 404, render("error", :locals => {message: "Place with ID ##{id} does not exist."})
       end
     end
-    
+
     get '/:id', media_type: 'application/json' do |id|
       json_response Place.with_pk(id).values
     end
-     
+
     # Valid ranges: Row [A-Z], Plot [1-49]a, Row [A-ZZ], Plot[001-150]
     # Zero-prefixes are decided at a global level.
     post '/', media_type: 'application/json' do
@@ -32,7 +32,12 @@ module Tombstone
         if parsed.nil?
           place.save
         elsif Array === parsed
-          Place.dataset.multi_insert(parsed.map { |v| request.POST.merge({'name' => v}) })
+          new_places = parsed.map { |v| Place.new(request.POST.merge({'name' => v})) }
+          if new_places.all? { |place| place.valid? }
+            new_places.each { |place| place.save }
+          else
+            place.errors.add(:name, "One or more of the new place names conflict with an existing sibling. Place names must be unique among siblings.")
+          end
         else
           place.errors.add(:name, parsed)
         end
@@ -108,7 +113,7 @@ module Tombstone
       end
       json_response chain
     end
-    
+
     # Takes a plot name with optional range. Returns an array of generated names if range exists and is valid, otherwise
     # returns an error string when invalid. Returns nil if there are no square brackets in the string.
     # Error handling is made verbose as to guide the user.

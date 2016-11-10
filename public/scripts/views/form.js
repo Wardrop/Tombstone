@@ -422,6 +422,7 @@ $( function () {
       if(selectedPlaceId) {
         this.$('.controls').append('<span class="add_child" title="Add Child" />')
                            .append('<span class="add" title="Add" />')
+                           .append('<a class="view" title="View" href="./'+selectedPlaceId+'" />')
                            .append('<span class="edit" title="Edit" />')
                            .append('<span class="delete" title="Delete" />')
       } else {

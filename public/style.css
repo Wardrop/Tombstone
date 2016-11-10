@@ -247,7 +247,7 @@ sup {
   font-size: 140%;
   padding: 12px 16px;
   background: #e58a2e;
-  color: white;  
+  color: white;
   top: 0;
   right: 0px;
   left: -1px;
@@ -690,7 +690,7 @@ a.row_button:hover {
   height: auto;
 }
 
-.placepicker .add_child, .placepicker .add, .placepicker .edit, .placepicker .delete {
+.placepicker .add_child, .placepicker .add, .placepicker .view, .placepicker .edit, .placepicker .delete {
   display: inline-block;
   width: 20px;
   height: 28px;
@@ -704,6 +704,9 @@ a.row_button:hover {
 .placepicker .add {
   background: url('images/add_20.png') no-repeat center center;
 }
+.placepicker .view {
+  background: url('images/view_20.png') no-repeat center center;
+}
 .placepicker .edit {
   background: url('images/edit_20.png') no-repeat center center;
 }
@@ -713,9 +716,9 @@ a.row_button:hover {
 .placepicker .add:first-child, .placepicker .edit:first-child, .placepicker .delete:first-child, .placepicker .add_child {
   margin-left: 8px;
 }
-.placepicker .add:hover, .placepicker .edit:hover, .placepicker .delete:hover, .placepicker .add_child:hover {
+.placepicker .add:hover, .placepicker .view:hover, .placepicker .edit:hover, .placepicker .delete:hover, .placepicker .add_child:hover {
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
-  opacity: 0.8; 
+  opacity: 0.8;
 }
 
 .multiinput_control input {
@@ -805,7 +808,7 @@ a.row_button:hover {
   border-bottom: 1px solid #62a4de;
 }
 .multibutton.no_dropdown > .viewport > ul > li {
-  border-radius: 5px; 
+  border-radius: 5px;
 }
 .multibutton > .viewport.show > ul > li {
   border-radius: 0;
@@ -1178,4 +1181,3 @@ iframe {
 .files > .image_container .delete:hover {
   background: url('images/delete_corner_hover.png') no-repeat center center;
 }
-

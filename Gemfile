@@ -19,6 +19,7 @@ gem 'term-colorizer'
 gem 'require_pattern'
 
 group :development do
+  gem 'shotgun'
   gem 'rspec'
   gem 'rerun'
 end
