@@ -1,5 +1,6 @@
 ---
   default: &default
+    :application_title: 'Tombstone'
     :search_record_limit: 250
     :base_url: ~ # Set to `nil` to have it dynamically set at runtime.
     :email:
