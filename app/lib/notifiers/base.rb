@@ -25,7 +25,7 @@ module Tombstone
           ldap.user_details_for(Tombstone::User.filter(role: role.to_s).naked.all.map! { |v| v[:id] }).map! do |v|
             v[:mail][0]
           end
-        }.flatten
+        }.flatten.compact
       end
 
       def send
