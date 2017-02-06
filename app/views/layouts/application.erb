@@ -59,7 +59,7 @@
     </div>
     <div id="main_banner"><%= Tombstone::CONFIG[:application_title] %> <sup><%= ENV['RACK_ENV'].to_s.titleize %></sup></div>
     <div id="print_banner">
-      <%= document[:page_heading] %><img src="<%= url 'images/logo.png' %>" />
+      <%= document[:page_heading] %><img src="<%= url Tombstone::CONFIG[:corporate_logo] %>" />
     </div>
     <%=
     if document[:breadcrumb].is_a? Array
