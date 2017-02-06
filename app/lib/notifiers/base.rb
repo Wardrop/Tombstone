@@ -30,6 +30,7 @@ module Tombstone
 
       def send
         [*to].each do |recipient|
+          puts "Sending notification to: #{recipient}"
           Mail.deliver({
             from: Tombstone::CONFIG[:email][:from],
             to: recipient,
