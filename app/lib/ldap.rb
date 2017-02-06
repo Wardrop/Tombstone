@@ -3,29 +3,29 @@ require 'net/ldap'
 module Tombstone
   class LDAP
     delegate :server, :servers, :use_ssl, :domain, :logger, :connection, :parse_username, :to => self
-    
+
     @servers = []
     @logger = Logger.new(nil)
     class << self
       attr_accessor :servers, :use_ssl, :domain, :logger, :connection
-      
+
       def domain=(domain)
         @domain = domain
       end
-      
+
       def server
         servers << servers.shift
         host, port = servers[-1].split(':')
         [host, (port || (use_ssl ? 636 : 389)).to_i]
       end
-      
+
       def parse_username(username)
         username.split('\\')[1] || username.split('@')[0] || username
       end
     end
-    
+
     attr_reader :username, :qualified_username, :last_message
-    
+
     # Username can be equalified or unqualified. An unqualidied username is qualified with the set domain.
     def initialize(username, password)
       raise StandardError, "Username must not be blank" if username.blank?
@@ -36,7 +36,7 @@ module Tombstone
       @treebase = domain.split('.').map{|v| "dc=#{v}"}.join(',')
       @user_details_cache = {}
     end
-    
+
     def connection
       @connection ||= begin
         host, port = server
@@ -45,11 +45,11 @@ module Tombstone
         conn
       end
     end
-    
+
     def authenticated?
       !!@authenticated
     end
-    
+
     def authenticate
       @authenticated = nil
       @last_message = nil
@@ -77,7 +77,7 @@ module Tombstone
         end
         logger.error(@last_message) if @last_message
       end
-      
+
       if @authenticated.nil?
         raise StandardError, @last_message
       else
@@ -85,12 +85,12 @@ module Tombstone
         @authenticated
       end
     end
-    
+
     # Returns the details of the authenticated user (the username that was given when the object was initialized)
     def user_details
       user_details_for(@qualified_username).first
     end
-    
+
     def user_details_for(users)
       filters = []
       results = []
@@ -102,17 +102,20 @@ module Tombstone
         end
       end
       intersection = filters.reduce(filters.shift) { |memo, filter| memo | filter }
-      result_set = connection.search(
-        :base => @treebase,
-        :filter => intersection
-      )
-      if result_set.nil?
-        op_result = connection.get_operation_result
-        raise StandardError, "Could not get user details for user #{@username}. The error was: (#{op_result.code}) #{op_result.message}" 
-      else
-        result_set.each { |obj| @user_details_cache[obj[:sAMAccountName]] = @user_details_cache }
+      unless intersection.empty?
+        result_set = connection.search(
+          :base => @treebase,
+          :filter => intersection
+        )
+        if result_set.nil?
+          op_result = connection.get_operation_result
+          raise StandardError, "Could not get user details for user #{@username}. The error was: (#{op_result.code}) #{op_result.message}"
+        else
+          result_set.each { |obj| @user_details_cache[obj[:sAMAccountName]] = @user_details_cache }
+        end
+        results.push *result_set
       end
-      results.push *result_set
+      results
     end
   end
 end
