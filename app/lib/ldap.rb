@@ -102,7 +102,7 @@ module Tombstone
         end
       end
       intersection = filters.reduce(filters.shift) { |memo, filter| memo | filter }
-      unless intersection.empty?
+      unless intersection.nil?
         result_set = connection.search(
           :base => @treebase,
           :filter => intersection
