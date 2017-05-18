@@ -6,7 +6,7 @@ require_relative 'helpers'
 
 module Tombstone
   DIR = File.dirname(__FILE__)
-  VERSION = '1.4.4'
+  VERSION = '1.4.5'
 
   c = YAML.load_file("#{DIR}/config.yml")
   CONFIG = c[ENV['RACK_ENV']] || c['default']
