@@ -7,7 +7,8 @@ Requirements
   If not available via system package manager, download the latest and most stable 0.9.x branch and compile. Configure with: ./configure --enable-msdblib.
   FreeTDS 0.8.x will not work. Note, libsybdb5 is required at runtime by tiny_tds.
   ** For development on OS X using homebrew, install using `brew install freetds --with-msdblib`
-* imagemagick is required for thumbnail generation (apt-get install imagemagick or brew install imagemagick)
+* imagemagick is required for thumbnail generation (e.g. zypper install imagemagick or brew install imagemagick)
+* ghostscript is recommended for pdf thumbnails (e.g. zypper install ghostscript or brew install ghostscript)
 
 Installation
 ------------
