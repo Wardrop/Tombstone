@@ -33,6 +33,7 @@ GEM
       mini_portile2 (~> 2.1.0)
     parslet (1.7.1)
       blankslate (>= 2.0, <= 4.0)
+    pkg-config (1.2.0)
     polyglot (0.3.3)
     rack (1.6.4)
     rack-accept (0.4.5)
@@ -92,6 +93,7 @@ DEPENDENCIES
   mini_magick
   net-ldap
   nokogiri
+  pkg-config
   rake
   require_pattern
   rerun

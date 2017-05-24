@@ -5,6 +5,7 @@ gem 'activesupport', :require => ['active_support', 'active_support/time']
 gem 'rake'
 gem 'sequel'
 gem 'htmlentities'
+gem 'pkg-config'
 gem 'nokogiri'
 gem 'tiny_tds', '>= 0.7.0'
 gem 'titleize'
