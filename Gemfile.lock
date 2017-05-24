@@ -13,7 +13,7 @@ GEM
     ffi (1.9.3)
     htmlentities (4.3.1)
     i18n (0.7.0)
-    json (1.8.3)
+    json (1.8.6)
     listen (1.0.3)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
@@ -26,11 +26,11 @@ GEM
     mini_magick (3.7.0)
       subexec (~> 0.2.1)
     mini_portile (0.6.2)
-    mini_portile2 (2.0.0)
+    mini_portile2 (2.1.0)
     minitest (5.8.4)
     net-ldap (0.8.0)
-    nokogiri (1.6.7.2)
-      mini_portile2 (~> 2.0.0.rc2)
+    nokogiri (1.7.2)
+      mini_portile2 (~> 2.1.0)
     parslet (1.7.1)
       blankslate (>= 2.0, <= 4.0)
     polyglot (0.3.3)
@@ -106,4 +106,4 @@ DEPENDENCIES
   titleize
 
 BUNDLED WITH
-   1.12.2
+   1.15.0
