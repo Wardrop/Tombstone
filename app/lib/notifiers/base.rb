@@ -34,7 +34,7 @@ module Tombstone
           Mail.deliver({
             from: Tombstone::CONFIG[:email][:from],
             to: recipient,
-            subject: "Tombstone: #{subject}",
+            subject: "Tombstone (#{ENV['RACK_ENV']}): #{subject}",
             body: render
           })
         end
