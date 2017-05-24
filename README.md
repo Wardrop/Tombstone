@@ -34,6 +34,11 @@ Mail
 Sendmail (or something sendmail-compatible) is required for email capability, such as notifications. If it's not
 installed, attempts to email will likely result in a "broken pipe" error or something similar.
 
+LDAP
+----
+Authentication is done via LDAP using the details configured in the applications main configuration file. User details such
+as full name and email address are also retrieved via LDAP.
+
 Other Notes
 -----------
 Because of how the permissions model has been implemented, this application is not thread safe; it was a trade-off that
