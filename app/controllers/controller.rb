@@ -35,7 +35,7 @@ module Tombstone
         else
           flash[:banner] = 'error', 'You must login to use this application.'
           referrer = URI.escape(request.fullpath, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
-          redirect absolute("/login?referrer=#{referrer}"), 303
+          redirect absolute("/login?referrer=#{referrer}"), status: 303
         end
       end
 
@@ -44,14 +44,6 @@ module Tombstone
       document[:banner] = flash[:banner]
       User.current = env['tombstone.user'] = User.with_pk(session[:user_id]) || User.new(id: session[:user_id]) if session[:user_id]
       BaseModel.permissions = (env['tombstone.user'].role_permissions rescue nil)
-
-      if env['CONTENT_TYPE'] && env['CONTENT_TYPE'].match(%r{^application/json})
-        body = request.body.read
-        unless body.empty?
-          request.POST.merge!(JSON.parse(body))
-        end
-        request.body.rewind
-      end
     end
 
     error PermissionsError do |e|

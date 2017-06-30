@@ -10,7 +10,7 @@ module Tombstone
     end
 
     post '/login' do
-      redirect :index, 303 if session[:authenticated]
+      redirect(:index, status: 303) if session[:authenticated]
       user_id = LDAP.parse_username(request.POST['username'])
       user = User.with_pk(user_id) || User.new(id: user_id)
       begin
@@ -18,7 +18,7 @@ module Tombstone
           flash[:banner] = 'success', "You have been logged in successfully."
           session[:user_id] = user_id
           session[:ldap] = user.ldap.user_details
-          redirect request.POST['referrer'] || absolute('/'), 303
+          redirect request.POST['referrer'] || absolute('/'), status: 303
         else
           document[:banner] = 'error', 'Invalid username or password.'
         end
@@ -31,7 +31,7 @@ module Tombstone
     get '/logout' do
       session.clear
       flash[:banner] = 'success', 'You have been logged out successfully.'
-      redirect absolute('/login'), 303
+      redirect absolute('/login'), status: 303
     end
   end
 end

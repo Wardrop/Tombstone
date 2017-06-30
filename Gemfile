@@ -1,9 +1,10 @@
 source 'https://rubygems.org'
 
-gem 'scorched'
+gem 'scorched', '>= 1.0.0-pre'
 gem 'activesupport', :require => ['active_support', 'active_support/time']
 gem 'rake'
 gem 'sequel'
+gem 'sequel-sessions'
 gem 'htmlentities'
 gem 'pkg-config'
 gem 'nokogiri'
