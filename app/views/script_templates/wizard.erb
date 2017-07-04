@@ -70,11 +70,13 @@
   	</label>
     <label class="row">
   		<span>Type</span>
-  		<select name="type">
-        <option value=""></option>
+  		<input name="type" list="types">
+      <datalist id="types">
         <% Tombstone::Place.select(:type).distinct.naked.all.map{ |v| v[:type] }.each do |v| %>
-          <option value="<%= v %>"><%= v.demodulize.titleize %></option>
+          <option value="<%= v %>">
         <% end %>
+      </datalist>
+
       </select>
   	</label>
   	<div class="row">
@@ -117,17 +119,17 @@
   	</label>
     <label class="row">
   		<span>State</span>
-  		<select name="state">
-        <option value=""></option>
-        <option>ACT</option>
-        <option>NT</option>
-        <option>NSW</option>
-        <option>QLD</option>
-        <option>SA</option>
-        <option>TAS</option>
-        <option>VIC</option>
-        <option>WA</option>
-      </select>
+  		<input name="state" list="states" />
+      <datalist id="states">
+        <option value="ACT">
+        <option value="NT">
+        <option value="NSW">
+        <option value="QLD">
+        <option value="SA">
+        <option value="TAS">
+        <option value="VIC">
+        <option value="WA">
+      </datalist>
   	</label>
     <label>
   		<span>Country</span>

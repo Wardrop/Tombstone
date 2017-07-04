@@ -1,4 +1,4 @@
-<% content_for :head do %>  
+<% content_for :head do %>
   <script type="application/json" id="json:allocation_data">
     <%=
     if @allocation.new?
@@ -14,7 +14,7 @@
     end
     %>
   </script>
-  
+
   <script type="application/json" id="json:place_data">
     <%=
     begin
@@ -25,12 +25,6 @@
       end
     end.to_json
     %>
-  </script>
-  
-  <script type="text/javascript">
-    $(function() {
-  		$('[name=funeral_service_location]').combobox({placeholder: 'Select or type...'});
-  	});
   </script>
 <% end %>
 <form id="interment_form" class="rowed wide" action="<%= (Tombstone::Interment === @allocation) ? "/interment/#{@allocation.id}" : "/interment" %>">
@@ -53,11 +47,11 @@
       </label>
       <label>
         <span>Location</span>
-      	<select name="funeral_service_location">
-      		<option value="">Select or type...</option>
-      		<option>Grave Side</option>
-      		<option>Church</option>
-      	</select>
+      	<input name="funeral_service_location" list="funeral_services" style="width: 30%">
+        <datalist id="funeral_services">
+          <option value="Grave Side">
+      		<option value="Church">
+      	</datalist>
         <!-- <input type="text" name="funeral_service_location" style="width: 40%;"  /> -->
         <!--
         <span style="position: relative; border: 1px solid #999; width: 30%; padding-right: 20px; padding-bottom: 0px;">
@@ -101,7 +95,7 @@
         <div class="multiinput_control">
           <% [nil].unshift(*@allocation.transactions).each do |trans| %>
             <div>
-              <input type="text" name="transactions[]" value="<%= trans ? trans.receipt_no : '' %>" placeholder="Add..." 
+              <input type="text" name="transactions[]" value="<%= trans ? trans.receipt_no : '' %>" placeholder="Add..."
                 maxlength="<%= Tombstone::Transaction.db_schema[:receipt_no][:max_chars].to_i %>"
                 title="Expects a valid proclaim receipt number">
             </div>

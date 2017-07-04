@@ -3,12 +3,12 @@
 <html>
 <head>
   <title><%= document[:title] %></title>
-  <link rel="stylesheet" href="<%= url "/reset.css" %>" />
+  <link rel="stylesheet" href="<%= url "/stylesheets/reset.css" %>" />
   <link rel="stylesheet" href="<%= url "/scripts/vendor/jquery-ui/smoothness/jquery-ui-1.8.21.custom.css" %>" />
   <link rel="stylesheet" href="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.css' %>" />
   <link rel="stylesheet" href="<%= url '/scripts/vendor/jquery.tipsy.css' %>" />
-  <link rel="stylesheet" href="<%= url "/style.css?#{Tombstone::VERSION}" %>" />
-  <link rel="stylesheet" href="<%= url "/print.css" %>" />
+  <link rel="stylesheet" href="<%= url "/stylesheets/style.scss?v#{Tombstone::VERSION}" %>" />
+  <link rel="stylesheet" href="<%= url "/stylesheets/print.css?v#{Tombstone::VERSION}" %>" />
   <script type="text/javascript" src="<%= url '/scripts/vendor/date-en-AU.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/shims/es5-shim.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/shims/html5shiv-printshiv.js' %>"></script>
@@ -19,13 +19,12 @@
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-1.8.21.custom.min.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery.ui.datepicker-en-AU.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-timepicker-addon.js' %>"></script>
-  <script type="text/javascript" src="<%= url '/scripts/vendor/jquery-ui/jquery-ui-combobox.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/underscore.js' %>"></script>
   <script type="text/javascript" src="<%= url '/scripts/vendor/backbone.custom.js' %>"></script>
-  <script type="text/javascript" src="<%= url '/scripts/common.js' %>"></script>
-  <script type="text/javascript" src="<%= url '/scripts/views.js' %>"></script>
-  <script type="text/javascript" src="<%= url '/scripts/models.js' %>"></script>
-  <script type="text/javascript" src="<%= url '/scripts/collections.js' %>"></script>
+  <script type="text/javascript" src="<%= url "/scripts/common.js?v#{Tombstone::VERSION}" %>"></script>
+  <script type="text/javascript" src="<%= url "/scripts/views.js?v#{Tombstone::VERSION}" %>"></script>
+  <script type="text/javascript" src="<%= url "/scripts/models.js?v#{Tombstone::VERSION}" %>"></script>
+  <script type="text/javascript" src="<%= url "/scripts/collections.js?v#{Tombstone::VERSION}" %>"></script>
   <% document[:scripts].each do |file| %>
     <script type="text/javascript" src="<%= url "/scripts/#{file}" %>"></script>
   <% end %>

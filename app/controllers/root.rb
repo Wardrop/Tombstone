@@ -33,5 +33,11 @@ module Tombstone
       flash[:banner] = 'success', 'You have been logged out successfully.'
       redirect absolute('/login'), status: 303
     end
+
+    get '/stylesheets/*.scss' do |file|
+      response['Content-type'] = 'text/css'
+      render (render :"stylesheets/#{file}.scss.erb", layout: nil), engine: :scss, layout: nil
+    end
+
   end
 end

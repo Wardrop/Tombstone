@@ -6,11 +6,11 @@ module Tombstone
       if Hash === obj
         obj[:errors] = nil if obj[:errors] && obj[:errors].empty?
         obj[:warnings] = nil if obj[:warnings] && obj[:warnings].empty?
-        response.status = 500 if obj[:errors] || obj[:warnings] 
+        response.status = 500 if obj[:errors] || obj[:warnings]
       end
       obj.to_json
     end
-    
+
     def include_script_views(*names)
       names.each do |name|
         document[:scripts] << "views/#{name}.js"
@@ -20,7 +20,7 @@ module Tombstone
       end
     end
 
-    def build_breadcrumb(segments = nil)  
+    def build_breadcrumb(segments = nil)
       uri = ''
       request.matched_path.gsub(/^\/+/, '').split(/\/+/).map { |segment|
         uri = File.join(uri, segment)
@@ -66,7 +66,7 @@ module Tombstone
     # selector: A CSS selector to provide scope.
     def prepare_form(xml, opts = {})
       document = Nokogiri::HTML::Document.parse(xml)
-      working_set = opts[:selector].nil? ? document : document.css(opts[:selector]) unless 
+      working_set = opts[:selector].nil? ? document : document.css(opts[:selector]) unless
 
       # Add error class to all fields with errors.
       unless opts[:errors].nil? || opts[:errors].empty?

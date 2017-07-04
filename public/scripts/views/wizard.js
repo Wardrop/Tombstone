@@ -98,7 +98,7 @@ $( function () {
       }, this)
     }
   })
-  
+
   Ts.WizardViews.Wizard = Ts.View.extend({
     className: 'overlay_background',
 		templateId: 'wizard:wizard_template',
@@ -106,7 +106,7 @@ $( function () {
 			'click .close' : 'close',
       'click .back' : 'goBack',
 			'click' : 'closeOnBlur',
-			'click [name=ok]:not(.disabled)': function (e) { 
+			'click [name=ok]:not(.disabled)': function (e) {
 			  // Wrapped in a setTimeout to counter the mistiming of events in vendor libraries. It's annoying as hell,
 			  // but this is the easiest fix.
 			  obj = this
@@ -166,7 +166,7 @@ $( function () {
       }
     }
   })
-  
+
   Ts.WizardViews.WarningOverlay = Ts.WizardViews.Wizard.extend({
     initialize: function () {
       this._super('initialize', arguments)
@@ -184,7 +184,7 @@ $( function () {
     },
     closeOnBlur: function () { }
   })
-  
+
   Ts.WizardViews.WarningConfirmation = Ts.WizardViews.BasePage.extend({
 		templateId: 'wizard:warning_confirmation_template',
     className: 'padded',
@@ -193,8 +193,8 @@ $( function () {
 			return this
     }
 	})
-  
-  
+
+
   /*** Place Wizard Views ***/
 
   Ts.WizardViews.PlaceWizard = Ts.WizardViews.Wizard.extend({
@@ -217,7 +217,7 @@ $( function () {
       })
     }
   })
-  
+
   Ts.WizardViews.PlaceForm = Ts.WizardViews.GenericForm.extend({
     templateId: 'wizard:place_form_template',
     initialize: function () {
@@ -226,13 +226,12 @@ $( function () {
     },
     renderTemplate: function () {
       this._super('renderTemplate', arguments)
-      this.$("[name=type]").combobox()
     }
   })
-  
-  
+
+
   /*** Role Wizard Views ***/
-  
+
   Ts.WizardViews.RoleWizard = Ts.WizardViews.Wizard.extend({
     templateId: 'wizard:role_wizard_template',
     events: _.extend({}, Ts.WizardViews.Wizard.prototype.events, {
@@ -292,7 +291,7 @@ $( function () {
       this.$('ul.menu > li').each( function () {
         var modelName = $(this).data('model')
         var model = role.get(modelName)
-        
+
         if(modelName != 'person') {
           role.get('person').valid() ? $(this).removeClass('disabled') : $(this).addClass('disabled')
         }
@@ -357,11 +356,11 @@ $( function () {
           }
         }, this)
         this.close()
-        this.options.onComplete(this.model.get('role'))    
+        this.options.onComplete(this.model.get('role'))
       }, this), 100)
     }
 	})
-  
+
   Ts.WizardViews.PersonPage = Ts.WizardViews.BasePage.extend({
     initialize: function () {
       this._super('initialize', arguments)
@@ -408,7 +407,7 @@ $( function () {
       }
     }
 	})
-  
+
   Ts.WizardViews.PersonForm = Ts.WizardViews.GenericForm.extend({
 		templateId: 'wizard:person_form_template',
     initialize: function () {
@@ -424,7 +423,7 @@ $( function () {
       }
     }
 	})
-    
+
 	Ts.WizardViews.PersonResults = Ts.WizardViews.BasePage.extend({
 		template: _.template($('#wizard\\:person_results_template').html()),
     render: function () {
@@ -444,7 +443,7 @@ $( function () {
 			return this
     }
 	})
-  
+
   Ts.WizardViews.PersonBlock = Ts.View.extend({
     className: 'row_block clickable',
     templateId: 'wizard:person_block_template',
@@ -453,7 +452,7 @@ $( function () {
 			return this
     }
   })
-  
+
   Ts.WizardViews.ContactPage = Ts.WizardViews.BasePage.extend({
     initialize: function () {
       this._super('initialize', arguments)
@@ -497,7 +496,7 @@ $( function () {
       this.resultsPane.html(contactResults.render().el)
     }
 	})
-  
+
   Ts.WizardViews.ContactForm = Ts.WizardViews.GenericForm.extend({
 		templateId: 'wizard:create_contact_form_template',
     initialize: function () {
@@ -506,7 +505,6 @@ $( function () {
     },
     renderTemplate: function () {
       this._super('renderTemplate', arguments)
-      this.$("[name=state]").combobox()
     },
     checkValidity: function () {
       if (this.model.hasRequired()) {
@@ -517,7 +515,7 @@ $( function () {
       }
     }
 	})
-  
+
   Ts.WizardViews.ContactResults = Ts.WizardViews.BasePage.extend({
 		templateId: 'wizard:contact_results_template',
     render: function () {
@@ -537,7 +535,7 @@ $( function () {
 			return this
     }
 	})
-  
+
   Ts.WizardViews.ContactBlock = Ts.View.extend({
     className: 'row_block clickable',
     templateId: 'wizard:contact_block_template',
@@ -546,15 +544,15 @@ $( function () {
 			return this
     }
   })
-  
+
   Ts.WizardViews.FindPersonForm = Ts.WizardViews.GenericForm.extend({
 		template: _.template($('#wizard\\:person_form_template').html())
 	})
-  
+
   Ts.WizardViews.CreatePersonForm = Ts.WizardViews.GenericForm.extend({
 		template: _.template($('#wizard\\:person_form_template').html())
 	})
-  
+
 	Ts.WizardViews.RoleReview = Ts.WizardViews.BasePage.extend({
 		template: _.template($('#wizard\\:role_review_template').html()),
     render: function () {
@@ -562,5 +560,5 @@ $( function () {
 			return this
     }
 	})
-	
+
 })
