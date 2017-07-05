@@ -1,7 +1,7 @@
 require 'csv'
 
 module Tombstone
-  Root.controller '/find' do
+  Root.controller '/find', conditions: {logged_in: true} do
     get '/' do
       @records = []
       @rejected_terms = []
@@ -17,14 +17,14 @@ module Tombstone
           else
             AllocationSearch
           end
-        
+
         terms = parse_search_string(request.GET['search'])
         original_terms = terms.clone
         order = (request.GET['order_by']) ? [[request.GET['order_by'], request.GET['order_dir']]] : []
         @records = @search_class.new.query(terms, [[request.GET['order_by'], request.GET['order_dir']]], record_limit).all
         @rejected_terms = original_terms.reject { |v| terms.any? { |t| t[:field] == v[:field] } }
       end
-      
+
       if request.GET['export']
         export_csv
       else
@@ -36,12 +36,12 @@ module Tombstone
         })
       end
     end
-    
+
     def export_csv
       formatted_records = []
       @records.each do |record|
         main_role = record.role_by_type('deceased') || record.role_by_type('reservee')
-        applicant = record.role_by_type('applicant') 
+        applicant = record.role_by_type('applicant')
         next_of_kin = record.role_by_type('next_of_kin')
         formatted_records << {
           type: record.type.demodulize.titleize,
@@ -57,7 +57,7 @@ module Tombstone
           interment_date: print(nil) { record.interment_date.strftime('%d/%m/%Y %l:%M%P')}
         }
       end
-      
+
       output = ''
       unless formatted_records.empty?
         csv = CSV.new(output)
@@ -68,7 +68,7 @@ module Tombstone
       response['Content-Type'] = 'text/csv'
       output
     end
-    
+
     # Takes a string in a format similar to "some term field1:some value field2:another value", and returns an array of
     # terms, consisting of the field name, operator and value. Any text before the first term is returned as the first
     # return value.
@@ -91,6 +91,6 @@ module Tombstone
       terms.unshift(field: :all, operator: ':', value: general_term) unless general_term.empty?
       terms
     end
-    
+
   end
 end

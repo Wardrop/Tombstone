@@ -1,5 +1,5 @@
 module Tombstone
-  Root.controller '/calendar' do
+  Root.controller '/calendar', conditions: {logged_in: true} do
 
     get '/' do
       render :'calendar/index'
@@ -17,6 +17,6 @@ module Tombstone
       response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
       Calendar.new.iCal.export
     end
-    
+
   end
 end

@@ -1,12 +1,12 @@
 module Tombstone
-  Root.controller '/person' do
+  Root.controller '/person', conditions: {logged_in: true} do
 
     get '/all', media_type: 'application/json' do
       filter_hash = request.GET.reject{ |k,v| !v || v.empty? }.symbolize_keys!
       Person.datetime_columns
       json_response Person.filter(filter_hash)
     end
-    
+
     get '/search', media_type: 'application/json' do
       filtered_hash = request.GET.reject{ |k,v| !v || v.empty? }.symbolize_keys!
       filtered_hash = Person.prepare_values(filtered_hash)
@@ -21,15 +21,15 @@ module Tombstone
         join(:contact, :contact__id => [:role__residential_contact_id, :role__mailing_contact_id]).
         naked.all
     end
-    
+
     get '/validate', media_type: 'application/json' do
       person = Person.new.set_valid_only(request.GET)
       json_response(valid: person.valid?, errors: person.errors)
     end
-    
+
     get '/:id', media_type: 'application/json' do |id|
       json_response Person.filter(:id => id)
     end
-    
+
   end
 end

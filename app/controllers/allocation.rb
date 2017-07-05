@@ -1,5 +1,5 @@
 module Tombstone
-  class AllocationController < Root
+  class AllocationController < Controller
     def self.inherited(klass)
       klass.mappings.push(*mappings)
     end
@@ -219,7 +219,7 @@ module Tombstone
     end
   end
 
-  Root.controller '/interment', AllocationController do
+  Root.controller '/interment', AllocationController, conditions: {logged_in: true} do
     def model; Interment; end
     def type; 'interment'; end
     render_defaults[:dir] = File.join(render_defaults[:dir], 'interment')
@@ -265,7 +265,7 @@ module Tombstone
     end
   end
 
-  Root.controller '/reservation', AllocationController do
+  Root.controller '/reservation', AllocationController, conditions: {logged_in: true} do
     def model; Reservation; end
     def type; 'reservation'; end
     render_defaults[:dir] = File.join(render_defaults[:dir], 'reservation')

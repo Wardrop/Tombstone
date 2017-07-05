@@ -17,6 +17,8 @@ module Tombstone
       use Rack::Lock
     }
 
+    conditions[:logged_in] = proc { |bool| bool != session[:user_id].nil? }
+
     def document
       env['tombstone.document']
     end
@@ -29,21 +31,21 @@ module Tombstone
         banner: nil
       }
 
-      if request.path_info != absolute('/login')  && request.path_info != absolute('/logout') && session[:user_id].nil?
-        if env['HTTP_ACCEPT'] && env['HTTP_ACCEPT'].include?('application/json')
-          halt 401, 'You must login to use this application.'.to_json
-        else
-          flash[:banner] = 'error', 'You must login to use this application.'
-          referrer = URI.escape(request.fullpath, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
-          redirect absolute("/login?referrer=#{referrer}"), status: 303
-        end
-      end
-
       # If the base URL is not hard-coded in the configuration, set it dynamically on the first request.
       CONFIG[:base_url] ||= URI.join(request.base_url, env['SCRIPT_NAME']).to_s
       document[:banner] = flash[:banner]
       User.current = env['tombstone.user'] = User.with_pk(session[:user_id]) || User.new(id: session[:user_id]) if session[:user_id]
       BaseModel.permissions = (env['tombstone.user'].role_permissions rescue nil)
+    end
+
+    after failed_condition: :logged_in, dispatched: false do
+      if env['HTTP_ACCEPT'] && env['HTTP_ACCEPT'].include?('application/json')
+        halt 401, 'You must login to use this application.'.to_json
+      else
+        flash[:banner] = 'error', 'You must login to use this application.'
+        referrer = URI.escape(request.fullpath, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
+        redirect absolute("/login?referrer=#{referrer}"), status: 303
+      end
     end
 
     error PermissionsError do |e|

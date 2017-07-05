@@ -1,7 +1,7 @@
 require 'stringio'
 
 module Tombstone
-  Root.controller '/files' do
+  Root.controller '/files', conditions: {logged_in: true} do
 
     get "/:id" do |id|
       response['Cache-Control'] = 'max-age=3600, public'

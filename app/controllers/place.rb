@@ -1,5 +1,5 @@
 module Tombstone
-  Root.controller '/place' do
+  Root.controller '/place', conditions: {logged_in: true} do
 
     get '/manage', 1 do
       @place = Place.with_pk(request.GET['place_id']) if request.GET['place_id']

@@ -1,6 +1,6 @@
 module Tombstone
   class Root < Controller
-    get '/' do
+    get '/', logged_in: true do
       @calendar = Calendar.new
       render :index
     end
