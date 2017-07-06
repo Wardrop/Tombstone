@@ -1,8 +1,10 @@
 ---
   default: &default
     :application_title: 'Tombstone'
+    :corporate_logo: 'images/logo.svg'
     :search_record_limit: 250
     :base_url: ~ # Set to `nil` to have it dynamically set at runtime.
+    :primary_color: '#2980cc'
     :email:
       :from: 'noreply@tombstone.localhost'
       :delivery_method: !ruby/symbol sendmail
