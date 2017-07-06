@@ -12,9 +12,9 @@ module Tombstone
     )
 
     middleware << proc {
+      use Rack::Lock
       use Rack::ResponsePadder
       use Rack::Session::Sequel, :db => Sequel::Model.db, :table_name => :session, :expire_after => 60 * 60 * 24 * 7
-      use Rack::Lock
     }
 
     conditions[:logged_in] = proc { |bool| bool != session[:user_id].nil? }
